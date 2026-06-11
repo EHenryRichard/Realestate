@@ -1,0 +1,58 @@
+export const adminNavLinks = [
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    href: "/admin",
+    iconKey: "speedometer",
+    helper: "Overview",
+  },
+  {
+    id: "properties",
+    label: "Properties",
+    href: "/admin/properties",
+    iconKey: "houses",
+    helper: "Listings",
+  },
+  {
+    id: "agents",
+    label: "Agents",
+    href: "/admin/agents",
+    iconKey: "people",
+    helper: "Team access",
+  },
+  {
+    id: "services",
+    label: "Services",
+    href: "/admin/services",
+    iconKey: "briefcase",
+    helper: "Offerings",
+  },
+  {
+    id: "testimonials",
+    label: "Testimonials",
+    href: "/admin/testimonials",
+    iconKey: "stars",
+    helper: "Client proof",
+  },
+  {
+    id: "messages",
+    label: "Messages",
+    href: "/admin/messages",
+    iconKey: "chatDots",
+    helper: "Enquiries",
+  },
+  {
+    id: "newsletter",
+    label: "Newsletter",
+    href: "/admin/newsletter",
+    iconKey: "envelope",
+    helper: "Subscribers",
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    href: "/admin/settings",
+    iconKey: "tools",
+    helper: "Site details",
+  },
+];

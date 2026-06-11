@@ -1,0 +1,132 @@
+.text-balance {
+  text-wrap: balance;
+}
+
+.hero-overlay {
+  background:
+    linear-gradient(90deg, rgba(6, 63, 44, 0.94) 0%, rgba(6, 63, 44, 0.78) 48%, rgba(6, 63, 44, 0.42) 100%),
+    linear-gradient(135deg, rgba(201, 154, 46, 0.24) 0%, rgba(201, 154, 46, 0) 42%);
+}
+
+.brand-sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-sheen::after {
+  content: "";
+  position: absolute;
+  inset: -80% auto auto -30%;
+  width: 36%;
+  height: 260%;
+  transform: rotate(18deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transition: left 520ms ease;
+}
+
+.brand-sheen:hover::after {
+  left: 120%;
+}
+
+.diagonal-accent {
+  position: relative;
+}
+
+.diagonal-accent::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 auto;
+  width: min(34vw, 21rem);
+  height: min(34vw, 21rem);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  background: linear-gradient(135deg, rgba(201, 154, 46, 0), rgba(201, 154, 46, 0.22));
+  pointer-events: none;
+}
+
+.loader-ring {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  border: 3px solid rgba(241, 211, 138, 0.18);
+  border-top-color: var(--brand-gold);
+  animation: loader-spin 900ms linear infinite;
+}
+
+.loader-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.loader-line::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 38%;
+  background: linear-gradient(90deg, transparent, var(--brand-gold), transparent);
+  animation: loader-line 1.35s ease-in-out infinite;
+}
+
+.drawer-panel {
+  animation: drawer-panel-in 240ms ease-out both;
+}
+
+.drawer-link {
+  animation: drawer-link-in 320ms ease-out both;
+}
+
+.drawer-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.drawer-scrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loader-line {
+  0% {
+    transform: translateX(-110%);
+  }
+
+  100% {
+    transform: translateX(280%);
+  }
+}
+
+@keyframes drawer-panel-in {
+  from {
+    opacity: 0.88;
+    transform: translateX(-1.25rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes drawer-link-in {
+  from {
+    opacity: 0;
+    transform: translateX(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer-panel,
+  .drawer-link {
+    animation: none;
+  }
+}

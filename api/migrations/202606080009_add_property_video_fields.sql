@@ -1,0 +1,3 @@
+ALTER TABLE properties
+ADD COLUMN IF NOT EXISTS video_url TEXT,
+ADD COLUMN IF NOT EXISTS video_poster TEXT;

@@ -1,0 +1,69 @@
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.docker.example
+!api/.env.example
+!frontend/.env.example
+
+# Node / frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.cache/
+frontend/coverage/
+frontend/vite-dev*.log
+frontend/*.log
+
+# Rust / API
+api/target/
+api/uploads/
+api/*.log
+api/**/*.log
+
+# Runtime uploads and generated media
+uploads/
+uploads_data/
+**/uploads/
+**/uploads_data/
+
+# Docker / local volumes and backups
+postgres_data/
+postgres_backups/
+caddy_data/
+caddy_config/
+*.dump
+*.sql.gz
+*.backup
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
+
+# Test / coverage output
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp

@@ -1,0 +1,7 @@
+pub mod auth_dto;
+pub mod contact_dto;
+pub mod newsletter_dto;
+pub mod property_dto;
+pub mod service_dto;
+pub mod settings_dto;
+pub mod testimonial_dto;

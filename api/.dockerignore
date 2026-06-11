@@ -1,0 +1,7 @@
+target
+uploads
+.env
+*.log
+api-dev.err.log
+api-dev.out.log
+Dockerfile

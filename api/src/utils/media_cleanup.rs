@@ -1,0 +1,234 @@
+use std::{
+    collections::HashSet,
+    path::{Component, Path, PathBuf},
+};
+
+use tokio::fs;
+use tracing::warn;
+
+use crate::db::DbPool;
+
+fn upload_key(reference: &str) -> Option<String> {
+    let trimmed = reference.trim();
+    let (_, relative) = trimmed.split_once("/uploads/")?;
+    let mut parts = Vec::new();
+
+    for component in Path::new(relative).components() {
+        match component {
+            Component::Normal(value) => parts.push(value.to_string_lossy().to_string()),
+            _ => return None,
+        }
+    }
+
+    if parts.is_empty() {
+        None
+    } else {
+        Some(parts.join("/"))
+    }
+}
+
+fn image_media_id(key: &str) -> Option<String> {
+    let filename = key.strip_prefix("images/")?;
+
+    filename
+        .strip_suffix("-large.webp")
+        .or_else(|| filename.strip_suffix("-medium.webp"))
+        .or_else(|| filename.strip_suffix("-thumbnail.webp"))
+        .map(str::to_string)
+}
+
+fn video_media_id(key: &str) -> Option<String> {
+    if let Some(filename) = key.strip_prefix("videos/") {
+        return filename.strip_suffix(".mp4").map(str::to_string);
+    }
+
+    key.strip_prefix("posters/")
+        .and_then(|filename| filename.strip_suffix("-poster.webp"))
+        .map(str::to_string)
+}
+
+fn image_group_keys(media_id: &str) -> Vec<String> {
+    ["thumbnail", "medium", "large"]
+        .into_iter()
+        .map(|variant| format!("images/{media_id}-{variant}.webp"))
+        .collect()
+}
+
+fn video_group_keys(media_id: &str) -> Vec<String> {
+    vec![
+        format!("videos/{media_id}.mp4"),
+        format!("posters/{media_id}-poster.webp"),
+    ]
+}
+
+fn safe_upload_path(upload_dir: &Path, key: &str) -> Option<PathBuf> {
+    let mut relative = PathBuf::new();
+
+    for component in Path::new(key).components() {
+        match component {
+            Component::Normal(value) => relative.push(value),
+            _ => return None,
+        }
+    }
+
+    Some(upload_dir.join(relative))
+}
+
+async fn remove_file_if_inside_upload_dir(upload_dir: &Path, key: &str) -> std::io::Result<()> {
+    let Some(target) = safe_upload_path(upload_dir, key) else {
+        return Ok(());
+    };
+
+    let upload_root = match fs::canonicalize(upload_dir).await {
+        Ok(path) => path,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(error) => return Err(error),
+    };
+    let target = match fs::canonicalize(&target).await {
+        Ok(path) => path,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(error) => return Err(error),
+    };
+
+    if target.starts_with(upload_root) && target.is_file() {
+        fs::remove_file(target).await?;
+    }
+
+    Ok(())
+}
+
+async fn remove_original_with_prefix(
+    upload_dir: &Path,
+    source_dir_key: &str,
+    media_id: &str,
+) -> std::io::Result<()> {
+    let Some(source_dir) = safe_upload_path(upload_dir, source_dir_key) else {
+        return Ok(());
+    };
+    let mut entries = match fs::read_dir(&source_dir).await {
+        Ok(entries) => entries,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(error) => return Err(error),
+    };
+    let prefix = format!("{media_id}-source.");
+
+    while let Some(entry) = entries.next_entry().await? {
+        let file_name = entry.file_name().to_string_lossy().to_string();
+
+        if file_name.starts_with(&prefix) {
+            let key = format!("{source_dir_key}/{file_name}");
+            remove_file_if_inside_upload_dir(upload_dir, &key).await?;
+        }
+    }
+
+    Ok(())
+}
+
+async fn live_upload_keys(pool: &DbPool) -> Result<HashSet<String>, sqlx::Error> {
+    let refs = sqlx::query_scalar::<_, String>(
+        r#"
+        SELECT media_ref FROM (
+            SELECT main_image AS media_ref FROM properties WHERE main_image IS NOT NULL
+            UNION ALL SELECT video_url FROM properties WHERE video_url IS NOT NULL
+            UNION ALL SELECT video_poster FROM properties WHERE video_poster IS NOT NULL
+            UNION ALL SELECT image_url FROM property_gallery_images WHERE image_url IS NOT NULL
+            UNION ALL SELECT image FROM services WHERE image IS NOT NULL
+            UNION ALL SELECT avatar FROM testimonials WHERE avatar IS NOT NULL
+            UNION ALL SELECT logo_url FROM site_settings WHERE logo_url IS NOT NULL
+            UNION ALL SELECT favicon_url FROM site_settings WHERE favicon_url IS NOT NULL
+            UNION ALL SELECT og_image_url FROM site_settings WHERE og_image_url IS NOT NULL
+        ) AS media_refs
+        "#,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    Ok(refs
+        .into_iter()
+        .filter_map(|reference| upload_key(&reference))
+        .collect())
+}
+
+async fn remove_generated_group(upload_dir: &Path, key: &str) -> std::io::Result<()> {
+    if let Some(media_id) = image_media_id(key) {
+        for group_key in image_group_keys(&media_id) {
+            remove_file_if_inside_upload_dir(upload_dir, &group_key).await?;
+        }
+        remove_original_with_prefix(upload_dir, "originals/images", &media_id).await?;
+        return Ok(());
+    }
+
+    if let Some(media_id) = video_media_id(key) {
+        for group_key in video_group_keys(&media_id) {
+            remove_file_if_inside_upload_dir(upload_dir, &group_key).await?;
+        }
+        remove_original_with_prefix(upload_dir, "originals/videos", &media_id).await?;
+        return Ok(());
+    }
+
+    remove_file_if_inside_upload_dir(upload_dir, key).await
+}
+
+fn group_is_still_referenced(key: &str, referenced_keys: &HashSet<String>) -> bool {
+    if let Some(media_id) = image_media_id(key) {
+        return image_group_keys(&media_id)
+            .into_iter()
+            .any(|group_key| referenced_keys.contains(&group_key));
+    }
+
+    if let Some(media_id) = video_media_id(key) {
+        return video_group_keys(&media_id)
+            .into_iter()
+            .any(|group_key| referenced_keys.contains(&group_key));
+    }
+
+    referenced_keys.contains(key)
+}
+
+pub fn refs_from_json_array(value: &serde_json::Value) -> Vec<String> {
+    value
+        .as_array()
+        .map(|items| {
+            items
+                .iter()
+                .filter_map(|item| item.as_str())
+                .map(str::to_string)
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+pub async fn cleanup_unused_uploads(
+    pool: &DbPool,
+    upload_dir: &str,
+    old_refs: Vec<String>,
+    keep_refs: Vec<String>,
+) {
+    let upload_dir = PathBuf::from(upload_dir);
+    let old_keys: HashSet<String> = old_refs
+        .into_iter()
+        .filter_map(|reference| upload_key(&reference))
+        .collect();
+    let keep_keys: HashSet<String> = keep_refs
+        .into_iter()
+        .filter_map(|reference| upload_key(&reference))
+        .collect();
+    let live_keys = match live_upload_keys(pool).await {
+        Ok(keys) => keys,
+        Err(error) => {
+            warn!("Could not check live upload references before cleanup: {error}");
+            return;
+        }
+    };
+    let referenced_keys = keep_keys.union(&live_keys).cloned().collect::<HashSet<_>>();
+
+    for key in old_keys {
+        if group_is_still_referenced(&key, &referenced_keys) {
+            continue;
+        }
+
+        if let Err(error) = remove_generated_group(&upload_dir, &key).await {
+            warn!("Could not remove unused uploaded media {key}: {error}");
+        }
+    }
+}

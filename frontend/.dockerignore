@@ -1,0 +1,7 @@
+node_modules
+dist
+.env
+*.log
+vite-dev.err.log
+vite-dev.out.log
+Dockerfile
