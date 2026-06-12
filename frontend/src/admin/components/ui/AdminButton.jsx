@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { adminPath } from "../../../config/adminConfig.js";
 
 const variantClasses = {
   primary: "border border-brand-gold bg-brand-gold text-brand-forest hover:bg-brand-emerald hover:text-white",
@@ -43,8 +44,10 @@ function AdminButton({
   );
 
   if (to) {
+    const linkTarget = typeof to === "string" && to.startsWith("/admin") ? adminPath(to) : to;
+
     return (
-      <Link className={classes} to={to} {...props}>
+      <Link className={classes} to={linkTarget} {...props}>
         {content}
       </Link>
     );

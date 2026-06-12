@@ -12,9 +12,9 @@ function AdminLayout() {
       <div className="fixed inset-y-0 left-0 z-30 hidden w-72 lg:block">
         <AdminSidebar />
       </div>
-      <div className="lg:pl-72">
+      <div className="min-w-0 lg:pl-72">
         <AdminTopbar onMenuClick={() => setIsDrawerOpen(true)} />
-        <main className="min-h-[calc(100dvh-4.5rem)] px-4 py-5 md:px-6">
+        <main className="min-h-[calc(100dvh-4.5rem)] min-w-0 max-w-full overflow-x-hidden px-4 py-5 md:px-6">
           <Outlet />
         </main>
       </div>

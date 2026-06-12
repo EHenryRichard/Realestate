@@ -10,17 +10,22 @@ use serde_json::json;
 
 use crate::{config::AppConfig, utils::jwt::verify_token};
 
-fn is_public_admin_auth_path(method: &Method, path: &str) -> bool {
-    if method == Method::OPTIONS {
-        return true;
+fn admin_api_path(admin_api_path: &str, suffix: &str) -> String {
+    format!("/api{}{}", admin_api_path, suffix)
+}
+
+fn admin_api_suffix<'a>(path: &'a str, admin_api_prefix: &str) -> Option<&'a str> {
+    path.strip_prefix(&format!("/api{admin_api_prefix}"))
+}
+
+fn is_public_admin_auth_path(method: &Method, path: &str, admin_api_prefix: &str) -> bool {
+    if method != Method::POST {
+        return false;
     }
 
     matches!(
-        (method.as_str(), path),
-        ("POST", "/api/admin/auth/signup")
-            | ("POST", "/api/admin/auth/login")
-            | ("POST", "/api/admin/auth/refresh")
-            | ("POST", "/api/admin/auth/logout")
+        admin_api_suffix(path, admin_api_prefix),
+        Some("/auth/signup" | "/auth/login" | "/auth/refresh" | "/auth/logout")
     )
 }
 
@@ -49,24 +54,23 @@ fn forbidden_response(message: &str) -> HttpResponse {
     }))
 }
 
-fn agent_can_access(method: &Method, path: &str) -> bool {
-    if method == Method::OPTIONS {
+fn agent_can_access(method: &Method, path: &str, admin_api_prefix: &str) -> bool {
+    if method == Method::GET
+        && (path == admin_api_path(admin_api_prefix, "/auth/me")
+            || path == admin_api_path(admin_api_prefix, "/dashboard"))
+    {
         return true;
     }
 
-    if method == Method::GET && matches!(path, "/api/admin/auth/me" | "/api/admin/dashboard") {
+    if path.starts_with(&admin_api_path(admin_api_prefix, "/properties")) {
         return true;
     }
 
-    if path.starts_with("/api/admin/properties") {
-        return true;
-    }
-
-    if path.starts_with("/api/admin/uploads") {
+    if path.starts_with(&admin_api_path(admin_api_prefix, "/uploads")) {
         return method == Method::POST || method == Method::DELETE;
     }
 
-    if path.starts_with("/api/admin/messages") {
+    if path.starts_with(&admin_api_path(admin_api_prefix, "/messages")) {
         return method == Method::GET || method == Method::PATCH;
     }
 
@@ -80,7 +84,7 @@ pub async fn require_admin_access<B>(
 where
     B: MessageBody + 'static,
 {
-    if is_public_admin_auth_path(req.method(), req.path()) {
+    if req.method() == Method::OPTIONS {
         return next
             .call(req)
             .await
@@ -92,6 +96,14 @@ where
             unauthorized_response("Admin auth configuration is missing").map_into_right_body();
         return Ok(req.into_response(response));
     };
+
+    if is_public_admin_auth_path(req.method(), req.path(), &config.admin_api_path) {
+        return next
+            .call(req)
+            .await
+            .map(ServiceResponse::map_into_left_body);
+    }
+
     let Some(token) = bearer_token(&req) else {
         let response = unauthorized_response("Missing admin token").map_into_right_body();
         return Ok(req.into_response(response));
@@ -99,7 +111,9 @@ where
 
     match verify_token(&token, &config.jwt_secret) {
         Ok(claims) if claims.token_type == "access" => {
-            if claims.role != "admin" && !agent_can_access(req.method(), req.path()) {
+            if claims.role != "admin"
+                && !agent_can_access(req.method(), req.path(), &config.admin_api_path)
+            {
                 let response = forbidden_response("This admin role cannot access this resource")
                     .map_into_right_body();
                 return Ok(req.into_response(response));

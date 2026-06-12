@@ -14,10 +14,10 @@ Open:
 - Website/admin: `http://localhost`
 - API health through proxy: `http://localhost/api/health`
 
-Create the first admin from:
+Create the first admin from your private admin path:
 
 ```txt
-http://localhost/admin/signup
+http://localhost/<ADMIN_BASE_PATH>/signup
 ```
 
 ## Production Values
@@ -31,6 +31,8 @@ PUBLIC_ORIGIN=https://your-domain.com
 REFRESH_COOKIE_SECURE=true
 RATE_LIMIT_WINDOW_SECONDS=60
 RATE_LIMIT_MAX_REQUESTS=60
+ADMIN_BASE_PATH=/control-use-a-long-random-private-path
+ADMIN_API_PATH=/core-use-a-long-random-private-path
 ```
 
 Keep `REFRESH_COOKIE_SECURE=false` only when testing over plain HTTP.

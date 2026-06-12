@@ -22,6 +22,14 @@ const PROPERTY_COLUMNS: &str = r#"
       main_image,
       image_alt,
       COALESCE((
+        SELECT jsonb_agg(
+          jsonb_build_object('url', video_url, 'poster', poster_url)
+          ORDER BY sort_order
+        )
+        FROM property_videos
+        WHERE property_videos.property_id = properties.id
+      ), '[]'::jsonb) AS videos,
+      COALESCE((
         SELECT jsonb_agg(image_url ORDER BY sort_order)
         FROM property_gallery_images
         WHERE property_gallery_images.property_id = properties.id

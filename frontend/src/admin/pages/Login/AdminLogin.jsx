@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { adminPath } from "../../../config/adminConfig.js";
 import { siteConfig } from "../../../config/siteConfig.js";
 import { showError, showSuccess } from "../../../utils/toast.jsx";
 import { useAdminAuth } from "../../hooks/useAdminAuth.js";
@@ -14,10 +15,10 @@ function AdminLogin() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const from = location.state?.from?.pathname || "/admin";
+  const from = location.state?.from?.pathname || adminPath();
 
   if (!isCheckingSession && isAuthenticated) {
-    return <Navigate replace to="/admin" />;
+    return <Navigate replace to={adminPath()} />;
   }
 
   const handleChange = (event) => {
@@ -64,7 +65,7 @@ function AdminLogin() {
         </form>
         <p className="mt-5 text-sm font-bold text-brand-muted">
           Need the first admin account?{" "}
-          <Link className="text-brand-gold hover:text-brand-emerald" to="/admin/signup">
+          <Link className="text-brand-gold hover:text-brand-emerald" to={adminPath("signup")}>
             Sign up
           </Link>
         </p>

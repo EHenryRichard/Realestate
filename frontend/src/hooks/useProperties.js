@@ -10,8 +10,11 @@ const normalizeProperty = (property = {}) => ({
   type: property.type || property.propertyType || "",
   featured: property.featured ?? property.isFeatured ?? false,
   gallery: property.gallery || property.galleryImages || [],
-  videoUrl: property.videoUrl || "",
-  videoPoster: property.videoPoster || "",
+  videos: Array.isArray(property.videos)
+    ? property.videos.filter((video) => video?.url)
+    : property.videoUrl
+      ? [{ url: property.videoUrl, poster: property.videoPoster || "" }]
+      : [],
 });
 
 export const useProperties = ({ filters = {}, featured = false, slug = "" } = {}) => {

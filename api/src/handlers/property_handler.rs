@@ -5,7 +5,7 @@ use uuid::Uuid;
 use crate::{
     config::AppConfig,
     db::DbPool,
-    dto::property_dto::{PropertyRequest, PropertyStatusRequest},
+    dto::property_dto::{PropertyRequest, PropertyStatusRequest, PropertyVideoRequest},
     handlers::common,
     models::property::Property,
     utils::{
@@ -29,8 +29,14 @@ const PROPERTY_COLUMNS: &str = r#"
       area,
       main_image,
       image_alt,
-      video_url,
-      video_poster,
+      COALESCE((
+        SELECT jsonb_agg(
+          jsonb_build_object('url', video_url, 'poster', poster_url)
+          ORDER BY sort_order
+        )
+        FROM property_videos
+        WHERE property_videos.property_id = properties.id
+      ), '[]'::jsonb) AS videos,
       COALESCE((
         SELECT jsonb_agg(image_url ORDER BY sort_order)
         FROM property_gallery_images
@@ -88,6 +94,50 @@ async fn save_gallery_images(
     Ok(())
 }
 
+async fn save_property_videos(
+    pool: &DbPool,
+    property_id: Uuid,
+    videos: Option<Vec<PropertyVideoRequest>>,
+) -> Result<(), sqlx::Error> {
+    let Some(videos) = videos else {
+        return Ok(());
+    };
+
+    sqlx::query("DELETE FROM property_videos WHERE property_id = $1")
+        .bind(property_id)
+        .execute(pool)
+        .await?;
+
+    for (index, video) in videos
+        .into_iter()
+        .filter(|video| !video.url.trim().is_empty())
+        .enumerate()
+    {
+        sqlx::query(
+            r#"
+            INSERT INTO property_videos (id, property_id, video_url, poster_url, sort_order)
+            VALUES ($1, $2, $3, $4, $5)
+            "#,
+        )
+        .bind(Uuid::new_v4())
+        .bind(property_id)
+        .bind(video.url.trim().to_string())
+        .bind(
+            video
+                .poster
+                .as_deref()
+                .map(str::trim)
+                .filter(|poster| !poster.is_empty())
+                .map(str::to_string),
+        )
+        .bind(index as i32)
+        .execute(pool)
+        .await?;
+    }
+
+    Ok(())
+}
+
 async fn fetch_property_by_id(pool: &DbPool, id: Uuid) -> Result<Option<Property>, sqlx::Error> {
     let query = format!("{} WHERE id = $1 LIMIT 1", property_select());
 
@@ -101,8 +151,17 @@ fn property_media_refs(property: &Property) -> Vec<String> {
     let mut refs = Vec::new();
 
     refs.extend(property.main_image.clone());
-    refs.extend(property.video_url.clone());
-    refs.extend(property.video_poster.clone());
+
+    if let Some(videos) = property.videos.as_array() {
+        for video in videos {
+            for key in ["url", "poster"] {
+                if let Some(value) = video.get(key).and_then(|value| value.as_str()) {
+                    refs.push(value.to_string());
+                }
+            }
+        }
+    }
+
     refs.extend(refs_from_json_array(&property.gallery_images));
 
     refs
@@ -257,18 +316,19 @@ pub async fn create_admin(
         .unwrap_or_else(|| slugify(&request.title));
     let features = json!(request.features.unwrap_or_default());
     let gallery_images = request.gallery_images;
+    let videos = request.videos;
 
     let query = format!(
         r#"
         INSERT INTO properties (
           id, title, slug, location, price, currency, property_type, status,
-          bedrooms, bathrooms, area, main_image, image_alt, video_url, video_poster,
+          bedrooms, bathrooms, area, main_image, image_alt,
           description, features,
           is_featured, is_visible
         )
         VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-          $11, $12, $13, $14, $15, $16, $17, $18, $19
+          $11, $12, $13, $14, $15, $16, $17
         )
         RETURNING {}
         "#,
@@ -289,8 +349,6 @@ pub async fn create_admin(
         .bind(request.area)
         .bind(request.main_image)
         .bind(request.image_alt)
-        .bind(request.video_url)
-        .bind(request.video_poster)
         .bind(request.description)
         .bind(features)
         .bind(request.is_featured.unwrap_or(false))
@@ -299,7 +357,14 @@ pub async fn create_admin(
         .await
     {
         Ok(property) => {
-            match save_gallery_images(pool.get_ref(), property.id, gallery_images).await {
+            let saved = save_gallery_images(pool.get_ref(), property.id, gallery_images).await;
+            let saved =
+                match saved {
+                    Ok(()) => save_property_videos(pool.get_ref(), property.id, videos).await,
+                    Err(error) => Err(error),
+                };
+
+            match saved {
                 Ok(()) => match fetch_property_by_id(pool.get_ref(), property.id).await {
                     Ok(Some(saved_property)) => {
                         common::created("Property created successfully", saved_property)
@@ -336,6 +401,7 @@ pub async fn update_admin(
         .unwrap_or_else(|| slugify(&request.title));
     let features = json!(request.features.unwrap_or_default());
     let gallery_images = request.gallery_images;
+    let videos = request.videos;
 
     let query = format!(
         r#"
@@ -352,12 +418,10 @@ pub async fn update_admin(
             area = $11,
             main_image = $12,
             image_alt = $13,
-            video_url = $14,
-            video_poster = $15,
-            description = $16,
-            features = $17,
-            is_featured = $18,
-            is_visible = $19,
+            description = $14,
+            features = $15,
+            is_featured = $16,
+            is_visible = $17,
             updated_at = now()
         WHERE id = $1
         RETURNING {}
@@ -379,8 +443,6 @@ pub async fn update_admin(
         .bind(request.area)
         .bind(request.main_image)
         .bind(request.image_alt)
-        .bind(request.video_url)
-        .bind(request.video_poster)
         .bind(request.description)
         .bind(features)
         .bind(request.is_featured.unwrap_or(false))
@@ -389,7 +451,14 @@ pub async fn update_admin(
         .await
     {
         Ok(Some(property)) => {
-            match save_gallery_images(pool.get_ref(), property.id, gallery_images).await {
+            let saved = save_gallery_images(pool.get_ref(), property.id, gallery_images).await;
+            let saved =
+                match saved {
+                    Ok(()) => save_property_videos(pool.get_ref(), property.id, videos).await,
+                    Err(error) => Err(error),
+                };
+
+            match saved {
                 Ok(()) => match fetch_property_by_id(pool.get_ref(), property.id).await {
                     Ok(Some(saved_property)) => {
                         cleanup_unused_uploads(

@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Image, Trash3, Upload } from "react-bootstrap-icons";
+import { getImageUrl } from "../../../utils/getImageUrl.js";
 import { dismissToast, showError, showLoading, showSuccess } from "../../../utils/toast.jsx";
 import { adminUploadApi } from "../../api/adminUploadApi.js";
+import AdminUploadProgress from "./AdminUploadProgress.jsx";
 
 const parseGalleryValues = (currentValue) =>
   String(currentValue || "")
@@ -14,10 +17,26 @@ const joinGalleryValues = (currentValue, uploadedUrls) => {
   return [...existingUrls, ...uploadedUrls].join(", ");
 };
 
-function AdminGalleryUploader({ label = "Gallery image paths", name = "galleryImages", onChange, value = "" }) {
+function AdminGalleryUploader({ label = "Gallery images", name = "galleryImages", onChange, value = "" }) {
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [processingSeconds, setProcessingSeconds] = useState(0);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const galleryItems = parseGalleryValues(value);
+
+  useEffect(() => {
+    if (!isUploading || uploadProgress < 100) {
+      setProcessingSeconds(0);
+      return undefined;
+    }
+
+    const startedAt = Date.now();
+    const timer = window.setInterval(() => {
+      setProcessingSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [isUploading, uploadProgress]);
 
   const deleteUnusedUpload = (path) => {
     if (!path) {
@@ -36,10 +55,11 @@ function AdminGalleryUploader({ label = "Gallery image paths", name = "galleryIm
 
     setError("");
     setIsUploading(true);
+    setUploadProgress(0);
     const toastId = showLoading("Uploading gallery images...");
 
     try {
-      const response = await adminUploadApi.uploadImages(files);
+      const response = await adminUploadApi.uploadImages(files, setUploadProgress);
       const uploadedData = Array.isArray(response?.data) ? response.data : [response?.data || response];
       const uploadedUrls = uploadedData
         .map((image) => image?.url || image?.path)
@@ -56,6 +76,7 @@ function AdminGalleryUploader({ label = "Gallery image paths", name = "galleryIm
       showError(caughtError.message);
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
       event.target.value = "";
     }
   };
@@ -69,37 +90,46 @@ function AdminGalleryUploader({ label = "Gallery image paths", name = "galleryIm
   };
 
   return (
-    <div className="block">
-      <label className="mb-2 block text-sm font-extrabold text-brand-forest" htmlFor={`${name}-paths`}>
+    <div className="block min-w-0 w-full max-w-full">
+      <p className="mb-2 text-sm font-extrabold text-brand-forest">
         {label}
-      </label>
-      <textarea
-        id={`${name}-paths`}
-        className="min-h-24 w-full border border-brand-forest/15 bg-white px-4 py-3 text-sm text-brand-charcoal focus:outline-none focus:ring-0"
-        name={name}
-        onChange={onChange}
-        placeholder="/images/properties/one.webp, /images/properties/two.webp"
-        value={value}
-      />
+      </p>
+
       {galleryItems.length ? (
-        <div className="mt-3 grid gap-2">
-          {galleryItems.map((imagePath) => (
-            <button
-              className="flex min-h-10 items-center justify-between border border-brand-forest/15 bg-brand-cream px-3 text-left text-xs font-bold text-brand-forest transition-colors hover:border-brand-forest hover:bg-brand-forest hover:text-white"
-              key={imagePath}
-              onClick={() => handleRemoveGalleryItem(imagePath)}
-              type="button"
-            >
-              <span className="min-w-0 truncate">{imagePath}</span>
-              <span className="ml-3 shrink-0 uppercase">Remove</span>
-            </button>
+        <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+          {galleryItems.map((imagePath, index) => (
+            <div className="min-w-0 overflow-hidden border border-brand-forest/10 bg-brand-cream" key={`${imagePath}-${index}`}>
+              <img alt="" className="aspect-video w-full object-cover" src={getImageUrl(imagePath, "")} />
+              <button
+                className="flex min-h-10 w-full items-center justify-center gap-2 border-t border-brand-forest/10 bg-white px-3 text-xs font-extrabold uppercase text-red-800 transition-colors hover:bg-red-800 hover:text-white"
+                onClick={() => handleRemoveGalleryItem(imagePath)}
+                type="button"
+              >
+                <Trash3 aria-hidden="true" className="h-4 w-4" />
+                Remove
+              </button>
+            </div>
           ))}
         </div>
-      ) : null}
-      <label className="mt-3 flex min-h-12 cursor-pointer items-center justify-center border border-brand-forest bg-brand-forest px-4 text-sm font-extrabold text-white transition-colors hover:bg-brand-gold hover:text-white">
+      ) : (
+        <div className="grid aspect-video min-w-0 place-items-center border border-brand-forest/10 bg-brand-cream text-brand-muted">
+          <Image aria-hidden="true" className="h-8 w-8" />
+        </div>
+      )}
+
+      <label className="mt-3 flex min-h-12 min-w-0 w-full max-w-full cursor-pointer items-center justify-center gap-2 border border-brand-forest bg-brand-forest px-4 text-center text-sm font-extrabold text-white transition-colors hover:bg-brand-gold hover:text-white">
+        <Upload aria-hidden="true" className="h-4 w-4" />
         <input accept="image/jpeg,image/png,image/webp" className="sr-only" multiple onChange={handleFileChange} type="file" />
-        {isUploading ? "Uploading images..." : "Upload gallery images"}
+        {isUploading ? "Uploading..." : galleryItems.length ? "Add Images" : "Upload Images"}
       </label>
+
+      {isUploading ? (
+        <AdminUploadProgress
+          elapsedSeconds={uploadProgress >= 100 ? processingSeconds : undefined}
+          label={uploadProgress >= 100 ? "Optimizing images" : "Uploading images"}
+          progress={uploadProgress}
+        />
+      ) : null}
       {error ? <p className="mt-2 text-sm font-bold text-red-700">{error}</p> : null}
     </div>
   );

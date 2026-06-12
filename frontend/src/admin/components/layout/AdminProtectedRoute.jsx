@@ -1,4 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { adminPath } from "../../../config/adminConfig.js";
 import { useAdminAuth } from "../../hooks/useAdminAuth.js";
 import AdminLoader from "../ui/AdminLoader.jsx";
 
@@ -11,7 +12,7 @@ function AdminProtectedRoute() {
   }
 
   if (!isAuthenticated) {
-    return <Navigate replace state={{ from: location }} to="/admin/login" />;
+    return <Navigate replace state={{ from: location }} to={adminPath("login")} />;
   }
 
   return <Outlet />;

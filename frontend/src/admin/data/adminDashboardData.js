@@ -1,5 +1,6 @@
 import { siteConfig } from "../../config/siteConfig.js";
 import { propertiesData } from "../../data/propertiesData.js";
+import { adminPath } from "../../config/adminConfig.js";
 import { servicesData } from "../../data/servicesData.js";
 import { testimonialsData } from "../../data/testimonialsData.js";
 
@@ -60,31 +61,31 @@ export const adminQuickActions = [
   {
     id: "add-property",
     label: "Add Property",
-    href: "/admin/properties/create",
+    href: adminPath("properties/create"),
     iconKey: "houseGear",
   },
   {
     id: "add-service",
     label: "Add Service",
-    href: "/admin/services/create",
+    href: adminPath("services/create"),
     iconKey: "briefcase",
   },
   {
     id: "add-testimonial",
     label: "Add Testimonial",
-    href: "/admin/testimonials/create",
+    href: adminPath("testimonials/create"),
     iconKey: "stars",
   },
   {
     id: "view-messages",
     label: "View Messages",
-    href: "/admin/messages",
+    href: adminPath("messages"),
     iconKey: "chatDots",
   },
   {
     id: "edit-settings",
     label: "Edit Site Settings",
-    href: "/admin/settings",
+    href: adminPath("settings"),
     iconKey: "tools",
   },
 ];

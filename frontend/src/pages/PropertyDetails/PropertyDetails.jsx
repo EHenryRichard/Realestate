@@ -1,4 +1,5 @@
-import { ArrowRight, CheckCircle, GeoAlt } from "react-bootstrap-icons";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, CheckCircle, ChevronLeft, ChevronRight, GeoAlt } from "react-bootstrap-icons";
 import { Link, useParams } from "react-router-dom";
 import ContactCTA from "../../components/sections/ContactCTA/ContactCTA.jsx";
 import Badge from "../../components/ui/Badge/Badge.jsx";
@@ -18,6 +19,7 @@ import { getImageUrl } from "../../utils/getImageUrl.js";
 function PropertyDetails() {
   const { slug } = useParams();
   const { property, properties, loading, error } = useProperties({ slug });
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const seo = property
     ? {
         title: `${property.title} | Sureboy Realty`,
@@ -27,6 +29,54 @@ function PropertyDetails() {
     : seoContent.properties;
 
   usePageMeta(seo);
+
+  const galleryImages = useMemo(() => {
+    if (!property) {
+      return [];
+    }
+
+    const images = [property.image, ...(Array.isArray(property.gallery) ? property.gallery : [])]
+      .map((item) => String(item || "").trim())
+      .filter(Boolean);
+    const uniqueImages = [...new Set(images)];
+
+    return uniqueImages.length ? uniqueImages : [getFallbackImage("property")];
+  }, [property]);
+  const activeImage = getImageUrl(galleryImages[activeImageIndex] || galleryImages[0], getFallbackImage("property"));
+  const hasGalleryControls = galleryImages.length > 1;
+  const propertyVideos = (Array.isArray(property?.videos) ? property.videos : [])
+    .filter((video) => video?.url)
+    .map((video) => ({
+      url: getImageUrl(video.url, ""),
+      poster: video.poster ? getImageUrl(video.poster, "") : "",
+    }));
+  const similarProperties = useMemo(() => {
+    if (!property) {
+      return [];
+    }
+
+    return properties.filter((item) => item.slug !== property.slug && item.type === property.type).slice(0, 3);
+  }, [properties, property]);
+
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [slug, galleryImages.length]);
+
+  const showPreviousImage = () => {
+    if (!galleryImages.length) {
+      return;
+    }
+
+    setActiveImageIndex((currentIndex) => (currentIndex === 0 ? galleryImages.length - 1 : currentIndex - 1));
+  };
+
+  const showNextImage = () => {
+    if (!galleryImages.length) {
+      return;
+    }
+
+    setActiveImageIndex((currentIndex) => (currentIndex + 1) % galleryImages.length);
+  };
 
   if (loading) {
     return <PageLoader />;
@@ -56,13 +106,6 @@ function PropertyDetails() {
     );
   }
 
-  const image = getImageUrl(property.image, getFallbackImage("property"));
-  const videoUrl = property.videoUrl ? getImageUrl(property.videoUrl, "") : "";
-  const videoPoster = property.videoPoster ? getImageUrl(property.videoPoster, "") : "";
-  const similarProperties = properties
-    .filter((item) => item.slug !== property.slug && item.type === property.type)
-    .slice(0, 3);
-
   return (
     <>
       <section className="bg-brand-forest py-10 text-white">
@@ -76,8 +119,54 @@ function PropertyDetails() {
       <section className="bg-white pb-16">
         <Container>
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="-mt-6 overflow-hidden bg-brand-cream shadow-[0_22px_70px_rgba(6,63,44,0.16)]">
-              <img alt={property.imageAlt || property.title} className="aspect-[4/3] h-full w-full object-cover" src={image} />
+            <div className="-mt-6 min-w-0 bg-brand-cream shadow-[0_22px_70px_rgba(6,63,44,0.16)]">
+              <div className="relative overflow-hidden">
+                <img alt={property.imageAlt || property.title} className="aspect-[4/3] h-full w-full object-cover" src={activeImage} />
+                {hasGalleryControls ? (
+                  <>
+                    <button
+                      aria-label="Previous property image"
+                      className="absolute left-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand-forest/85 text-white transition hover:bg-brand-gold"
+                      onClick={showPreviousImage}
+                      type="button"
+                    >
+                      <ChevronLeft aria-hidden="true" className="h-5 w-5" />
+                    </button>
+                    <button
+                      aria-label="Next property image"
+                      className="absolute right-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand-forest/85 text-white transition hover:bg-brand-gold"
+                      onClick={showNextImage}
+                      type="button"
+                    >
+                      <ChevronRight aria-hidden="true" className="h-5 w-5" />
+                    </button>
+                    <div className="absolute bottom-4 right-4 bg-brand-forest/85 px-3 py-1 text-xs font-extrabold text-white">
+                      {activeImageIndex + 1} / {galleryImages.length}
+                    </div>
+                  </>
+                ) : null}
+              </div>
+              {hasGalleryControls ? (
+                <div className="grid grid-cols-4 gap-2 bg-white p-2 sm:grid-cols-5">
+                  {galleryImages.map((galleryImage, index) => (
+                    <button
+                      aria-label={`Show property image ${index + 1}`}
+                      className={`overflow-hidden border transition ${
+                        index === activeImageIndex ? "border-brand-gold" : "border-transparent hover:border-brand-forest/30"
+                      }`}
+                      key={`${galleryImage}-${index}`}
+                      onClick={() => setActiveImageIndex(index)}
+                      type="button"
+                    >
+                      <img
+                        alt=""
+                        className="aspect-[4/3] w-full object-cover"
+                        src={getImageUrl(galleryImage, getFallbackImage("property"))}
+                      />
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
             <div className="py-8 lg:py-10">
               <div className="flex flex-wrap gap-2">
@@ -136,15 +225,22 @@ function PropertyDetails() {
             </div>
           </div>
 
-          {videoUrl ? (
+          {propertyVideos.length ? (
             <div className="mt-12">
-              <h2 className="text-2xl font-black tracking-[0] text-brand-forest">Property Video</h2>
-              <video
-                className="mt-5 aspect-video w-full bg-brand-forest object-cover"
-                controls
-                poster={videoPoster || undefined}
-                src={videoUrl}
-              />
+              <h2 className="text-2xl font-black tracking-[0] text-brand-forest">
+                {propertyVideos.length > 1 ? "Property Videos" : "Property Video"}
+              </h2>
+              <div className={`mt-5 grid gap-6 ${propertyVideos.length > 1 ? "md:grid-cols-2" : ""}`}>
+                {propertyVideos.map((video, index) => (
+                  <video
+                    className="aspect-video w-full bg-brand-forest object-cover"
+                    controls
+                    key={`${video.url}-${index}`}
+                    poster={video.poster || undefined}
+                    src={video.url}
+                  />
+                ))}
+              </div>
             </div>
           ) : null}
 

@@ -58,14 +58,14 @@ impl RateLimitState {
     }
 }
 
-fn should_rate_limit(method: &Method, path: &str) -> bool {
+fn should_rate_limit(method: &Method, path: &str, admin_api_path: &str) -> bool {
     if method == Method::OPTIONS {
         return false;
     }
 
     method == Method::POST
         && (matches!(path, "/api/contact" | "/api/newsletter")
-            || path.starts_with("/api/admin/auth/"))
+            || path.starts_with(&format!("/api{admin_api_path}/auth/")))
 }
 
 fn client_identifier(request: &ServiceRequest) -> String {
@@ -100,19 +100,20 @@ pub async fn rate_limit<B>(
 where
     B: MessageBody + 'static,
 {
-    if !should_rate_limit(req.method(), req.path()) {
-        return next
-            .call(req)
-            .await
-            .map(ServiceResponse::map_into_left_body);
-    }
-
     let Some(config) = req.app_data::<web::Data<AppConfig>>().cloned() else {
         return next
             .call(req)
             .await
             .map(ServiceResponse::map_into_left_body);
     };
+
+    if !should_rate_limit(req.method(), req.path(), &config.admin_api_path) {
+        return next
+            .call(req)
+            .await
+            .map(ServiceResponse::map_into_left_body);
+    }
+
     let Some(state) = req.app_data::<web::Data<RateLimitState>>().cloned() else {
         return next
             .call(req)

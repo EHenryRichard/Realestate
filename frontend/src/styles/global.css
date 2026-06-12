@@ -3,7 +3,9 @@
 @import "./variables.css";
 @import "./utilities.css";
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -46,6 +48,7 @@ input,
 textarea,
 select {
   font: inherit;
+  max-width: 100%;
 }
 
 a {

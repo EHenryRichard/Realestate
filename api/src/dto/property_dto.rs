@@ -20,13 +20,19 @@ pub struct PropertyRequest {
     pub area: Option<String>,
     pub main_image: Option<String>,
     pub image_alt: Option<String>,
-    pub video_url: Option<String>,
-    pub video_poster: Option<String>,
+    pub videos: Option<Vec<PropertyVideoRequest>>,
     pub gallery_images: Option<Vec<String>>,
     pub description: String,
     pub features: Option<Vec<String>>,
     pub is_featured: Option<bool>,
     pub is_visible: Option<bool>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PropertyVideoRequest {
+    pub url: String,
+    pub poster: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]

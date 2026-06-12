@@ -129,8 +129,8 @@ async fn live_upload_keys(pool: &DbPool) -> Result<HashSet<String>, sqlx::Error>
         r#"
         SELECT media_ref FROM (
             SELECT main_image AS media_ref FROM properties WHERE main_image IS NOT NULL
-            UNION ALL SELECT video_url FROM properties WHERE video_url IS NOT NULL
-            UNION ALL SELECT video_poster FROM properties WHERE video_poster IS NOT NULL
+            UNION ALL SELECT video_url FROM property_videos WHERE video_url IS NOT NULL
+            UNION ALL SELECT poster_url FROM property_videos WHERE poster_url IS NOT NULL
             UNION ALL SELECT image_url FROM property_gallery_images WHERE image_url IS NOT NULL
             UNION ALL SELECT image FROM services WHERE image IS NOT NULL
             UNION ALL SELECT avatar FROM testimonials WHERE avatar IS NOT NULL

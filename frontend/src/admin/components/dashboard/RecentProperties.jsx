@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { adminPath } from "../../../config/adminConfig.js";
 import { formatCurrency } from "../../../utils/formatCurrency.js";
 import AdminBadge from "../ui/AdminBadge.jsx";
 import AdminCard from "../ui/AdminCard.jsx";
@@ -8,7 +9,7 @@ function RecentProperties({ properties }) {
     <AdminCard>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="font-display text-2xl font-bold text-brand-forest">Recent Properties</h2>
-        <Link className="text-sm font-extrabold text-brand-gold hover:text-brand-emerald" to="/admin/properties">
+        <Link className="text-sm font-extrabold text-brand-gold hover:text-brand-emerald" to={adminPath("properties")}>
           View all
         </Link>
       </div>
@@ -17,7 +18,7 @@ function RecentProperties({ properties }) {
           <Link
             className="flex items-center justify-between gap-4 border border-brand-forest/10 p-3 transition hover:border-brand-gold/50"
             key={property.id}
-            to={`/admin/properties/${property.id}/edit`}
+            to={adminPath(`properties/${property.id}/edit`)}
           >
             <span className="min-w-0">
               <span className="block truncate text-sm font-extrabold text-brand-forest">{property.title}</span>

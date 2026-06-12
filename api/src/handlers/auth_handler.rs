@@ -114,7 +114,7 @@ fn refresh_cookie(config: &AppConfig, refresh_token: String) -> Cookie<'static> 
         .http_only(true)
         .secure(config.refresh_cookie_secure)
         .same_site(SameSite::Lax)
-        .path("/api/admin/auth")
+        .path(admin_auth_cookie_path(config))
         .max_age(CookieDuration::seconds(expiry_seconds(
             &config.jwt_refresh_expires_in,
         )))
@@ -126,9 +126,13 @@ fn clear_refresh_cookie(config: &AppConfig) -> Cookie<'static> {
         .http_only(true)
         .secure(config.refresh_cookie_secure)
         .same_site(SameSite::Lax)
-        .path("/api/admin/auth")
+        .path(admin_auth_cookie_path(config))
         .max_age(CookieDuration::seconds(0))
         .finish()
+}
+
+fn admin_auth_cookie_path(config: &AppConfig) -> String {
+    format!("/api{}/auth", config.admin_api_path)
 }
 
 fn require_access_claims(

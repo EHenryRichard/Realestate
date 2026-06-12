@@ -1,4 +1,5 @@
 import axios from "axios";
+import { adminApiPath, adminConfig, adminPath, isAdminBrowserPath } from "../config/adminConfig.js";
 import { apiConfig } from "../config/apiConfig.js";
 
 let adminAuthToken = "";
@@ -7,14 +8,20 @@ let adminAuthRefreshHandler = null;
 const isAdminRequest = (config = {}) => {
   const url = config.url || "";
   const baseURL = config.baseURL || "";
+  const hiddenAdminApiPath = adminConfig.apiBasePath;
+  const fullHiddenAdminApiPath = `${apiConfig.baseURL}${hiddenAdminApiPath}`;
 
-  return url.startsWith("/admin") || `${baseURL}${url}`.includes("/api/admin");
+  return (
+    url.startsWith("/admin") ||
+    url.startsWith(hiddenAdminApiPath) ||
+    `${baseURL}${url}`.includes(fullHiddenAdminApiPath)
+  );
 };
 
 const isAdminAuthRefreshRequest = (config = {}) => {
   const url = config.url || "";
 
-  return url.includes("/admin/auth/refresh");
+  return url.includes("/admin/auth/refresh") || url.includes(`${adminConfig.apiBasePath}/auth/refresh`);
 };
 
 const isSkippedAdminAuthRequest = (config = {}) => {
@@ -25,7 +32,19 @@ const isSkippedAdminAuthRequest = (config = {}) => {
     "/admin/auth/signup",
     "/admin/auth/refresh",
     "/admin/auth/logout",
+    `${adminConfig.apiBasePath}/auth/login`,
+    `${adminConfig.apiBasePath}/auth/signup`,
+    `${adminConfig.apiBasePath}/auth/refresh`,
+    `${adminConfig.apiBasePath}/auth/logout`,
   ].some((path) => url.includes(path));
+};
+
+const rewriteAdminApiUrl = (url = "") => {
+  if (typeof url !== "string" || !url.startsWith("/admin")) {
+    return url;
+  }
+
+  return adminApiPath(url);
 };
 
 export const setAdminAuthToken = (token = "") => {
@@ -52,6 +71,8 @@ export const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use((config) => {
+  config.url = rewriteAdminApiUrl(config.url);
+
   if (adminAuthToken) {
     config.headers = config.headers || {};
 
@@ -94,8 +115,8 @@ axiosClient.interceptors.response.use(
         clearAdminAuthToken();
         window.dispatchEvent(new CustomEvent("sureboy:admin-auth-invalid"));
 
-        if (window.location.pathname.startsWith("/admin") && !window.location.pathname.startsWith("/admin/login")) {
-          window.location.assign("/admin/login");
+        if (isAdminBrowserPath() && window.location.pathname !== adminPath("login")) {
+          window.location.assign(adminPath("login"));
         }
       }
     }
@@ -104,8 +125,8 @@ axiosClient.interceptors.response.use(
       clearAdminAuthToken();
       window.dispatchEvent(new CustomEvent("sureboy:admin-auth-invalid"));
 
-      if (window.location.pathname.startsWith("/admin") && !window.location.pathname.startsWith("/admin/login")) {
-        window.location.assign("/admin/login");
+      if (isAdminBrowserPath() && window.location.pathname !== adminPath("login")) {
+        window.location.assign(adminPath("login"));
       }
     }
 

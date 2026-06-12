@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import AdminRoutes from "../admin/routes/AdminRoutes.jsx";
 import PageLayout from "../components/layout/PageLayout/PageLayout.jsx";
 import PageLoader from "../components/ui/PageLoader/PageLoader.jsx";
+import { adminConfig } from "../config/adminConfig.js";
 
 const Home = lazy(() => import("../pages/Home/Home.jsx"));
 const About = lazy(() => import("../pages/About/About.jsx"));
@@ -18,7 +19,7 @@ function AppRoutes() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        <Route element={<AdminRoutes />} path="/admin/*" />
+        <Route element={<AdminRoutes />} path={`${adminConfig.basePath}/*`} />
         <Route
           element={
             <PageLayout>

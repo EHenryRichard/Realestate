@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { BoxArrowRight } from "react-bootstrap-icons";
 import { getIcon } from "../../../config/iconConfig.js";
 import { siteConfig } from "../../../config/siteConfig.js";
+import { adminConfig, adminPath } from "../../../config/adminConfig.js";
 import { adminNavLinks } from "../../data/adminNavLinks.js";
 import { useAdminAuth } from "../../hooks/useAdminAuth.js";
 
@@ -12,7 +13,7 @@ function AdminSidebar({ onNavigate }) {
   const handleLogout = () => {
     logout();
     onNavigate?.();
-    navigate("/admin/login", { replace: true });
+    navigate(adminPath("login"), { replace: true });
   };
 
   return (
@@ -36,7 +37,7 @@ function AdminSidebar({ onNavigate }) {
                   .filter(Boolean)
                   .join(" ")
               }
-              end={link.href === "/admin"}
+              end={link.href === adminConfig.basePath}
               key={link.id}
               onClick={onNavigate}
               to={link.href}

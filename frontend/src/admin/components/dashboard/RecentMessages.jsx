@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { adminPath } from "../../../config/adminConfig.js";
 import AdminBadge from "../ui/AdminBadge.jsx";
 import AdminCard from "../ui/AdminCard.jsx";
 
@@ -7,7 +8,7 @@ function RecentMessages({ messages }) {
     <AdminCard>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="font-display text-2xl font-bold text-brand-forest">Recent Messages</h2>
-        <Link className="text-sm font-extrabold text-brand-gold hover:text-brand-emerald" to="/admin/messages">
+        <Link className="text-sm font-extrabold text-brand-gold hover:text-brand-emerald" to={adminPath("messages")}>
           View all
         </Link>
       </div>
@@ -16,7 +17,7 @@ function RecentMessages({ messages }) {
           <Link
             className="border border-brand-forest/10 p-3 transition hover:border-brand-gold/50"
             key={message.id}
-            to={`/admin/messages/${message.id}`}
+            to={adminPath(`messages/${message.id}`)}
           >
             <span className="flex items-start justify-between gap-3">
               <span className="min-w-0">

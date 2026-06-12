@@ -1,5 +1,6 @@
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { adminPath } from "../../../config/adminConfig.js";
 import { siteConfig } from "../../../config/siteConfig.js";
 import { showError, showSuccess } from "../../../utils/toast.jsx";
 import AdminButton from "../../components/ui/AdminButton.jsx";
@@ -14,7 +15,7 @@ function AdminSignup() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isCheckingSession && isAuthenticated) {
-    return <Navigate replace to="/admin" />;
+    return <Navigate replace to={adminPath()} />;
   }
 
   const handleChange = (event) => {
@@ -33,7 +34,7 @@ function AdminSignup() {
     try {
       await signup(formData);
       showSuccess("Admin account created successfully.");
-      navigate("/admin", { replace: true });
+      navigate(adminPath(), { replace: true });
     } catch (signupError) {
       setError(signupError.message);
       showError(signupError.message);
@@ -62,7 +63,7 @@ function AdminSignup() {
         </form>
         <p className="mt-5 text-sm font-bold text-brand-muted">
           Already have an account?{" "}
-          <Link className="text-brand-gold hover:text-brand-emerald" to="/admin/login">
+          <Link className="text-brand-gold hover:text-brand-emerald" to={adminPath("login")}>
             Sign in
           </Link>
         </p>

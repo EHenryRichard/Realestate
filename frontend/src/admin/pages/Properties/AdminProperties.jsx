@@ -19,9 +19,15 @@ function AdminProperties() {
         subtitle="Search, filter, edit, feature, and prepare property records for backend persistence."
       />
       <AdminCard>
-        <div className="mb-4 grid gap-3 md:grid-cols-[1fr_14rem]">
-          <AdminSearchInput label="Search properties" onChange={(event) => setSearch(event.target.value)} value={search} />
+        <div className="mb-4 grid min-w-0 max-w-full gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,14rem)]">
+          <AdminSearchInput
+            className="min-w-0"
+            label="Search properties"
+            onChange={(event) => setSearch(event.target.value)}
+            value={search}
+          />
           <AdminSelect
+            className="min-w-0"
             name="status"
             onChange={(event) => setStatus(event.target.value)}
             options={["available", "sold", "rented", "pending", "hidden"]}

@@ -153,7 +153,7 @@ function Select({
   };
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative min-w-0 w-full max-w-full ${className}`}>
       {label ? (
         <span className="mb-2 block text-sm font-extrabold text-brand-forest" id={`${selectId}-label`}>
           {label}
@@ -168,7 +168,7 @@ function Select({
         aria-haspopup="listbox"
         aria-invalid={Boolean(error)}
         aria-labelledby={label ? `${selectId}-label` : undefined}
-        className="flex min-h-12 w-full items-center justify-between gap-3 border border-brand-forest/15 bg-white px-4 text-left text-brand-charcoal shadow-sm transition hover:border-brand-gold/60 focus:border-brand-forest/15 focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-60"
+        className="box-border flex min-h-12 min-w-0 w-full max-w-full items-center justify-between gap-3 border border-brand-forest/15 bg-white px-4 text-left text-brand-charcoal shadow-sm transition hover:border-brand-gold/60 focus:border-brand-forest/15 focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={disabled}
         id={selectId}
         onClick={() => setIsOpen((currentValue) => !currentValue)}
@@ -184,7 +184,7 @@ function Select({
       </button>
       {isOpen ? (
         <div
-          className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-30 overflow-hidden border border-brand-forest/10 bg-white shadow-[0_18px_55px_rgba(6,63,44,0.18)]"
+          className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-30 min-w-0 max-w-full overflow-hidden border border-brand-forest/10 bg-white shadow-[0_18px_55px_rgba(6,63,44,0.18)]"
           ref={dropdownRef}
         >
           <div className="border-b border-brand-forest/10 p-2">
@@ -192,7 +192,7 @@ function Select({
               <input
                 aria-label={`Search ${label || "options"}`}
                 autoComplete="on"
-                className="min-h-10 w-full appearance-none border border-brand-forest/15 bg-brand-cream/40 px-3 pr-10 text-sm text-brand-charcoal placeholder:text-brand-muted/70 focus:border-brand-forest/15 focus:outline-none focus:ring-0"
+                className="box-border min-h-10 min-w-0 w-full max-w-full appearance-none border border-brand-forest/15 bg-brand-cream/40 px-3 pr-10 text-sm text-brand-charcoal placeholder:text-brand-muted/70 focus:border-brand-forest/15 focus:outline-none focus:ring-0"
                 list={`${selectId}-autocomplete`}
                 onChange={(event) => setSearchTerm(event.target.value)}
                 onKeyDown={handleSearchKeyDown}

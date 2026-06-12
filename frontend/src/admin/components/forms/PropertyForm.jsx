@@ -27,8 +27,14 @@ const normalizeProperty = (property = {}) => ({
   area: property.area || "",
   mainImage: property.mainImage || property.image || "",
   imageAlt: property.imageAlt || "",
-  videoUrl: property.videoUrl || "",
-  videoPoster: property.videoPoster || "",
+  videos: Array.isArray(property.videos)
+    ? property.videos
+        .map((video) => ({
+          url: String(video?.url || "").trim(),
+          poster: String(video?.poster || "").trim(),
+        }))
+        .filter((video) => video.url)
+    : [],
   galleryImages: Array.isArray(property.galleryImages || property.gallery)
     ? (property.galleryImages || property.gallery).join(", ")
     : property.galleryImages || "",
@@ -134,8 +140,8 @@ function PropertyForm({ initialProperty, mode = "create" }) {
   };
 
   return (
-    <form className="grid gap-5" onSubmit={handleSubmit}>
-      <div className="grid gap-4 md:grid-cols-2">
+    <form className="grid min-w-0 w-full max-w-full gap-5" onSubmit={handleSubmit}>
+      <div className="grid min-w-0 max-w-full gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <AdminInput error={errors.title} label="Property title" name="title" onChange={handleChange} value={formData.title} />
         <AdminInput label="Slug" name="slug" onChange={handleChange} value={formData.slug} />
         <AdminInput error={errors.location} label="Location" name="location" onChange={handleChange} value={formData.location} />
@@ -168,16 +174,10 @@ function PropertyForm({ initialProperty, mode = "create" }) {
         value={formData.description}
       />
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid min-w-0 max-w-full gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] 2xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
         <AdminImageUploader name="mainImage" onChange={handleChange} value={formData.mainImage} />
         <AdminGalleryUploader name="galleryImages" onChange={handleChange} value={formData.galleryImages} />
-        <AdminVideoUploader
-          onChange={handleChange}
-          posterName="videoPoster"
-          posterValue={formData.videoPoster}
-          videoName="videoUrl"
-          videoValue={formData.videoUrl}
-        />
+        <AdminVideoUploader name="videos" onChange={handleChange} value={formData.videos} />
       </div>
 
       <AdminInput
@@ -210,9 +210,11 @@ function PropertyForm({ initialProperty, mode = "create" }) {
         </div>
       ) : null}
 
-      <details className="border border-brand-forest/10 bg-white p-4 text-xs text-brand-muted">
+      <details className="min-w-0 max-w-full border border-brand-forest/10 bg-white p-4 text-xs text-brand-muted">
         <summary className="cursor-pointer font-extrabold uppercase text-brand-forest">API payload preview</summary>
-        <pre className="mt-3 overflow-x-auto whitespace-pre-wrap">{JSON.stringify(payloadPreview, null, 2)}</pre>
+        <pre className="mt-3 max-w-full overflow-x-auto whitespace-pre-wrap break-words">
+          {JSON.stringify(payloadPreview, null, 2)}
+        </pre>
       </details>
 
       <div className="flex flex-wrap gap-3">

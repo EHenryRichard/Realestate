@@ -4,6 +4,7 @@ use std::env;
 pub struct AppConfig {
     pub server_host: String,
     pub server_port: u16,
+    pub admin_api_path: String,
     pub database_url: String,
     pub jwt_secret: String,
     pub jwt_access_expires_in: String,
@@ -12,6 +13,7 @@ pub struct AppConfig {
     pub frontend_url: String,
     pub upload_dir: String,
     pub ffmpeg_path: String,
+    pub ffprobe_path: String,
     pub rate_limit_window_seconds: u64,
     pub rate_limit_max_requests: usize,
 }
@@ -24,6 +26,9 @@ impl AppConfig {
                 .ok()
                 .and_then(|value| value.parse::<u16>().ok())
                 .unwrap_or(8080),
+            admin_api_path: normalize_path(
+                &env::var("ADMIN_API_PATH").unwrap_or_else(|_| "/core-portal".to_string()),
+            ),
             database_url: env::var("DATABASE_URL").unwrap_or_else(|_| {
                 "postgres://app_user:12345@localhost:5432/sureboy_realty".to_string()
             }),
@@ -40,6 +45,7 @@ impl AppConfig {
                 .unwrap_or_else(|_| "http://localhost:5173".to_string()),
             upload_dir: env::var("UPLOAD_DIR").unwrap_or_else(|_| "uploads".to_string()),
             ffmpeg_path: env::var("FFMPEG_PATH").unwrap_or_else(|_| "ffmpeg".to_string()),
+            ffprobe_path: env::var("FFPROBE_PATH").unwrap_or_else(|_| "ffprobe".to_string()),
             rate_limit_window_seconds: env::var("RATE_LIMIT_WINDOW_SECONDS")
                 .ok()
                 .and_then(|value| value.parse::<u64>().ok())
@@ -53,5 +59,15 @@ impl AppConfig {
 
     pub fn bind_address(&self) -> String {
         format!("{}:{}", self.server_host, self.server_port)
+    }
+}
+
+fn normalize_path(value: &str) -> String {
+    let trimmed = value.trim().trim_matches('/');
+
+    if trimmed.is_empty() {
+        "/core-portal".to_string()
+    } else {
+        format!("/{trimmed}")
     }
 }

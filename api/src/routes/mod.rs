@@ -14,9 +14,9 @@ use actix_web::{middleware::from_fn, web};
 
 use crate::middleware::auth_middleware::require_admin_access;
 
-pub fn configure(cfg: &mut web::ServiceConfig) {
+pub fn configure(cfg: &mut web::ServiceConfig, admin_api_path: &str) {
     cfg.configure(public_routes::configure).service(
-        web::scope("/admin")
+        web::scope(admin_api_path)
             .wrap(from_fn(require_admin_access))
             .configure(admin_routes::configure),
     );
