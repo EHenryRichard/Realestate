@@ -41,6 +41,21 @@ async fn main() -> std::io::Result<()> {
     tokio::fs::create_dir_all(&config.upload_dir).await?;
     let rate_limit_state = web::Data::new(RateLimitState::default());
     let video_jobs = web::Data::new(VideoJobs::default());
+
+    tokio::spawn({
+        let pool = conn.clone();
+        let upload_dir = config.upload_dir.clone();
+
+        async move {
+            let mut interval = tokio::time::interval(std::time::Duration::from_secs(24 * 60 * 60));
+
+            loop {
+                interval.tick().await;
+                utils::media_cleanup::sweep_orphaned_uploads(&pool, &upload_dir).await;
+            }
+        }
+    });
+
     info!("Starting Sureboy Realty API on {}", bind_address);
 
     HttpServer::new(move || {

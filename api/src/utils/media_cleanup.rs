@@ -1,12 +1,25 @@
 use std::{
     collections::HashSet,
     path::{Component, Path, PathBuf},
+    time::Duration,
 };
 
 use tokio::fs;
-use tracing::warn;
+use tracing::{info, warn};
 
 use crate::db::DbPool;
+
+// Unreferenced files younger than this are kept: they may belong to an upload
+// still compressing in the background or a form the admin has not saved yet.
+const ORPHAN_GRACE_PERIOD: Duration = Duration::from_secs(24 * 60 * 60);
+
+const SWEEP_DIRS: [&str; 5] = [
+    "images",
+    "videos",
+    "posters",
+    "originals/images",
+    "originals/videos",
+];
 
 fn upload_key(reference: &str) -> Option<String> {
     let trimmed = reference.trim();
@@ -196,6 +209,102 @@ pub fn refs_from_json_array(value: &serde_json::Value) -> Vec<String> {
                 .collect()
         })
         .unwrap_or_default()
+}
+
+fn original_group_keys(key: &str) -> Option<Vec<String>> {
+    let (source_dir, group_keys_for): (&str, fn(&str) -> Vec<String>) =
+        if key.starts_with("originals/images/") {
+            ("originals/images/", image_group_keys)
+        } else if key.starts_with("originals/videos/") {
+            ("originals/videos/", video_group_keys)
+        } else {
+            return None;
+        };
+
+    let file_name = key.strip_prefix(source_dir)?;
+    let (media_id, _) = file_name.split_once("-source.")?;
+
+    Some(group_keys_for(media_id))
+}
+
+fn key_is_orphaned(key: &str, live_keys: &HashSet<String>) -> bool {
+    if let Some(group_keys) = original_group_keys(key) {
+        return !group_keys
+            .into_iter()
+            .any(|group_key| live_keys.contains(&group_key));
+    }
+
+    !group_is_still_referenced(key, live_keys)
+}
+
+/// Deletes uploaded files that are no longer referenced anywhere in the
+/// database. Files modified within the grace period are always kept.
+pub async fn sweep_orphaned_uploads(pool: &DbPool, upload_dir: &str) {
+    let live_keys = match live_upload_keys(pool).await {
+        Ok(keys) => keys,
+        Err(error) => {
+            warn!("Could not load live upload references for orphan sweep: {error}");
+            return;
+        }
+    };
+    let upload_root = PathBuf::from(upload_dir);
+    let mut removed = 0_u32;
+
+    for dir_key in SWEEP_DIRS {
+        let dir_path = upload_root.join(dir_key.replace('/', std::path::MAIN_SEPARATOR_STR));
+        let mut entries = match fs::read_dir(&dir_path).await {
+            Ok(entries) => entries,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => continue,
+            Err(error) => {
+                warn!("Could not scan upload directory {dir_key}: {error}");
+                continue;
+            }
+        };
+
+        loop {
+            let entry = match entries.next_entry().await {
+                Ok(Some(entry)) => entry,
+                Ok(None) => break,
+                Err(error) => {
+                    warn!("Could not read upload directory {dir_key}: {error}");
+                    break;
+                }
+            };
+            let Ok(metadata) = entry.metadata().await else {
+                continue;
+            };
+
+            if !metadata.is_file() {
+                continue;
+            }
+
+            let recently_modified = metadata
+                .modified()
+                .ok()
+                .and_then(|modified| modified.elapsed().ok())
+                .map(|age| age < ORPHAN_GRACE_PERIOD)
+                .unwrap_or(true);
+
+            if recently_modified {
+                continue;
+            }
+
+            let key = format!("{dir_key}/{}", entry.file_name().to_string_lossy());
+
+            if !key_is_orphaned(&key, &live_keys) {
+                continue;
+            }
+
+            match remove_file_if_inside_upload_dir(&upload_root, &key).await {
+                Ok(()) => removed += 1,
+                Err(error) => warn!("Could not remove orphaned upload {key}: {error}"),
+            }
+        }
+    }
+
+    if removed > 0 {
+        info!("Orphan sweep removed {removed} unused upload file(s)");
+    }
 }
 
 pub async fn cleanup_unused_uploads(
