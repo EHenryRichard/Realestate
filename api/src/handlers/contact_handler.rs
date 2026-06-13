@@ -3,10 +3,12 @@ use serde_json::json;
 use uuid::Uuid;
 
 use crate::{
+    config::AppConfig,
     db::DbPool,
     dto::contact_dto::{ContactMessageRequest, MessageStatusRequest},
     handlers::common,
     models::contact_message::ContactMessage,
+    services::push_notification_service::{self, PushLeadAlert},
     utils::pagination::{PaginationQuery, make_pagination_meta},
 };
 
@@ -31,6 +33,7 @@ fn parse_id(path: web::Path<String>) -> Result<Uuid, actix_web::HttpResponse> {
 }
 
 pub async fn create_public(
+    config: web::Data<AppConfig>,
     pool: web::Data<DbPool>,
     payload: web::Json<ContactMessageRequest>,
 ) -> impl Responder {
@@ -56,7 +59,31 @@ pub async fn create_public(
         .fetch_one(pool.get_ref())
         .await
     {
-        Ok(message) => common::created("Contact message sent successfully", message),
+        Ok(message) => {
+            let lead_context = message
+                .service_interested_in
+                .as_deref()
+                .map(str::trim)
+                .filter(|value| !value.is_empty())
+                .map(|value| format!(" about {value}"))
+                .unwrap_or_default();
+            let alert = PushLeadAlert::new(
+                "New enquiry on Sureboy Realty",
+                format!(
+                    "{} sent a contact message{lead_context}.",
+                    message.full_name
+                ),
+                format!("{}/messages/{}", config.admin_base_path, message.id),
+            );
+
+            push_notification_service::spawn_lead_alert(
+                pool.get_ref().clone(),
+                config.get_ref().clone(),
+                alert,
+            );
+
+            common::created("Contact message sent successfully", message)
+        }
         Err(error) => common::server_error(error),
     }
 }

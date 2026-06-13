@@ -10,6 +10,7 @@ use crate::{
     models::property::Property,
     utils::{
         media_cleanup::{cleanup_unused_uploads, refs_from_json_array},
+        media_signing::signed_video_url,
         pagination::{PaginationQuery, make_pagination_meta},
         slug::slugify,
     },
@@ -147,6 +148,36 @@ async fn fetch_property_by_id(pool: &DbPool, id: Uuid) -> Result<Option<Property
         .await
 }
 
+/// Replaces stored `/uploads/videos/<file>` URLs with signed, expiring stream
+/// URLs so public links cannot be shared or hotlinked. Posters are left as-is.
+fn sign_property_videos(property: &mut Property, config: &AppConfig) {
+    let Some(videos) = property.videos.as_array_mut() else {
+        return;
+    };
+
+    for video in videos {
+        let Some(url) = video.get("url").and_then(|value| value.as_str()) else {
+            continue;
+        };
+        let Some(file_name) = url.rsplit('/').next().filter(|name| !name.is_empty()) else {
+            continue;
+        };
+
+        let signed = signed_video_url(
+            &config.media_url_secret,
+            file_name,
+            config.media_url_ttl_seconds,
+        );
+        video["url"] = json!(signed);
+    }
+}
+
+fn sign_properties_videos(properties: &mut [Property], config: &AppConfig) {
+    for property in properties.iter_mut() {
+        sign_property_videos(property, config);
+    }
+}
+
 fn property_media_refs(property: &Property) -> Vec<String> {
     let mut refs = Vec::new();
 
@@ -167,7 +198,7 @@ fn property_media_refs(property: &Property) -> Vec<String> {
     refs
 }
 
-pub async fn list_public(pool: web::Data<DbPool>) -> impl Responder {
+pub async fn list_public(config: web::Data<AppConfig>, pool: web::Data<DbPool>) -> impl Responder {
     let query = format!(
         "{} WHERE is_visible = TRUE ORDER BY created_at DESC",
         property_select()
@@ -177,12 +208,18 @@ pub async fn list_public(pool: web::Data<DbPool>) -> impl Responder {
         .fetch_all(pool.get_ref())
         .await
     {
-        Ok(properties) => common::ok("Visible properties fetched successfully", properties),
+        Ok(mut properties) => {
+            sign_properties_videos(&mut properties, config.get_ref());
+            common::ok("Visible properties fetched successfully", properties)
+        }
         Err(error) => common::server_error(error),
     }
 }
 
-pub async fn featured_public(pool: web::Data<DbPool>) -> impl Responder {
+pub async fn featured_public(
+    config: web::Data<AppConfig>,
+    pool: web::Data<DbPool>,
+) -> impl Responder {
     let query = format!(
         "{} WHERE is_visible = TRUE AND is_featured = TRUE ORDER BY created_at DESC",
         property_select()
@@ -192,12 +229,16 @@ pub async fn featured_public(pool: web::Data<DbPool>) -> impl Responder {
         .fetch_all(pool.get_ref())
         .await
     {
-        Ok(properties) => common::ok("Featured properties fetched successfully", properties),
+        Ok(mut properties) => {
+            sign_properties_videos(&mut properties, config.get_ref());
+            common::ok("Featured properties fetched successfully", properties)
+        }
         Err(error) => common::server_error(error),
     }
 }
 
 pub async fn get_public_by_slug(
+    config: web::Data<AppConfig>,
     pool: web::Data<DbPool>,
     path: web::Path<String>,
 ) -> impl Responder {
@@ -211,7 +252,10 @@ pub async fn get_public_by_slug(
         .fetch_optional(pool.get_ref())
         .await
     {
-        Ok(Some(property)) => common::ok("Property fetched successfully", property),
+        Ok(Some(mut property)) => {
+            sign_property_videos(&mut property, config.get_ref());
+            common::ok("Property fetched successfully", property)
+        }
         Ok(None) => common::not_found("Property not found"),
         Err(error) => common::server_error(error),
     }
@@ -358,11 +402,10 @@ pub async fn create_admin(
     {
         Ok(property) => {
             let saved = save_gallery_images(pool.get_ref(), property.id, gallery_images).await;
-            let saved =
-                match saved {
-                    Ok(()) => save_property_videos(pool.get_ref(), property.id, videos).await,
-                    Err(error) => Err(error),
-                };
+            let saved = match saved {
+                Ok(()) => save_property_videos(pool.get_ref(), property.id, videos).await,
+                Err(error) => Err(error),
+            };
 
             match saved {
                 Ok(()) => match fetch_property_by_id(pool.get_ref(), property.id).await {
@@ -452,11 +495,10 @@ pub async fn update_admin(
     {
         Ok(Some(property)) => {
             let saved = save_gallery_images(pool.get_ref(), property.id, gallery_images).await;
-            let saved =
-                match saved {
-                    Ok(()) => save_property_videos(pool.get_ref(), property.id, videos).await,
-                    Err(error) => Err(error),
-                };
+            let saved = match saved {
+                Ok(()) => save_property_videos(pool.get_ref(), property.id, videos).await,
+                Err(error) => Err(error),
+            };
 
             match saved {
                 Ok(()) => match fetch_property_by_id(pool.get_ref(), property.id).await {

@@ -8,6 +8,7 @@ RUN apt-get update \
         clang \
         cmake \
         libclang-dev \
+        perl \
         pkg-config \
     && rm -rf /var/lib/apt/lists/*
 

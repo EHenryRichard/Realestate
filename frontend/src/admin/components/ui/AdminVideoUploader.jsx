@@ -7,7 +7,7 @@ import AdminUploadProgress from "./AdminUploadProgress.jsx";
 
 const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
 const MAX_VIDEO_LABEL = "100MB";
-const STATUS_POLL_INTERVAL_MS = 3000;
+const STATUS_POLL_INTERVAL_MS = 2000;
 
 const normalizeVideos = (value) =>
   (Array.isArray(value) ? value : [])

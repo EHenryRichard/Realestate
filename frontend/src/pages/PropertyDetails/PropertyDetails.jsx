@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, CheckCircle, ChevronLeft, ChevronRight, GeoAlt } from "react-bootstrap-icons";
 import { Link, useParams } from "react-router-dom";
 import ContactCTA from "../../components/sections/ContactCTA/ContactCTA.jsx";
@@ -9,6 +9,7 @@ import EmptyState from "../../components/ui/EmptyState/EmptyState.jsx";
 import ErrorState from "../../components/ui/ErrorState/ErrorState.jsx";
 import PageLoader from "../../components/ui/PageLoader/PageLoader.jsx";
 import PropertyCard from "../../components/ui/PropertyCard/PropertyCard.jsx";
+import VideoPlayer from "../../components/ui/VideoPlayer/VideoPlayer.jsx";
 import { seoContent } from "../../content/seoContent.js";
 import { usePageMeta } from "../../hooks/usePageMeta.js";
 import { useProperties } from "../../hooks/useProperties.js";
@@ -20,6 +21,8 @@ function PropertyDetails() {
   const { slug } = useParams();
   const { property, properties, loading, error } = useProperties({ slug });
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [activeVideoIndex, setActiveVideoIndex] = useState(0);
+  const thumbnailRefs = useRef([]);
   const seo = property
     ? {
         title: `${property.title} | Sureboy Realty`,
@@ -50,6 +53,9 @@ function PropertyDetails() {
       url: getImageUrl(video.url, ""),
       poster: video.poster ? getImageUrl(video.poster, "") : "",
     }));
+  const hasMultipleVideos = propertyVideos.length > 1;
+  const safeVideoIndex = Math.min(activeVideoIndex, Math.max(propertyVideos.length - 1, 0));
+  const activeVideo = propertyVideos[safeVideoIndex] || { url: "", poster: "" };
   const similarProperties = useMemo(() => {
     if (!property) {
       return [];
@@ -61,6 +67,38 @@ function PropertyDetails() {
   useEffect(() => {
     setActiveImageIndex(0);
   }, [slug, galleryImages.length]);
+
+  useEffect(() => {
+    if (!hasGalleryControls) {
+      return;
+    }
+
+    thumbnailRefs.current[activeImageIndex]?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+  }, [activeImageIndex, hasGalleryControls]);
+
+  useEffect(() => {
+    setActiveVideoIndex(0);
+  }, [slug, propertyVideos.length]);
+
+  const showPreviousVideo = () => {
+    if (!propertyVideos.length) {
+      return;
+    }
+
+    setActiveVideoIndex((currentIndex) => (currentIndex === 0 ? propertyVideos.length - 1 : currentIndex - 1));
+  };
+
+  const showNextVideo = () => {
+    if (!propertyVideos.length) {
+      return;
+    }
+
+    setActiveVideoIndex((currentIndex) => (currentIndex + 1) % propertyVideos.length);
+  };
 
   const showPreviousImage = () => {
     if (!galleryImages.length) {
@@ -147,25 +185,45 @@ function PropertyDetails() {
                 ) : null}
               </div>
               {hasGalleryControls ? (
-                <div className="grid grid-cols-4 gap-2 bg-white p-2 sm:grid-cols-5">
-                  {galleryImages.map((galleryImage, index) => (
-                    <button
-                      aria-label={`Show property image ${index + 1}`}
-                      className={`overflow-hidden border transition ${
-                        index === activeImageIndex ? "border-brand-gold" : "border-transparent hover:border-brand-forest/30"
-                      }`}
-                      key={`${galleryImage}-${index}`}
-                      onClick={() => setActiveImageIndex(index)}
-                      type="button"
-                    >
-                      <img
-                        alt=""
-                        className="aspect-[4/3] w-full object-cover"
-                        src={getImageUrl(galleryImage, getFallbackImage("property"))}
+                <>
+                  <div className="flex max-w-full snap-x gap-2 overflow-x-auto bg-white p-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    {galleryImages.map((galleryImage, index) => (
+                      <button
+                        aria-current={index === activeImageIndex ? "true" : undefined}
+                        aria-label={`Show property image ${index + 1}`}
+                        className={`h-20 w-28 shrink-0 snap-start overflow-hidden border bg-brand-cream transition sm:h-24 sm:w-32 md:w-36 ${
+                          index === activeImageIndex ? "border-brand-gold" : "border-transparent hover:border-brand-forest/30"
+                        }`}
+                        key={`${galleryImage}-${index}`}
+                        onClick={() => setActiveImageIndex(index)}
+                        ref={(element) => {
+                          thumbnailRefs.current[index] = element;
+                        }}
+                        type="button"
+                      >
+                        <img
+                          alt=""
+                          className="h-full w-full object-cover"
+                          src={getImageUrl(galleryImage, getFallbackImage("property"))}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-center gap-2 bg-white pb-3">
+                    {galleryImages.map((galleryImage, index) => (
+                      <button
+                        aria-current={index === activeImageIndex ? "true" : undefined}
+                        aria-label={`Show property image ${index + 1}`}
+                        className={`h-2.5 rounded-full transition ${
+                          index === activeImageIndex ? "w-6 bg-brand-gold" : "w-2.5 bg-brand-forest/25 hover:bg-brand-forest/50"
+                        }`}
+                        key={`dot-${galleryImage}-${index}`}
+                        onClick={() => setActiveImageIndex(index)}
+                        type="button"
                       />
-                    </button>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </>
               ) : null}
             </div>
             <div className="py-8 lg:py-10">
@@ -230,17 +288,47 @@ function PropertyDetails() {
               <h2 className="text-2xl font-black tracking-[0] text-brand-forest">
                 {propertyVideos.length > 1 ? "Property Videos" : "Property Video"}
               </h2>
-              <div className={`mt-5 grid gap-6 ${propertyVideos.length > 1 ? "md:grid-cols-2" : ""}`}>
-                {propertyVideos.map((video, index) => (
-                  <video
-                    className="aspect-video w-full bg-brand-forest object-cover"
-                    controls
-                    key={`${video.url}-${index}`}
-                    poster={video.poster || undefined}
-                    src={video.url}
-                  />
-                ))}
+              <div className="relative mt-5 overflow-hidden">
+                <VideoPlayer key={activeVideo.url} poster={activeVideo.poster} src={activeVideo.url} />
+                {hasMultipleVideos ? (
+                  <>
+                    <button
+                      aria-label="Previous property video"
+                      className="absolute left-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand-forest/85 text-white transition hover:bg-brand-gold"
+                      onClick={showPreviousVideo}
+                      type="button"
+                    >
+                      <ChevronLeft aria-hidden="true" className="h-5 w-5" />
+                    </button>
+                    <button
+                      aria-label="Next property video"
+                      className="absolute right-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand-forest/85 text-white transition hover:bg-brand-gold"
+                      onClick={showNextVideo}
+                      type="button"
+                    >
+                      <ChevronRight aria-hidden="true" className="h-5 w-5" />
+                    </button>
+                    <div className="absolute right-4 top-4 bg-brand-forest/85 px-3 py-1 text-xs font-extrabold text-white">
+                      {safeVideoIndex + 1} / {propertyVideos.length}
+                    </div>
+                  </>
+                ) : null}
               </div>
+              {hasMultipleVideos ? (
+                <div className="mt-2 flex flex-wrap justify-center gap-2">
+                  {propertyVideos.map((video, index) => (
+                    <button
+                      aria-label={`Show property video ${index + 1}`}
+                      className={`h-2.5 w-2.5 rounded-full transition ${
+                        index === safeVideoIndex ? "bg-brand-gold" : "bg-brand-forest/25 hover:bg-brand-forest/50"
+                      }`}
+                      key={`${video.url}-${index}`}
+                      onClick={() => setActiveVideoIndex(index)}
+                      type="button"
+                    />
+                  ))}
+                </div>
+              ) : null}
             </div>
           ) : null}
 
@@ -263,3 +351,4 @@ function PropertyDetails() {
 }
 
 export default PropertyDetails;
+

@@ -3,7 +3,7 @@ use std::{
     fs as std_fs,
     path::{Path, PathBuf},
     process::Stdio,
-    sync::Mutex,
+    sync::{Mutex, OnceLock},
     time::{Duration, Instant},
 };
 
@@ -13,12 +13,18 @@ use futures_util::StreamExt;
 use image::{DynamicImage, imageops::FilterType};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use tokio::{fs, io::AsyncWriteExt, process::Command, sync::OnceCell, task};
+use tokio::{
+    fs,
+    io::AsyncWriteExt,
+    process::Command,
+    sync::{OnceCell, Semaphore},
+    task,
+};
 use uuid::Uuid;
 use webp::Encoder as WebPEncoder;
 
 use crate::{
-    config::AppConfig,
+    config::{AppConfig, VideoConfig},
     db::DbPool,
     handlers::common,
     utils::{
@@ -29,20 +35,14 @@ use crate::{
 
 const MAX_IMAGE_BYTES: u64 = 8 * 1024 * 1024;
 const MAX_VIDEO_BYTES: u64 = 100 * 1024 * 1024;
-const VIDEO_MAX_WIDTH: &str = "1280";
-const VIDEO_MAX_WIDTH_PIXELS: u64 = 1280;
-const VIDEO_PRESET: &str = "veryfast";
-const VIDEO_TARGET_BITRATE: &str = "2200k";
-const VIDEO_MAX_BITRATE: &str = "3000k";
-const VIDEO_BUFFER_SIZE: &str = "6000k";
-const VIDEO_AUDIO_BITRATE: &str = "96k";
-// Files already at or below this bitrate are stream-copied instead of re-encoded.
-const VIDEO_REMUX_MAX_BITRATE: u64 = 3_500_000;
 
 // Hardware encoders to probe for, in order of preference. libx264 is the fallback.
 const HARDWARE_VIDEO_ENCODERS: [&str; 3] = ["h264_nvenc", "h264_qsv", "h264_amf"];
 
 static VIDEO_ENCODER: OnceCell<&'static str> = OnceCell::const_new();
+// Initialized once from VideoConfig; bounds simultaneous CPU encodes so each
+// ffmpeg run gets all cores and the first video in a batch finishes fastest.
+static ENCODE_SLOTS: OnceLock<Semaphore> = OnceLock::new();
 
 #[derive(Clone, Copy)]
 struct ImageVariantSpec {
@@ -379,7 +379,7 @@ async fn video_encoder(ffmpeg_path: &str) -> &'static str {
 
 /// Returns true when the source is already browser-ready h264 at or below the
 /// target width and bitrate, so a stream copy can replace the slow re-encode.
-async fn can_remux_video(ffprobe_path: &str, source_path: &Path) -> bool {
+async fn can_remux_video(ffprobe_path: &str, source_path: &Path, video: &VideoConfig) -> bool {
     let output = match Command::new(ffprobe_path)
         .arg("-v")
         .arg("error")
@@ -418,15 +418,16 @@ async fn can_remux_video(ffprobe_path: &str, source_path: &Path) -> bool {
 
     is_h264
         && width > 0
-        && width <= VIDEO_MAX_WIDTH_PIXELS
+        && width <= video.remux_max_width
         && bitrate > 0
-        && bitrate <= VIDEO_REMUX_MAX_BITRATE
+        && bitrate <= video.remux_max_bitrate
 }
 
 async fn remux_video(
     ffmpeg_path: &str,
     source_path: &Path,
     output_path: &Path,
+    video: &VideoConfig,
 ) -> Result<(), String> {
     let mut command = Command::new(ffmpeg_path);
     command
@@ -438,7 +439,7 @@ async fn remux_video(
         .arg("-c:a")
         .arg("aac")
         .arg("-b:a")
-        .arg(VIDEO_AUDIO_BITRATE)
+        .arg(&video.audio_bitrate)
         .arg("-movflags")
         .arg("+faststart")
         .arg(output_path);
@@ -451,6 +452,7 @@ async fn encode_video(
     encoder: &str,
     source_path: &Path,
     output_path: &Path,
+    video: &VideoConfig,
 ) -> Result<(), String> {
     let mut video_command = Command::new(ffmpeg_path);
     video_command
@@ -458,7 +460,7 @@ async fn encode_video(
         .arg("-i")
         .arg(source_path)
         .arg("-vf")
-        .arg(format!("scale=min({VIDEO_MAX_WIDTH}\\,iw):-2"))
+        .arg(format!("scale=min({}\\,iw):-2", video.max_width))
         .arg("-c:v")
         .arg(encoder);
 
@@ -475,7 +477,7 @@ async fn encode_video(
         _ => {
             video_command
                 .arg("-preset")
-                .arg(VIDEO_PRESET)
+                .arg(&video.preset)
                 .arg("-threads")
                 .arg("0");
         }
@@ -483,17 +485,17 @@ async fn encode_video(
 
     video_command
         .arg("-b:v")
-        .arg(VIDEO_TARGET_BITRATE)
+        .arg(&video.target_bitrate)
         .arg("-maxrate")
-        .arg(VIDEO_MAX_BITRATE)
+        .arg(&video.max_bitrate)
         .arg("-bufsize")
-        .arg(VIDEO_BUFFER_SIZE)
+        .arg(&video.buffer_size)
         .arg("-pix_fmt")
         .arg("yuv420p")
         .arg("-c:a")
         .arg("aac")
         .arg("-b:a")
-        .arg(VIDEO_AUDIO_BITRATE)
+        .arg(&video.audio_bitrate)
         .arg("-movflags")
         .arg("+faststart")
         .arg(output_path);
@@ -507,23 +509,31 @@ async fn compress_video(
     source_path: &Path,
     output_path: &Path,
     poster_path: &Path,
+    video: &VideoConfig,
 ) -> Result<(), String> {
-    let remuxed = can_remux_video(ffprobe_path, source_path).await
-        && remux_video(ffmpeg_path, source_path, output_path)
+    let remuxed = can_remux_video(ffprobe_path, source_path, video).await
+        && remux_video(ffmpeg_path, source_path, output_path, video)
             .await
             .is_ok();
 
     if !remuxed {
         let encoder = video_encoder(ffmpeg_path).await;
+        // Serialize CPU encodes so each ffmpeg run gets all cores; the
+        // semaphore is never closed, so acquire only fails on a logic bug.
+        let slots =
+            ENCODE_SLOTS.get_or_init(|| Semaphore::new(video.max_concurrent_encodes.max(1)));
+        let _slot = slots.acquire().await.map_err(|error| error.to_string())?;
 
-        if let Err(error) = encode_video(ffmpeg_path, encoder, source_path, output_path).await {
+        if let Err(error) =
+            encode_video(ffmpeg_path, encoder, source_path, output_path, video).await
+        {
             if encoder == "libx264" {
                 return Err(error);
             }
 
             // Hardware encoder passed detection but failed on this file; retry on CPU.
             tracing::warn!("{encoder} encode failed ({error}); falling back to libx264");
-            encode_video(ffmpeg_path, "libx264", source_path, output_path).await?;
+            encode_video(ffmpeg_path, "libx264", source_path, output_path, video).await?;
         }
     }
 
@@ -726,6 +736,7 @@ pub async fn upload_videos(
             let jobs = jobs.clone().into_inner();
             let ffmpeg_path = config.ffmpeg_path.clone();
             let ffprobe_path = config.ffprobe_path.clone();
+            let video_config = config.video.clone();
             let source_destination = source_destination.clone();
             let output_destination = output_destination.clone();
             let poster_destination = poster_destination.clone();
@@ -738,6 +749,7 @@ pub async fn upload_videos(
                     &source_destination,
                     &output_destination,
                     &poster_destination,
+                    &video_config,
                 )
                 .await;
 
@@ -815,10 +827,9 @@ pub async fn video_upload_status(
             "Video is still compressing",
             json!({ "status": "processing" }),
         ),
-        Some(VideoJobStatus::Ready { size }) => common::ok(
-            "Video is ready",
-            json!({ "status": "ready", "size": size }),
-        ),
+        Some(VideoJobStatus::Ready { size }) => {
+            common::ok("Video is ready", json!({ "status": "ready", "size": size }))
+        }
         Some(VideoJobStatus::Failed { message }) => common::ok(
             "Video compression failed",
             json!({ "status": "failed", "message": message }),

@@ -17,8 +17,11 @@ argon2 = "0.5"
 chrono = { version = "0.4", features = ["serde"] }
 dotenvy = "0.15"
 futures-util = "0.3"
+hex = "0.4"
+hmac = "0.12"
 image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp"] }
 jsonwebtoken = "9"
+sha2 = "0.10"
 rand_core = { version = "0.6", features = ["getrandom"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -30,3 +33,5 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 uuid = { version = "1", features = ["serde", "v4"] }
 validator = { version = "0.20", features = ["derive"] }
 webp = "0.3"
+web-push = { version = "0.11.0", default-features = false, features = ["hyper-client", "hyper-tls"] }
+openssl = { version = "0.10.81", features = ["vendored"] }

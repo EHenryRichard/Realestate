@@ -3,6 +3,7 @@ pub mod auth_routes;
 pub mod contact_routes;
 pub mod dashboard_routes;
 pub mod newsletter_routes;
+pub mod notification_routes;
 pub mod property_routes;
 pub mod public_routes;
 pub mod service_routes;

@@ -24,6 +24,7 @@ services:
     environment:
       SERVER_HOST: 0.0.0.0
       SERVER_PORT: 8080
+      ADMIN_BASE_PATH: ${ADMIN_BASE_PATH:-/control-panel}
       ADMIN_API_PATH: ${ADMIN_API_PATH:-/core-portal}
       DATABASE_URL: postgres://${POSTGRES_USER:-app_user}:${POSTGRES_PASSWORD:-change_me_before_deploy}@postgres:5432/${POSTGRES_DB:-sureboy_realty}
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in your root .env file}
@@ -33,8 +34,23 @@ services:
       FRONTEND_URL: ${PUBLIC_ORIGIN:-http://localhost}
       UPLOAD_DIR: /app/uploads
       FFMPEG_PATH: /usr/bin/ffmpeg
+      FFPROBE_PATH: /usr/bin/ffprobe
       RATE_LIMIT_WINDOW_SECONDS: ${RATE_LIMIT_WINDOW_SECONDS:-60}
       RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-60}
+      VIDEO_MAX_WIDTH: ${VIDEO_MAX_WIDTH:-1280}
+      VIDEO_PRESET: ${VIDEO_PRESET:-veryfast}
+      VIDEO_TARGET_BITRATE: ${VIDEO_TARGET_BITRATE:-2200k}
+      VIDEO_MAX_BITRATE: ${VIDEO_MAX_BITRATE:-3000k}
+      VIDEO_BUFFER_SIZE: ${VIDEO_BUFFER_SIZE:-6000k}
+      VIDEO_AUDIO_BITRATE: ${VIDEO_AUDIO_BITRATE:-96k}
+      VIDEO_REMUX_MAX_WIDTH: ${VIDEO_REMUX_MAX_WIDTH:-1920}
+      VIDEO_REMUX_MAX_BITRATE: ${VIDEO_REMUX_MAX_BITRATE:-12000000}
+      VIDEO_MAX_CONCURRENT_ENCODES: ${VIDEO_MAX_CONCURRENT_ENCODES:-1}
+      MEDIA_URL_SECRET: ${MEDIA_URL_SECRET:-${JWT_SECRET}}
+      MEDIA_URL_TTL_SECONDS: ${MEDIA_URL_TTL_SECONDS:-3600}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-}
       RUST_LOG: ${RUST_LOG:-info}
     volumes:
       - uploads_data:/app/uploads
@@ -53,6 +69,7 @@ services:
         VITE_API_TIMEOUT: ${VITE_API_TIMEOUT:-30000}
         VITE_ADMIN_BASE_PATH: ${ADMIN_BASE_PATH:-/control-panel}
         VITE_ADMIN_API_BASE_PATH: ${ADMIN_API_PATH:-/core-portal}
+        VITE_VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
     restart: unless-stopped
     depends_on:
       api:
