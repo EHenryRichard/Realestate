@@ -102,17 +102,34 @@ function VideoPlayer({ src, poster = "", className = "" }) {
     setCurrentTime(nextTime);
   };
 
-  const toggleFullscreen = useCallback(() => {
+  const toggleFullscreen = useCallback(async () => {
     const container = containerRef.current;
 
     if (!container) {
       return;
     }
 
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      container.requestFullscreen?.();
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+        // unlock is best-effort; unsupported on iOS/desktop
+        try {
+          window.screen.orientation?.unlock?.();
+        } catch {
+          /* ignore */
+        }
+      } else {
+        await container.requestFullscreen?.();
+        // Rotate to landscape on mobile so the video fills the screen.
+        // Rejects on iOS Safari / desktop, which is fine — ignore it.
+        try {
+          await window.screen.orientation?.lock?.("landscape");
+        } catch {
+          /* ignore */
+        }
+      }
+    } catch {
+      /* fullscreen request was blocked or interrupted */
     }
   }, []);
 
@@ -151,7 +168,21 @@ function VideoPlayer({ src, poster = "", className = "" }) {
   };
 
   useEffect(() => {
-    const onFullscreenChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    const onFullscreenChange = () => {
+      const active = Boolean(document.fullscreenElement);
+
+      setIsFullscreen(active);
+
+      // When the user leaves fullscreen (e.g. swipe/back/Esc), release the
+      // landscape lock so the page returns to normal orientation.
+      if (!active) {
+        try {
+          window.screen.orientation?.unlock?.();
+        } catch {
+          /* ignore */
+        }
+      }
+    };
 
     document.addEventListener("fullscreenchange", onFullscreenChange);
 
