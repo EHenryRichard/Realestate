@@ -146,7 +146,7 @@ function PropertyDetails() {
 
   return (
     <>
-      <section className="bg-brand-forest py-10 text-white">
+      <section className="bg-brand-forest pb-10 pt-24 text-white md:pt-28">
         <Container>
           <Link className="text-sm font-extrabold text-brand-gold-soft transition hover:text-brand-gold" to="/properties">
             Back to properties
