@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, CheckCircle, ChevronLeft, ChevronRight, GeoAlt } from "react-bootstrap-icons";
+import { ArrowLeft, ArrowRight, CheckCircle, ChevronLeft, ChevronRight, GeoAlt } from "react-bootstrap-icons";
 import { Link, useParams } from "react-router-dom";
 import ContactCTA from "../../components/sections/ContactCTA/ContactCTA.jsx";
 import Badge from "../../components/ui/Badge/Badge.jsx";
@@ -148,8 +148,12 @@ function PropertyDetails() {
     <>
       <section className="bg-brand-forest pb-10 pt-24 text-white md:pt-28">
         <Container>
-          <Link className="text-sm font-extrabold text-brand-gold-soft transition hover:text-brand-gold" to="/properties">
-            Back to properties
+          <Link
+            aria-label="Back to properties"
+            className="inline-flex h-11 w-11 items-center justify-center border border-white/20 text-brand-gold-soft transition hover:border-brand-gold hover:text-brand-gold"
+            to="/properties"
+          >
+            <ArrowLeft aria-hidden="true" className="h-5 w-5" />
           </Link>
         </Container>
       </section>
