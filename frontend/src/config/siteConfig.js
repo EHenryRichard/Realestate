@@ -4,7 +4,7 @@ export const siteConfig = {
   slogans: ["Your Property. Our Priority.", "Built on Trust. Driven by Excellence."],
   phone: "+234 916 326 7765",
   phoneCompact: "+2349163267765",
-  email: "austineokolie57@gmail.com",
+  email: "Sureboyrealty@gmail.com",
   whatsappNumber: "2349163267765",
   address: "Warri, Delta State, Nigeria",
   businessHours: "Mon - Sat, 9:00 AM - 6:00 PM",
@@ -15,23 +15,23 @@ export const siteConfig = {
   socialLinks: [
     {
       label: "Instagram",
-      href: "https://www.instagram.com/",
+      href: "https://www.instagram.com/Sureboy_Realty",
       iconKey: "instagram",
     },
     {
       label: "Facebook",
-      href: "https://www.facebook.com/",
+      href: "https://www.facebook.com/Sureboy_Realty",
       iconKey: "facebook",
     },
     {
-      label: "LinkedIn",
-      href: "https://www.linkedin.com/",
-      iconKey: "linkedin",
+      label: "TikTok",
+      href: "https://www.tiktok.com/@sureboy_Realty",
+      iconKey: "tiktok",
     },
     {
-      label: "X",
-      href: "https://x.com/",
-      iconKey: "twitterX",
+      label: "Telegram",
+      href: "https://t.me/Sureboy_Realty",
+      iconKey: "telegram",
     },
   ],
 };

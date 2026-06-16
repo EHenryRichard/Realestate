@@ -6,6 +6,7 @@ import { usePageMeta } from "../../hooks/usePageMeta.js";
 import Container from "../../components/ui/Container/Container.jsx";
 import EmptyState from "../../components/ui/EmptyState/EmptyState.jsx";
 import ErrorState from "../../components/ui/ErrorState/ErrorState.jsx";
+import LazyImage from "../../components/ui/LazyImage/LazyImage.jsx";
 import LoadingState from "../../components/ui/LoadingState/LoadingState.jsx";
 
 const CATEGORY_COLORS = {
@@ -20,7 +21,7 @@ function CategoryBadge({ category }) {
   const cls = CATEGORY_COLORS[category] || "bg-slate-50 text-slate-700 border-slate-200";
 
   return (
-    <span className={`inline-flex items-center border px-2.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.05em] ${cls}`}>
+    <span className={`inline-flex items-center border px-2.5 py-0.5 text-xs font-extrabold uppercase tracking-wider ${cls}`}>
       {category}
     </span>
   );
@@ -42,17 +43,11 @@ function FeaturedPostCard({ post }) {
       to={`/blog/${post.slug}`}
     >
       <div className="relative min-h-64 bg-brand-forest/8 lg:min-h-80">
-        {post.coverImage ? (
-          <img
-            alt={post.title}
-            className="h-full w-full object-cover"
-            src={post.coverImage}
-          />
-        ) : (
-          <div className="flex h-full min-h-64 items-center justify-center bg-brand-forest/6 lg:min-h-80">
-            <span className="font-display text-6xl font-black text-brand-forest/20">SR</span>
-          </div>
-        )}
+        <LazyImage
+          alt={post.title}
+          className="h-full w-full object-cover"
+          src={post.coverImage || ""}
+        />
         <div className="absolute left-4 top-4">
           <CategoryBadge category={post.category} />
         </div>
@@ -62,7 +57,7 @@ function FeaturedPostCard({ post }) {
         <p className="text-xs font-extrabold uppercase tracking-[0.08em] text-brand-muted">
           {formatDate(post.publishedAt)} · {post.author}
         </p>
-        <h2 className="mt-3 text-2xl font-black leading-tight tracking-[0] text-brand-charcoal group-hover:text-brand-forest sm:text-3xl">
+        <h2 className="mt-3 text-2xl font-black leading-tight tracking-normal text-brand-charcoal group-hover:text-brand-forest sm:text-3xl">
           {post.title}
         </h2>
         <p className="mt-4 text-sm leading-7 text-brand-muted">{post.excerpt}</p>
@@ -81,14 +76,12 @@ function PostCard({ post }) {
       className="group flex flex-col overflow-hidden border border-brand-forest/10 bg-white transition hover:border-brand-forest/25"
       to={`/blog/${post.slug}`}
     >
-      <div className="relative min-h-44 bg-brand-forest/6">
-        {post.coverImage ? (
-          <img alt={post.title} className="h-full w-full object-cover" src={post.coverImage} />
-        ) : (
-          <div className="flex h-44 items-center justify-center">
-            <span className="font-display text-4xl font-black text-brand-forest/20">SR</span>
-          </div>
-        )}
+      <div className="relative h-44 bg-brand-forest/6">
+        <LazyImage
+          alt={post.title}
+          className="h-full w-full object-cover"
+          src={post.coverImage || ""}
+        />
         <div className="absolute left-3 top-3">
           <CategoryBadge category={post.category} />
         </div>
@@ -98,7 +91,7 @@ function PostCard({ post }) {
         <p className="text-xs font-extrabold uppercase tracking-[0.08em] text-brand-muted">
           {formatDate(post.publishedAt)}
         </p>
-        <h3 className="mt-2 text-lg font-black leading-snug tracking-[0] text-brand-charcoal group-hover:text-brand-forest">
+        <h3 className="mt-2 text-lg font-black leading-snug tracking-normal text-brand-charcoal group-hover:text-brand-forest">
           {post.title}
         </h3>
         <p className="mt-2 line-clamp-3 flex-1 text-sm leading-6 text-brand-muted">
@@ -123,10 +116,10 @@ function Blog() {
     <div className="min-h-screen">
       <section className="border-b border-brand-forest/10 bg-brand-forest py-16 text-white">
         <Container>
-          <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gold">
+          <p className="text-xs font-extrabold uppercase tracking-widest text-brand-gold">
             Property Talk
           </p>
-          <h1 className="mt-3 max-w-2xl text-4xl font-black leading-tight tracking-[0] sm:text-5xl">
+          <h1 className="mt-3 max-w-2xl text-4xl font-black leading-tight tracking-normal sm:text-5xl">
             Real Estate Insights from Warri.
           </h1>
           <p className="mt-4 max-w-xl text-base leading-7 text-white/72">

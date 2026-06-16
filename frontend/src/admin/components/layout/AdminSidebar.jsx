@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { BoxArrowRight } from "react-bootstrap-icons";
+import { BoxArrowRight, PersonCircle } from "react-bootstrap-icons";
 import { getIcon } from "../../../config/iconConfig.js";
 import { siteConfig } from "../../../config/siteConfig.js";
 import { adminConfig, adminPath } from "../../../config/adminConfig.js";
@@ -8,7 +8,12 @@ import { useAdminAuth } from "../../hooks/useAdminAuth.js";
 
 function AdminSidebar({ onNavigate }) {
   const navigate = useNavigate();
-  const { logout } = useAdminAuth();
+  const { admin, logout } = useAdminAuth();
+  const role = admin?.role || "agent";
+
+  const visibleLinks = adminNavLinks.filter(
+    (link) => !link.roles || link.roles.includes(role)
+  );
 
   const handleLogout = () => {
     logout();
@@ -18,24 +23,29 @@ function AdminSidebar({ onNavigate }) {
 
   return (
     <aside className="flex h-full flex-col border-r border-white/10 bg-brand-forest text-white">
+      {/* Brand */}
       <div className="border-b border-white/10 px-5 py-5">
-        <p className="font-display text-3xl font-bold leading-none text-white">{siteConfig.brandName}</p>
-        <p className="mt-2 text-xs font-extrabold uppercase tracking-[0.08em] text-brand-gold">Admin Control</p>
+        <img
+          alt={siteConfig.brandName}
+          className="h-10 w-auto object-contain brightness-0 invert"
+          src="/images/logo/logo.png"
+        />
+        <p className="mt-3 text-xs font-extrabold uppercase tracking-[0.08em] text-brand-gold">
+          Admin Panel
+        </p>
       </div>
 
-      <nav aria-label="Admin navigation" className="grid gap-1 px-3 py-4">
-        {adminNavLinks.map((link) => {
+      {/* Nav */}
+      <nav aria-label="Admin navigation" className="grid gap-1 overflow-y-auto px-3 py-4">
+        {visibleLinks.map((link) => {
           const Icon = getIcon(link.iconKey);
-
           return (
             <NavLink
               className={({ isActive }) =>
                 [
                   "group flex min-h-14 items-center gap-3 px-2 text-sm transition hover:-translate-x-1 hover:bg-white/6 hover:text-brand-gold",
                   isActive ? "bg-white/8 text-brand-gold" : "text-white/82",
-                ]
-                  .filter(Boolean)
-                  .join(" ")
+                ].join(" ")
               }
               end={link.href === adminConfig.basePath}
               key={link.id}
@@ -62,7 +72,24 @@ function AdminSidebar({ onNavigate }) {
         })}
       </nav>
 
-      <div className="mt-auto border-t border-white/10 p-3">
+      {/* Bottom: profile + logout */}
+      <div className="mt-auto border-t border-white/10 p-3 grid gap-1">
+        <NavLink
+          className={({ isActive }) =>
+            [
+              "flex min-h-12 items-center gap-3 px-3 text-sm font-extrabold uppercase tracking-[0.01em] transition hover:bg-white/6 hover:text-brand-gold",
+              isActive ? "text-brand-gold" : "text-white/78",
+            ].join(" ")
+          }
+          onClick={onNavigate}
+          to={adminPath("profile")}
+        >
+          <PersonCircle aria-hidden="true" className="h-5 w-5 text-brand-gold" />
+          <span className="min-w-0">
+            <span className="block truncate">{admin?.fullName || "My Profile"}</span>
+            <span className="block text-xs font-normal normal-case text-white/50">{role}</span>
+          </span>
+        </NavLink>
         <button
           className="flex min-h-12 w-full items-center gap-3 px-3 text-sm font-extrabold uppercase tracking-[0.01em] text-white/78 transition hover:bg-brand-emerald hover:text-white focus:outline-none focus:ring-0"
           onClick={handleLogout}

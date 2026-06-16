@@ -7,9 +7,11 @@ import Button from "../../components/ui/Button/Button.jsx";
 import Container from "../../components/ui/Container/Container.jsx";
 import EmptyState from "../../components/ui/EmptyState/EmptyState.jsx";
 import ErrorState from "../../components/ui/ErrorState/ErrorState.jsx";
+import LazyImage from "../../components/ui/LazyImage/LazyImage.jsx";
 import PageLoader from "../../components/ui/PageLoader/PageLoader.jsx";
 import PropertyCard from "../../components/ui/PropertyCard/PropertyCard.jsx";
 import VideoPlayer from "../../components/ui/VideoPlayer/VideoPlayer.jsx";
+import { getSiteWhatsAppLink } from "../../config/siteConfig.js";
 import { seoContent } from "../../content/seoContent.js";
 import { usePageMeta } from "../../hooks/usePageMeta.js";
 import { useProperties } from "../../hooks/useProperties.js";
@@ -34,19 +36,17 @@ function PropertyDetails() {
   usePageMeta(seo);
 
   const galleryImages = useMemo(() => {
-    if (!property) {
-      return [];
-    }
-
+    if (!property) return [];
     const images = [property.image, ...(Array.isArray(property.gallery) ? property.gallery : [])]
       .map((item) => String(item || "").trim())
       .filter(Boolean);
     const uniqueImages = [...new Set(images)];
-
     return uniqueImages.length ? uniqueImages : [getFallbackImage("property")];
   }, [property]);
+
   const activeImage = getImageUrl(galleryImages[activeImageIndex] || galleryImages[0], getFallbackImage("property"));
   const hasGalleryControls = galleryImages.length > 1;
+
   const propertyVideos = (Array.isArray(property?.videos) ? property.videos : [])
     .filter((video) => video?.url)
     .map((video) => ({
@@ -56,11 +56,9 @@ function PropertyDetails() {
   const hasMultipleVideos = propertyVideos.length > 1;
   const safeVideoIndex = Math.min(activeVideoIndex, Math.max(propertyVideos.length - 1, 0));
   const activeVideo = propertyVideos[safeVideoIndex] || { url: "", poster: "" };
-  const similarProperties = useMemo(() => {
-    if (!property) {
-      return [];
-    }
 
+  const similarProperties = useMemo(() => {
+    if (!property) return [];
     return properties.filter((item) => item.slug !== property.slug && item.type === property.type).slice(0, 3);
   }, [properties, property]);
 
@@ -69,10 +67,7 @@ function PropertyDetails() {
   }, [slug, galleryImages.length]);
 
   useEffect(() => {
-    if (!hasGalleryControls) {
-      return;
-    }
-
+    if (!hasGalleryControls) return;
     thumbnailRefs.current[activeImageIndex]?.scrollIntoView({
       behavior: "smooth",
       block: "nearest",
@@ -85,40 +80,26 @@ function PropertyDetails() {
   }, [slug, propertyVideos.length]);
 
   const showPreviousVideo = () => {
-    if (!propertyVideos.length) {
-      return;
-    }
-
-    setActiveVideoIndex((currentIndex) => (currentIndex === 0 ? propertyVideos.length - 1 : currentIndex - 1));
+    if (!propertyVideos.length) return;
+    setActiveVideoIndex((i) => (i === 0 ? propertyVideos.length - 1 : i - 1));
   };
 
   const showNextVideo = () => {
-    if (!propertyVideos.length) {
-      return;
-    }
-
-    setActiveVideoIndex((currentIndex) => (currentIndex + 1) % propertyVideos.length);
+    if (!propertyVideos.length) return;
+    setActiveVideoIndex((i) => (i + 1) % propertyVideos.length);
   };
 
   const showPreviousImage = () => {
-    if (!galleryImages.length) {
-      return;
-    }
-
-    setActiveImageIndex((currentIndex) => (currentIndex === 0 ? galleryImages.length - 1 : currentIndex - 1));
+    if (!galleryImages.length) return;
+    setActiveImageIndex((i) => (i === 0 ? galleryImages.length - 1 : i - 1));
   };
 
   const showNextImage = () => {
-    if (!galleryImages.length) {
-      return;
-    }
-
-    setActiveImageIndex((currentIndex) => (currentIndex + 1) % galleryImages.length);
+    if (!galleryImages.length) return;
+    setActiveImageIndex((i) => (i + 1) % galleryImages.length);
   };
 
-  if (loading) {
-    return <PageLoader />;
-  }
+  if (loading) return <PageLoader />;
 
   if (error) {
     return (
@@ -144,16 +125,32 @@ function PropertyDetails() {
     );
   }
 
+  const enquiryWhatsApp = getSiteWhatsAppLink(
+    `Hello Sureboy Realty, I am interested in "${property.title}" and would like to schedule an inspection.`
+  );
+
+  const contactLink = `/contact?property=${encodeURIComponent(property.slug)}&ref=${encodeURIComponent(property.title)}`;
+
   return (
     <>
+      {/* Header bar with breadcrumb */}
       <section className="bg-brand-forest pb-10 pt-24 text-white md:pt-28">
         <Container>
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-white/50">
+            <Link className="transition hover:text-brand-gold" to="/">Home</Link>
+            <span aria-hidden="true">/</span>
+            <Link className="transition hover:text-brand-gold" to="/properties">Properties</Link>
+            <span aria-hidden="true">/</span>
+            <span className="text-white/80 line-clamp-1">{property.title}</span>
+          </nav>
+
           <Link
             aria-label="Back to properties"
-            className="inline-flex h-11 w-11 items-center justify-center border border-white/20 text-brand-gold-soft transition hover:border-brand-gold hover:text-brand-gold"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-gold-soft transition hover:text-brand-gold"
             to="/properties"
           >
-            <ArrowLeft aria-hidden="true" className="h-5 w-5" />
+            <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+            Back to Properties
           </Link>
         </Container>
       </section>
@@ -161,9 +158,14 @@ function PropertyDetails() {
       <section className="bg-white pb-16">
         <Container>
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+            {/* Gallery */}
             <div className="-mt-6 min-w-0 bg-brand-cream shadow-[0_22px_70px_rgba(6,63,44,0.16)]">
-              <div className="relative overflow-hidden">
-                <img alt={property.imageAlt || property.title} className="aspect-[4/3] h-full w-full object-cover" src={activeImage} />
+              <div className="relative aspect-4/3 overflow-hidden">
+                <LazyImage
+                  alt={property.imageAlt || property.title}
+                  className="h-full w-full object-cover"
+                  src={activeImage}
+                />
                 {hasGalleryControls ? (
                   <>
                     <button
@@ -188,6 +190,7 @@ function PropertyDetails() {
                   </>
                 ) : null}
               </div>
+
               {hasGalleryControls ? (
                 <>
                   <div className="flex max-w-full snap-x gap-2 overflow-x-auto bg-white p-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -195,17 +198,15 @@ function PropertyDetails() {
                       <button
                         aria-current={index === activeImageIndex ? "true" : undefined}
                         aria-label={`Show property image ${index + 1}`}
-                        className={`h-20 w-28 shrink-0 snap-start overflow-hidden border bg-brand-cream transition sm:h-24 sm:w-32 md:w-36 ${
+                        className={`relative h-20 w-28 shrink-0 snap-start overflow-hidden border bg-brand-cream transition sm:h-24 sm:w-32 md:w-36 ${
                           index === activeImageIndex ? "border-brand-gold" : "border-transparent hover:border-brand-forest/30"
                         }`}
                         key={`${galleryImage}-${index}`}
                         onClick={() => setActiveImageIndex(index)}
-                        ref={(element) => {
-                          thumbnailRefs.current[index] = element;
-                        }}
+                        ref={(el) => { thumbnailRefs.current[index] = el; }}
                         type="button"
                       >
-                        <img
+                        <LazyImage
                           alt=""
                           className="h-full w-full object-cover"
                           src={getImageUrl(galleryImage, getFallbackImage("property"))}
@@ -230,17 +231,21 @@ function PropertyDetails() {
                 </>
               ) : null}
             </div>
+
+            {/* Property info */}
             <div className="py-8 lg:py-10">
               <div className="flex flex-wrap gap-2">
                 <Badge>{property.status}</Badge>
                 <Badge tone="cream">{property.type}</Badge>
               </div>
-              <h1 className="mt-5 text-balance text-4xl font-black tracking-[0] text-brand-forest sm:text-5xl">{property.title}</h1>
+              <h1 className="mt-5 text-balance text-4xl font-black tracking-normal text-brand-forest sm:text-5xl">
+                {property.title}
+              </h1>
               <p className="mt-4 flex items-center gap-2 text-base font-semibold text-brand-muted">
                 <GeoAlt aria-hidden="true" className="h-5 w-5 text-brand-gold" />
                 {property.location}
               </p>
-              <p className="mt-6 text-3xl font-black tracking-[0] text-brand-charcoal">
+              <p className="mt-6 text-3xl font-black tracking-normal text-brand-charcoal">
                 {formatCurrency(property.price, property.currency)}
               </p>
               <p className="mt-5 text-base leading-8 text-brand-muted">{property.description}</p>
@@ -258,15 +263,16 @@ function PropertyDetails() {
                   <p className="mt-1 text-xl font-black text-brand-forest">{property.area}</p>
                 </div>
               </div>
-              <Button className="mt-8" icon={ArrowRight} to="/contact" variant="primary">
+              <Button className="mt-8" icon={ArrowRight} to={contactLink} variant="primary">
                 Enquire About This Property
               </Button>
             </div>
           </div>
 
+          {/* Features + Inspection CTA */}
           <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_0.8fr]">
             <div>
-              <h2 className="text-2xl font-black tracking-[0] text-brand-forest">Property Features</h2>
+              <h2 className="text-2xl font-black tracking-normal text-brand-forest">Property Features</h2>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {property.features.map((feature) => (
                   <div className="flex items-center gap-3 border border-brand-forest/10 bg-brand-cream/45 p-4" key={feature}>
@@ -276,20 +282,32 @@ function PropertyDetails() {
                 ))}
               </div>
             </div>
+
             <div className="bg-brand-forest p-6 text-white">
-              <h2 className="text-2xl font-black tracking-[0]">Need a private inspection?</h2>
+              <h2 className="text-2xl font-black tracking-normal">Need a private inspection?</h2>
               <p className="mt-3 text-sm leading-7 text-white/74">
-                Send an enquiry and Sureboy Realty will help you confirm availability, inspection timing, and the next practical step.
+                Send an enquiry and Sureboy Realty will confirm availability, inspection timing, and the next step.
               </p>
-              <Button className="mt-6" to="/contact" variant="primary">
-                Schedule Inspection
-              </Button>
+              <div className="mt-6 grid gap-3">
+                <Button to={contactLink} variant="primary">
+                  Schedule Inspection
+                </Button>
+                <a
+                  className="flex items-center justify-center gap-2 border border-white/20 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.06em] text-white transition hover:border-[#25d366] hover:text-[#25d366]"
+                  href={enquiryWhatsApp}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Or message us on WhatsApp
+                </a>
+              </div>
             </div>
           </div>
 
+          {/* Videos */}
           {propertyVideos.length ? (
             <div className="mt-12">
-              <h2 className="text-2xl font-black tracking-[0] text-brand-forest">
+              <h2 className="text-2xl font-black tracking-normal text-brand-forest">
                 {propertyVideos.length > 1 ? "Property Videos" : "Property Video"}
               </h2>
               <div className="relative mt-5 overflow-hidden">
@@ -336,9 +354,12 @@ function PropertyDetails() {
             </div>
           ) : null}
 
+          {/* Similar properties */}
           {similarProperties.length > 0 ? (
             <div className="mt-16">
-              <h2 className="text-2xl font-black tracking-[0] text-brand-forest">Similar Properties</h2>
+              <h2 className="text-2xl font-black tracking-normal text-brand-forest">
+                Similar {property.type} Properties
+              </h2>
               <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                 {similarProperties.map((item) => (
                   <PropertyCard key={item.id} property={item} />
@@ -355,4 +376,3 @@ function PropertyDetails() {
 }
 
 export default PropertyDetails;
-

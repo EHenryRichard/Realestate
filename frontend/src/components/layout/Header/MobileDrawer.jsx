@@ -82,13 +82,20 @@ function MobileDrawer({ isOpen, onClose }) {
         tabIndex={-1}
       >
         <div className="drawer-link mb-5 flex items-start justify-between gap-4 border-b border-white/12 pb-4">
-          <div>
-            <p className="text-[0.68rem] font-semibold uppercase leading-none tracking-[0.01em] text-brand-gold">
-              {siteConfig.brandName}
-            </p>
-            <p className="mt-2 text-sm font-medium uppercase tracking-[0.01em] text-white/72">
-              Navigation
-            </p>
+          <div className="flex items-center gap-3">
+            <img
+              alt="Sureboy Realty"
+              className="h-9 w-auto object-contain"
+              src="/images/logo/logo.png"
+            />
+            <div>
+              <p className="text-[0.68rem] font-semibold uppercase leading-none tracking-[0.01em] text-brand-gold">
+                {siteConfig.brandName}
+              </p>
+              <p className="mt-1 text-xs font-medium uppercase tracking-[0.01em] text-white/72">
+                Navigation
+              </p>
+            </div>
           </div>
           <button
             aria-label="Close navigation menu"

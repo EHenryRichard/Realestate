@@ -11,5 +11,6 @@ export const apiConfig = {
     blog: "/blog",
     contact: "/contact",
     newsletter: "/newsletter",
+    agents: "/agents",
   },
 };

@@ -92,13 +92,12 @@ function Header() {
             </Link>
           </div>
 
-          <Link className="text-center leading-none text-white transition hover:text-brand-gold" to="/">
-            <span className="block font-display text-xl font-semibold lowercase tracking-[0] md:text-3xl">
-              Sureboy
-            </span>
-            <span className="block font-display text-xl font-semibold lowercase tracking-[0] md:text-3xl">
-              Realty
-            </span>
+          <Link className="flex items-center justify-center transition" to="/">
+            <img
+              alt="Sureboy Realty"
+              className="h-10 w-auto object-contain md:h-12"
+              src="/images/logo/logo.png"
+            />
           </Link>
 
           <div className="flex min-w-0 items-center justify-end gap-3">

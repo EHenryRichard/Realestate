@@ -15,6 +15,8 @@ const Projects = lazy(() => import("../pages/Projects/Projects.jsx"));
 const Contact = lazy(() => import("../pages/Contact/Contact.jsx"));
 const Blog = lazy(() => import("../pages/Blog/Blog.jsx"));
 const BlogPost = lazy(() => import("../pages/Blog/BlogPost.jsx"));
+const Team = lazy(() => import("../pages/Agents/Team.jsx"));
+const AgentProfile = lazy(() => import("../pages/Agents/AgentProfile.jsx"));
 const NotFound = lazy(() => import("../pages/NotFound/NotFound.jsx"));
 
 function AppRoutes() {
@@ -36,6 +38,8 @@ function AppRoutes() {
                 <Route element={<Contact />} path="contact" />
                 <Route element={<Blog />} path="blog" />
                 <Route element={<BlogPost />} path="blog/:slug" />
+                <Route element={<Team />} path="agents" />
+                <Route element={<AgentProfile />} path="agents/:slug" />
                 <Route element={<NotFound />} path="*" />
               </Routes>
             </PageLayout>

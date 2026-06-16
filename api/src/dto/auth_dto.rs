@@ -22,6 +22,42 @@ pub struct RegisterAdminRequest {
     #[validate(length(min = 6))]
     pub password: String,
     pub role: Option<String>,
+    pub phone: Option<String>,
+    pub title: Option<String>,
+    pub bio: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateProfileRequest {
+    pub full_name: Option<String>,
+    pub phone: Option<String>,
+    pub photo: Option<String>,
+    pub bio: Option<String>,
+    pub title: Option<String>,
+    pub slug: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Validate)]
+#[serde(rename_all = "camelCase")]
+pub struct ChangePasswordRequest {
+    #[validate(length(min = 1))]
+    pub current_password: String,
+    #[validate(length(min = 6))]
+    pub new_password: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateAgentRequest {
+    pub full_name: Option<String>,
+    pub role: Option<String>,
+    pub is_active: Option<bool>,
+    pub phone: Option<String>,
+    pub photo: Option<String>,
+    pub bio: Option<String>,
+    pub title: Option<String>,
+    pub slug: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -32,6 +68,11 @@ pub struct AdminResponse {
     pub email: String,
     pub role: String,
     pub is_active: bool,
+    pub phone: Option<String>,
+    pub photo: Option<String>,
+    pub bio: Option<String>,
+    pub title: Option<String>,
+    pub slug: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -49,6 +90,11 @@ impl From<&AdminUser> for AdminResponse {
             email: admin.email.clone(),
             role: admin.role.clone(),
             is_active: admin.is_active,
+            phone: admin.phone.clone(),
+            photo: admin.photo.clone(),
+            bio: admin.bio.clone(),
+            title: admin.title.clone(),
+            slug: admin.slug.clone(),
         }
     }
 }

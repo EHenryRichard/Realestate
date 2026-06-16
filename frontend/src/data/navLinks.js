@@ -35,6 +35,13 @@ export const navLinks = [
     iconKey: "journalCheck",
   },
   {
+    id: "agents",
+    label: "Our Team",
+    helper: "Meet the agents",
+    href: "/agents",
+    iconKey: "people",
+  },
+  {
     id: "contact",
     label: "Contact",
     helper: "Talk to us",

@@ -4,13 +4,21 @@ use super::{
     blog_routes, contact_routes, faq_routes, newsletter_routes, property_routes, service_routes,
     settings_routes, testimonial_routes,
 };
-use crate::handlers::{health_handler, media_handler};
+use crate::handlers::{auth_handler, health_handler, media_handler};
 
 pub fn configure(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/health").route(web::get().to(health_handler::health)))
         .service(
             web::resource("/stream/videos/{file_name}")
                 .route(web::get().to(media_handler::stream_video)),
+        )
+        .service(
+            web::resource("/agents")
+                .route(web::get().to(auth_handler::list_public_agents)),
+        )
+        .service(
+            web::resource("/agents/{slug}")
+                .route(web::get().to(auth_handler::get_public_agent)),
         )
         .configure(property_routes::configure_public)
         .configure(service_routes::configure_public)

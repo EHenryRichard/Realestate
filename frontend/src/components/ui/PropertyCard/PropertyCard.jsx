@@ -1,27 +1,20 @@
 import { DoorClosed, Droplet, GeoAlt, Rulers } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
-import { getFallbackImage } from "../../../utils/getFallbackImage.js";
 import { getImageUrl } from "../../../utils/getImageUrl.js";
 import { formatCurrency } from "../../../utils/formatCurrency.js";
 import Badge from "../Badge/Badge.jsx";
 import Button from "../Button/Button.jsx";
+import LazyImage from "../LazyImage/LazyImage.jsx";
 
 function PropertyCard({ property }) {
-  const image = getImageUrl(property.image, getFallbackImage("property"));
-
-  const handleImageError = (event) => {
-    event.currentTarget.onerror = null;
-    event.currentTarget.src = getFallbackImage("property");
-  };
+  const image = getImageUrl(property.image, "");
 
   return (
     <article className="group flex h-full flex-col overflow-hidden border border-brand-forest/10 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(6,63,44,0.12)]">
-      <Link className="relative block h-60 overflow-hidden bg-brand-cream" to={`/properties/${property.slug}`}>
-        <img
+      <Link className="relative block h-60 overflow-hidden bg-brand-forest/6" to={`/properties/${property.slug}`}>
+        <LazyImage
           alt={property.imageAlt || property.title}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-          loading="lazy"
-          onError={handleImageError}
           src={image}
         />
         <div className="absolute left-4 top-4 flex flex-wrap gap-2">

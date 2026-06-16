@@ -35,6 +35,12 @@ export const seoContent = {
       "Land verification guides, investment tips, and real estate insights for buyers and investors in Warri, Delta State, and Nigeria.",
     ogImage: "/og-image.jpg",
   },
+  team: {
+    title: "Our Team | Sureboy Realty — Warri Real Estate Professionals",
+    description:
+      "Meet the experienced property agents and consultants at Sureboy Realty in Warri, Delta State. Ready to help you buy, sell, or invest.",
+    ogImage: "/og-image.jpg",
+  },
   notFound: {
     title: "Page Not Found | Sureboy Realty",
     description: "The page you requested could not be found. Return to Sureboy Realty home.",

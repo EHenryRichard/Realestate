@@ -1,126 +1,157 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { PencilSquare, PersonXFill, PersonCheckFill, Trash } from "react-bootstrap-icons";
 import { apiConfig } from "../../../config/apiConfig.js";
-import { showError, showSuccess, showToast } from "../../../utils/toast.jsx";
-import { adminAuthApi } from "../../api/adminAuthApi.js";
+import { adminPath } from "../../../config/adminConfig.js";
+import { showError, showSuccess } from "../../../utils/toast.jsx";
+import { adminAgentsApi } from "../../api/adminAgentsApi.js";
+import AdminBadge from "../../components/ui/AdminBadge.jsx";
 import AdminButton from "../../components/ui/AdminButton.jsx";
 import AdminCard from "../../components/ui/AdminCard.jsx";
 import AdminErrorState from "../../components/ui/AdminErrorState.jsx";
-import AdminInput from "../../components/ui/AdminInput.jsx";
 import AdminLoader from "../../components/ui/AdminLoader.jsx";
 import AdminPageHeader from "../../components/ui/AdminPageHeader.jsx";
-import AdminTable from "../../components/ui/AdminTable.jsx";
+
+const ROLE_TONE = { admin: "active", agent: "unread" };
 
 function AdminAgents() {
   const [agents, setAgents] = useState([]);
-  const [formData, setFormData] = useState({ fullName: "", email: "", password: "", role: "agent" });
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState("");
 
-  const loadAgents = async () => {
-    if (!apiConfig.useApi) {
-      setAgents([]);
-      return;
-    }
-
-    setIsLoading(true);
+  const load = async () => {
+    if (!apiConfig.useApi) { setAgents([]); return; }
+    setLoading(true);
     setError("");
-
     try {
-      const response = await adminAuthApi.listAgents();
-      setAgents(response?.data || []);
-    } catch (caughtError) {
-      setError(caughtError.message);
-      showError(caughtError.message);
+      const res = await adminAgentsApi.list();
+      setAgents(res?.data?.data || res?.data || []);
+    } catch (err) {
+      setError(err.message);
+      showError(err.message);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadAgents();
-  }, []);
+  useEffect(() => { load(); }, []);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((currentData) => ({
-      ...currentData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError("");
-    setMessage("");
-
-    if (!apiConfig.useApi) {
-      setMessage("Agent payload is ready for the Rust API.");
-      showToast("Agent payload is ready for the Rust API.");
-      return;
-    }
-
-    setIsSubmitting(true);
-
+  const handleToggle = async (agent) => {
     try {
-      await adminAuthApi.registerAgent(formData);
-      setFormData({ fullName: "", email: "", password: "", role: "agent" });
-      setMessage("Agent registered successfully.");
-      showSuccess("Agent registered successfully.");
-      await loadAgents();
-    } catch (caughtError) {
-      setError(caughtError.message);
-      showError(caughtError.message);
-    } finally {
-      setIsSubmitting(false);
+      await adminAgentsApi.toggle(agent.id);
+      showSuccess(`${agent.fullName} ${agent.isActive ? "deactivated" : "activated"}.`);
+      load();
+    } catch (err) {
+      showError(err.message);
     }
   };
 
-  const columns = [
-    {
-      key: "fullName",
-      label: "Name",
-      render: (agent) => (
-        <div>
-          <p className="font-extrabold text-brand-forest">{agent.fullName}</p>
-          <p className="mt-1 text-xs font-semibold text-brand-muted">{agent.email}</p>
-        </div>
-      ),
-    },
-    {
-      key: "role",
-      label: "Role",
-    },
-    {
-      key: "isActive",
-      label: "Status",
-      render: (agent) => (agent.isActive ? "Active" : "Inactive"),
-    },
-  ];
+  const handleDelete = async (agent) => {
+    if (!window.confirm(`Remove ${agent.fullName} permanently? This cannot be undone.`)) return;
+    try {
+      await adminAgentsApi.remove(agent.id);
+      showSuccess(`${agent.fullName} removed.`);
+      load();
+    } catch (err) {
+      showError(err.message);
+    }
+  };
 
   return (
     <>
-      <AdminPageHeader title="Agents" subtitle="Register admins or agents who can help manage properties and website records." />
-      <div className="grid gap-5 xl:grid-cols-[24rem_1fr]">
-        <AdminCard>
-          <form className="grid gap-4" onSubmit={handleSubmit}>
-            <AdminInput label="Full name" name="fullName" onChange={handleChange} required value={formData.fullName} />
-            <AdminInput label="Email address" name="email" onChange={handleChange} required type="email" value={formData.email} />
-            <AdminInput label="Password" name="password" onChange={handleChange} required type="password" value={formData.password} />
-            <AdminInput label="Role" name="role" onChange={handleChange} value={formData.role} />
-            {message ? <div className="border border-brand-gold/35 bg-brand-gold/12 p-4 text-sm font-bold text-brand-forest">{message}</div> : null}
-            {error ? <AdminErrorState message={error} /> : null}
-            <AdminButton disabled={isSubmitting} type="submit">
-              {isSubmitting ? "Registering..." : "Register Agent"}
-            </AdminButton>
-          </form>
-        </AdminCard>
+      <AdminPageHeader
+        action={<AdminButton to={adminPath("agents/create")}>+ Add Member</AdminButton>}
+        subtitle="Everyone who has access to this admin panel. Only admins can manage team members."
+        title="Team"
+      />
 
-        <AdminCard>
-          {isLoading ? <AdminLoader label="Loading agents" /> : <AdminTable columns={columns} rows={agents} />}
-        </AdminCard>
-      </div>
+      <AdminCard>
+        {loading ? (
+          <AdminLoader label="Loading team" />
+        ) : error ? (
+          <AdminErrorState message={error} />
+        ) : agents.length === 0 ? (
+          <p className="py-8 text-center text-sm text-brand-muted">No team members yet.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-brand-forest/10 text-left">
+                  <th className="pb-3 pr-4 text-xs font-extrabold uppercase tracking-widest text-brand-muted">Member</th>
+                  <th className="pb-3 pr-4 text-xs font-extrabold uppercase tracking-widest text-brand-muted">Role</th>
+                  <th className="pb-3 pr-4 text-xs font-extrabold uppercase tracking-widest text-brand-muted">Title</th>
+                  <th className="pb-3 pr-4 text-xs font-extrabold uppercase tracking-widest text-brand-muted">Status</th>
+                  <th className="pb-3 text-xs font-extrabold uppercase tracking-widest text-brand-muted">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-brand-forest/6">
+                {agents.map((agent) => (
+                  <tr key={agent.id}>
+                    <td className="py-4 pr-4">
+                      <div className="flex items-center gap-3">
+                        {agent.photo ? (
+                          <img alt={agent.fullName} className="h-10 w-10 rounded-full object-cover" src={agent.photo} />
+                        ) : (
+                          <div className="grid h-10 w-10 shrink-0 place-items-center bg-brand-forest text-sm font-extrabold text-brand-gold">
+                            {agent.fullName.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-extrabold text-brand-forest">{agent.fullName}</p>
+                          <p className="text-xs text-brand-muted">{agent.email}</p>
+                          {agent.phone && <p className="text-xs text-brand-muted">{agent.phone}</p>}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 pr-4">
+                      <AdminBadge tone={ROLE_TONE[agent.role] || "default"}>
+                        {agent.role}
+                      </AdminBadge>
+                    </td>
+                    <td className="py-4 pr-4 text-brand-muted">{agent.title || "—"}</td>
+                    <td className="py-4 pr-4">
+                      <AdminBadge tone={agent.isActive ? "active" : "hidden"}>
+                        {agent.isActive ? "Active" : "Inactive"}
+                      </AdminBadge>
+                    </td>
+                    <td className="py-4">
+                      <div className="flex items-center gap-2">
+                        <Link
+                          className="grid h-8 w-8 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-forest hover:text-white"
+                          title="Edit"
+                          to={adminPath(`agents/${agent.id}/edit`)}
+                        >
+                          <PencilSquare className="h-4 w-4" />
+                        </Link>
+                        <button
+                          className="grid h-8 w-8 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-forest hover:text-white"
+                          onClick={() => handleToggle(agent)}
+                          title={agent.isActive ? "Deactivate" : "Activate"}
+                          type="button"
+                        >
+                          {agent.isActive
+                            ? <PersonXFill className="h-4 w-4" />
+                            : <PersonCheckFill className="h-4 w-4" />}
+                        </button>
+                        {agent.role !== "admin" && (
+                          <button
+                            className="grid h-8 w-8 place-items-center border border-red-200 text-red-600 transition hover:bg-red-600 hover:text-white"
+                            onClick={() => handleDelete(agent)}
+                            title="Remove"
+                            type="button"
+                          >
+                            <Trash className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </AdminCard>
     </>
   );
 }

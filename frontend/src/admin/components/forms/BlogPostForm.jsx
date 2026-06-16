@@ -2,6 +2,7 @@ import { useState } from "react";
 import { apiConfig } from "../../../config/apiConfig.js";
 import { showError, showSuccess, showToast } from "../../../utils/toast.jsx";
 import { adminBlogApi } from "../../api/adminBlogApi.js";
+import BlogEditor from "../editor/BlogEditor.jsx";
 import AdminButton from "../ui/AdminButton.jsx";
 import AdminImageUploader from "../ui/AdminImageUploader.jsx";
 import AdminInput from "../ui/AdminInput.jsx";
@@ -131,13 +132,10 @@ function BlogPostForm({ initialPost, mode = "create" }) {
         value={formData.excerpt}
       />
 
-      <AdminTextarea
-        label="Content (supports **bold**, *italic*, ## Headings, - bullet lists)"
-        name="content"
+      <BlogEditor
+        label="Content"
         onChange={handleChange}
-        placeholder={"## Introduction\n\nWrite your article here. Use **bold** for emphasis.\n\n## Section Two\n\n- Bullet point one\n- Bullet point two"}
         required
-        rows={18}
         value={formData.content}
       />
 
