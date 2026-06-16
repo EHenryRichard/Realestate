@@ -53,6 +53,21 @@ function applyBlock(el, before, after, placeholder) {
   return { value: next, selStart: start + before.length + 2, selEnd: start + before.length + 2 + selected.length };
 }
 
+// Link / image: uses the selection as the label, then selects the URL
+// placeholder so the editor can immediately paste a link. (GitHub-style.)
+function applyMedia(el, isImage) {
+  const start = el.selectionStart;
+  const end = el.selectionEnd;
+  const selected = el.value.slice(start, end);
+  const prefix = isImage ? "!" : "";
+  const label = selected || (isImage ? "image description" : "link text");
+  const url = "https://";
+  const replacement = `${prefix}[${label}](${url})`;
+  const next = el.value.slice(0, start) + replacement + el.value.slice(end);
+  const urlStart = start + prefix.length + 1 + label.length + 2;
+  return { value: next, selStart: urlStart, selEnd: urlStart + url.length };
+}
+
 // ─── Toolbar button ───────────────────────────────────────────────────────────
 
 function ToolBtn({ icon: Icon, title, onClick, active }) {
@@ -111,7 +126,7 @@ function BlogEditor({ value = "", onChange, label, required }) {
       if (!mod) return;
       if (e.key === "b") { e.preventDefault(); cmd((el) => applyInlineWrap(el, "**", "**")); }
       if (e.key === "i") { e.preventDefault(); cmd((el) => applyInlineWrap(el, "*", "*")); }
-      if (e.key === "k") { e.preventDefault(); cmd((el) => applyInlineWrap(el, "[", "](url)")); }
+      if (e.key === "k") { e.preventDefault(); cmd((el) => applyMedia(el, false)); }
     };
 
     el.addEventListener("keydown", onKey);
@@ -140,20 +155,20 @@ function BlogEditor({ value = "", onChange, label, required }) {
   return (
     <div
       className={[
-        "flex flex-col border border-brand-forest/15 bg-white",
-        fullscreen ? "fixed inset-0 z-50" : "",
+        "flex flex-col overflow-hidden border border-brand-forest/15 bg-white",
+        fullscreen ? "fixed inset-0 z-50" : "h-144",
       ].join(" ")}
     >
       {/* ── Label ── */}
       {label && !fullscreen && (
-        <p className="border-b border-brand-forest/10 px-4 py-2 text-xs font-extrabold uppercase tracking-widest text-brand-forest">
+        <p className="shrink-0 border-b border-brand-forest/10 px-4 py-2 text-xs font-extrabold uppercase tracking-widest text-brand-forest">
           {label}
           {required && <span className="ml-1 text-red-500">*</span>}
         </p>
       )}
 
-      {/* ── Toolbar ── */}
-      <div className="flex flex-wrap items-center gap-0.5 border-b border-brand-forest/10 bg-brand-cream/40 px-3 py-2">
+      {/* ── Toolbar (pinned) ── */}
+      <div className="shrink-0 flex flex-wrap items-center gap-0.5 border-b border-brand-forest/10 bg-brand-cream/40 px-3 py-2">
         {/* Headings */}
         <ToolBtn icon={TypeH2} title="Heading 2 (##)" onClick={() => cmd((el) => applyLinePrefix(el, "## "))} />
         <ToolBtn icon={TypeH3} title="Heading 3 (###)" onClick={() => cmd((el) => applyLinePrefix(el, "### "))} />
@@ -166,8 +181,8 @@ function BlogEditor({ value = "", onChange, label, required }) {
         <Divider />
 
         {/* Links & media */}
-        <ToolBtn icon={Link45deg} title="Link (Ctrl+K)"  onClick={() => cmd((el) => applyInlineWrap(el, "[", "](url)"))} />
-        <ToolBtn icon={Image}     title="Image"          onClick={() => cmd((el) => applyInlineWrap(el, "![alt](", ")"))} />
+        <ToolBtn icon={Link45deg} title="Link (Ctrl+K)"  onClick={() => cmd((el) => applyMedia(el, false))} />
+        <ToolBtn icon={Image}     title="Insert image"   onClick={() => cmd((el) => applyMedia(el, true))} />
         <Divider />
 
         {/* Lists */}
@@ -209,24 +224,20 @@ function BlogEditor({ value = "", onChange, label, required }) {
         />
       </div>
 
-      {/* ── Editor + Preview ── */}
+      {/* ── Editor + Preview (scrolls inside) ── */}
       <div
         className={[
-          "grid min-h-0 flex-1",
+          "grid min-h-0 flex-1 overflow-hidden",
           view === "split" ? "grid-cols-2 divide-x divide-brand-forest/10" : "grid-cols-1",
         ].join(" ")}
-        style={{ minHeight: fullscreen ? 0 : "24rem" }}
       >
         {showEdit && (
           <textarea
-            className={[
-              "h-full w-full resize-none bg-white p-4 font-mono text-sm leading-7 text-brand-charcoal outline-none placeholder:text-brand-muted/50",
-              fullscreen ? "min-h-0" : "min-h-96",
-            ].join(" ")}
+            className="h-full w-full resize-none overflow-y-auto bg-white p-4 font-mono text-sm leading-7 text-brand-charcoal outline-none placeholder:text-brand-muted/50"
             name="content"
             onChange={onChange}
             onKeyDown={handleKeyDown}
-            placeholder={"## Start with a heading\n\nWrite your article here. Use the toolbar above or type markdown directly.\n\n**Bold**, *italic*, [links](url), and bullet lists are all supported."}
+            placeholder={"## Start with a heading\n\nWrite your article here. Use the toolbar above or type markdown directly.\n\n**Bold**, *italic*, [links](url), ![images](url), and bullet lists are all supported."}
             ref={textareaRef}
             required={required}
             spellCheck
@@ -235,12 +246,7 @@ function BlogEditor({ value = "", onChange, label, required }) {
         )}
 
         {showPreview && (
-          <div
-            className={[
-              "overflow-y-auto bg-brand-cream/20 p-6",
-              fullscreen ? "min-h-0" : "min-h-96",
-            ].join(" ")}
-          >
+          <div className="h-full overflow-y-auto bg-brand-cream/20 p-6">
             {value.trim() ? (
               <MarkdownRenderer content={value} />
             ) : (
@@ -250,8 +256,8 @@ function BlogEditor({ value = "", onChange, label, required }) {
         )}
       </div>
 
-      {/* ── Status bar ── */}
-      <div className="flex items-center justify-between border-t border-brand-forest/10 bg-brand-cream/30 px-4 py-1.5">
+      {/* ── Status bar (pinned) ── */}
+      <div className="shrink-0 flex items-center justify-between border-t border-brand-forest/10 bg-brand-cream/30 px-4 py-1.5">
         <div className="flex items-center gap-4 text-[11px] text-brand-muted">
           <span>{words} {words === 1 ? "word" : "words"}</span>
           <span>{chars} characters</span>

@@ -63,7 +63,51 @@ function About() {
         </Container>
       </section>
 
-      <section className="bg-white py-16 sm:py-20">
+      {/* ── Founder ── */}
+      <section className="bg-white py-16 sm:py-24">
+        <Container>
+          <div className="grid items-start gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
+            {/* Photo */}
+            <div className="relative">
+              <div className="absolute -left-3 -top-3 hidden h-full w-full border border-brand-gold/40 sm:block" aria-hidden="true" />
+              <img
+                alt={aboutContent.founder.photoAlt}
+                className="relative aspect-4/5 w-full object-cover object-top shadow-lg"
+                loading="lazy"
+                src={aboutContent.founder.photo}
+              />
+            </div>
+
+            {/* Bio */}
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-widest text-brand-gold">
+                {aboutContent.founder.eyebrow}
+              </p>
+              <h2 className="mt-3 text-3xl font-black tracking-tight text-brand-forest sm:text-4xl">
+                {aboutContent.founder.name}
+              </h2>
+              <p className="mt-2 text-sm font-extrabold uppercase tracking-wider text-brand-forest/70">
+                {aboutContent.founder.role}
+              </p>
+              <p className="mt-1 text-sm text-brand-muted">{aboutContent.founder.origin}</p>
+
+              <div className="mt-6 grid gap-4 text-base leading-8 text-brand-muted">
+                {aboutContent.founder.bio.map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </div>
+
+              <blockquote className="mt-8 border-l-4 border-brand-gold bg-brand-cream/50 py-4 pl-6 pr-4">
+                <p className="text-lg font-black italic text-brand-forest">
+                  {aboutContent.founder.quote}
+                </p>
+              </blockquote>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      <section className="bg-brand-cream/40 py-16 sm:py-20">
         <Container size="narrow">
           <div className="text-center">
             <p className="text-lg leading-8 text-brand-muted">{aboutContent.closing}</p>

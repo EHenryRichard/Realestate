@@ -39,6 +39,22 @@ export const aboutContent = {
       iconKey: "geoAlt",
     },
   ],
+  founder: {
+    eyebrow: "Meet the founder",
+    name: "Okolie Chukwuma Austine",
+    role: "Founder & Chief Executive Officer",
+    origin: "Ihiala LGA, Anambra State, Nigeria",
+    photo: "/images/founder.jpeg",
+    photoAlt: "Okolie Chukwuma Austine, Founder & CEO of Sureboy Realty",
+    bio: [
+      "My name is Okolie Chukwuma Austine, originally from Ihiala Local Government Area of Anambra State, Nigeria, and I am the founder and Chief Executive Officer of Sureboy Realty, a trusted real estate brand committed to helping individuals, families, and investors find the right property opportunities across Nigeria.",
+      "Driven by a passion for real estate and a deep understanding of the Nigerian property market, I specialize in property sales, rentals, land acquisition, and real estate investment advisory services. My mission is to connect clients with genuine, profitable, and secure real estate opportunities while upholding the highest standards of professionalism, transparency, and integrity.",
+      "Over the years, I have built a reputation for providing reliable real estate solutions and helping clients make informed property decisions. At Sureboy Realty, we understand that every property transaction is a significant investment. That is why we work closely with our clients to provide verified properties, accurate information, and expert guidance throughout the buying, selling, or renting process.",
+      "Whether you are searching for your dream home, an investment property, commercial space, or land for future development, Sureboy Realty is dedicated to making your real estate journey smooth, secure, and rewarding.",
+      "Our mission is to help clients build wealth through smart real estate investments while delivering exceptional service and lasting value. We believe that trust is the foundation of every successful transaction.",
+    ],
+    quote: "Sureboy Realty — We Don't Just Buy Properties; We Build Trust.",
+  },
   closing:
     "Whether you are buying your first plot in Warri, selling an inherited property, or looking to invest in Delta State real estate — call us. We will give you a straight answer.",
 };
