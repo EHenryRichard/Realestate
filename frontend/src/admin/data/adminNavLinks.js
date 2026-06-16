@@ -37,6 +37,20 @@ export const adminNavLinks = [
     helper: "Client proof",
   },
   {
+    id: "faqs",
+    label: "FAQs",
+    href: adminPath("faqs"),
+    iconKey: "chatDots",
+    helper: "Q&A",
+  },
+  {
+    id: "blog",
+    label: "Blog",
+    href: adminPath("blog"),
+    iconKey: "journalCheck",
+    helper: "Articles",
+  },
+  {
     id: "messages",
     label: "Messages",
     href: adminPath("messages"),

@@ -1,5 +1,7 @@
 pub mod admin_user;
+pub mod blog_post;
 pub mod contact_message;
+pub mod faq;
 pub mod newsletter_subscriber;
 pub mod property;
 pub mod push_subscription;

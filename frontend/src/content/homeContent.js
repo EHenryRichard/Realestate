@@ -1,25 +1,25 @@
 export const homeContent = {
   hero: {
-    eyebrow: "Sureboy Realty",
-    headline: "Find Your Perfect Property With Sureboy Realty",
+    eyebrow: "Warri's Property Man",
+    headline: "Own Land in Warri. No Stress. No Stories.",
     subtitle:
-      "Premium properties, prime investments, and trusted real estate solutions for buyers, sellers, landlords, and investors.",
+      "Sureboy Realty handles the inspection, verification, and negotiation so you buy clean. GRA, Effurun, Jakpa Road, Sapele Road — we know every street and every price.",
     primaryCta: {
-      label: "View Properties",
+      label: "See Available Properties",
       href: "/properties",
     },
     secondaryCta: {
-      label: "Speak With an Agent",
+      label: "Call or WhatsApp Us",
       href: "/contact",
     },
     image: "/images/hero/home-hero.webp",
-    imageAlt: "Premium modern property exterior curated by Sureboy Realty",
+    imageAlt: "Verified residential property in Warri, Delta State by Sureboy Realty",
   },
   aboutPreview: {
-    eyebrow: "Built on trust",
-    title: "Real estate guidance with clarity, care, and premium execution.",
+    eyebrow: "Who We Are",
+    title: "A Delta State property team built on truth and verified transactions.",
     body:
-      "Sureboy Realty helps clients buy, sell, manage, inspect, and invest in property with confidence. Every recommendation is shaped by market awareness, clear communication, and a commitment to long-term value.",
+      "Too many people in Warri have lost money to bad land deals — wrong documents, no inspection, fake agents. Sureboy Realty exists to fix that. Every property we handle is checked, documented, and clean before we show it to you.",
     cta: {
       label: "Learn About Us",
       href: "/about",
@@ -27,58 +27,76 @@ export const homeContent = {
   },
   sections: {
     services: {
-      eyebrow: "Our expertise",
-      title: "Complete property solutions for serious decisions.",
+      eyebrow: "What We Do",
+      title: "Every service you need to buy, sell, or hold property in Delta State.",
       subtitle:
-        "From sales and inspections to management and investment guidance, each service is structured to protect your interest and move you forward.",
+        "Sales, inspections, management, consultancy — handled by a team that actually knows the Warri market.",
     },
     featuredProperties: {
-      eyebrow: "Featured listings",
-      title: "Selected properties with strong lifestyle and investment appeal.",
+      eyebrow: "Current Listings",
+      title: "Properties we have inspected, verified, and ready for you.",
       subtitle:
-        "Browse a curated set of homes, land, and commercial opportunities ready for enquiry.",
+        "Every listing on this page has been physically checked. No fake listings, no bad documents.",
     },
     whyChooseUs: {
-      eyebrow: "Why choose us",
-      title: "A premium experience backed by practical market judgement.",
+      eyebrow: "Why Sureboy Realty",
+      title: "We inspect before we list. We verify before you pay.",
       subtitle:
-        "We keep property decisions clear, documented, and aligned with what the client actually needs.",
+        "We have been in Warri long enough to know who owns what, what a fair price looks like, and which documents are real.",
     },
     testimonials: {
-      eyebrow: "Client confidence",
-      title: "People choose Sureboy Realty for trust and follow-through.",
+      eyebrow: "Client Stories",
+      title: "Real people. Real transactions. Real results.",
       subtitle:
-        "Our clients value the steady communication, honest guidance, and practical care we bring to property transactions.",
+        "These are clients who trusted us with their property decisions in Warri and Delta State.",
     },
   },
   managementHighlight: {
-    eyebrow: "For landlords and property owners",
-    title: "Property management that protects income, tenants, and long-term value.",
+    eyebrow: "For Landlords",
+    title: "Stop chasing rent. Let us manage your property in Warri.",
     body:
-      "We help owners reduce vacancy stress, coordinate inspections, communicate with tenants, and keep the property positioned for dependable returns.",
-    points: ["Tenant coordination", "Inspection support", "Rent and occupancy guidance"],
+      "Whether it is one apartment or multiple units, we handle tenant screening, rent collection, and property maintenance so you earn without the headache.",
+    points: ["Tenant screening and coordination", "Rent collection and tracking", "Maintenance and property upkeep"],
     cta: {
       label: "Discuss Management",
       href: "/contact",
     },
   },
   consultancyHighlight: {
-    eyebrow: "For investors and buyers",
-    title: "Real estate consultancy for confident investment moves.",
+    eyebrow: "For Investors and Buyers",
+    title: "Want to invest in Delta State real estate? Start here.",
     body:
-      "We combine location insight, property checks, and investment-focused advisory so clients can compare opportunities with a clearer view of risk and value.",
-    points: ["Location guidance", "Investment review", "Buyer advisory"],
+      "Warri property is moving. If you want to enter the market but are not sure what to buy, where to buy, or what a fair price looks like — we will walk you through it honestly.",
+    points: ["Location and price analysis", "Document and title verification", "Investment planning and advisory"],
     cta: {
-      label: "Book Consultation",
+      label: "Book a Consultation",
+      href: "/contact",
+    },
+  },
+  faq: {
+    eyebrow: "Common Questions",
+    title: "Straight answers to the questions people ask us every week.",
+    subtitle: "Everything you need to know before buying, selling, or investing in property in Warri and Delta State.",
+  },
+  videoSection: {
+    eyebrow: "Property Talk with Sureboy",
+    title: "Watch. Learn. Invest with Confidence.",
+    subtitle:
+      "Property tours, land verification tips, real estate investment advice, and straight talk about the Delta State market — from the Sureboy Realty team.",
+    comingSoonLabel: "Coming Soon",
+    comingSoonBody:
+      "We are filming property tours, market walkthroughs, and land verification guides across Warri and Delta State. Follow us to be notified when the first episode drops.",
+    cta: {
+      label: "Follow Us for Updates",
       href: "/contact",
     },
   },
   contactCta: {
-    title: "Ready to make your next property move?",
+    title: "Ready to buy, sell, or invest in Warri property?",
     body:
-      "Call, WhatsApp, or send a message. A Sureboy Realty agent will help you take the next step with confidence.",
+      "Call or WhatsApp Sureboy directly. We will tell you the truth about any property — no fluff, no pressure.",
     primaryCta: {
-      label: "Speak With an Agent",
+      label: "Call or WhatsApp Now",
       href: "/contact",
     },
     secondaryCta: {

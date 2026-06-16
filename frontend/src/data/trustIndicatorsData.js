@@ -1,26 +1,26 @@
 export const trustIndicatorsData = [
   {
-    id: "trusted-service",
-    label: "Trusted Service",
-    value: "Client-first",
+    id: "clean-titles",
+    label: "Clean Titles Only",
+    value: "C of O Verified",
     iconKey: "shieldCheck",
   },
   {
-    id: "proven-excellence",
-    label: "Proven Excellence",
-    value: "Premium process",
-    iconKey: "award",
+    id: "physical-inspection",
+    label: "Every Property",
+    value: "Physically Inspected",
+    iconKey: "houseCheck",
   },
   {
-    id: "client-satisfaction",
-    label: "Client Satisfaction",
-    value: "Guided decisions",
+    id: "warri-market",
+    label: "Warri Market",
+    value: "Deep Local Knowledge",
+    iconKey: "geoAlt",
+  },
+  {
+    id: "same-day",
+    label: "Response Time",
+    value: "Same Day Always",
     iconKey: "personCheck",
-  },
-  {
-    id: "value-assurance",
-    label: "Value Assurance",
-    value: "Investment aware",
-    iconKey: "cashStack",
   },
 ];

@@ -13,6 +13,8 @@ const PropertyDetails = lazy(() => import("../pages/PropertyDetails/PropertyDeta
 const SavedHouses = lazy(() => import("../pages/SavedHouses/SavedHouses.jsx"));
 const Projects = lazy(() => import("../pages/Projects/Projects.jsx"));
 const Contact = lazy(() => import("../pages/Contact/Contact.jsx"));
+const Blog = lazy(() => import("../pages/Blog/Blog.jsx"));
+const BlogPost = lazy(() => import("../pages/Blog/BlogPost.jsx"));
 const NotFound = lazy(() => import("../pages/NotFound/NotFound.jsx"));
 
 function AppRoutes() {
@@ -32,6 +34,8 @@ function AppRoutes() {
                 <Route element={<SavedHouses />} path="saved-houses" />
                 <Route element={<Projects />} path="projects" />
                 <Route element={<Contact />} path="contact" />
+                <Route element={<Blog />} path="blog" />
+                <Route element={<BlogPost />} path="blog/:slug" />
                 <Route element={<NotFound />} path="*" />
               </Routes>
             </PageLayout>

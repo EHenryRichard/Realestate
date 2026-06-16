@@ -7,6 +7,8 @@ export const apiConfig = {
     featuredProperties: "/properties/featured",
     services: "/services",
     testimonials: "/testimonials",
+    faqs: "/faqs",
+    blog: "/blog",
     contact: "/contact",
     newsletter: "/newsletter",
   },

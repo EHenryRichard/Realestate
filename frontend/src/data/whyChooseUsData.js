@@ -1,26 +1,26 @@
 export const whyChooseUsData = [
   {
-    id: "clear-guidance",
-    title: "Clear Guidance",
-    body: "We simplify property choices with practical information and direct communication.",
-    iconKey: "lightbulb",
+    id: "inspect-everything",
+    title: "We Inspect Everything",
+    body: "Every property gets a physical visit before it goes on our list. What we show you, we have stood on ourselves.",
+    iconKey: "houseCheck",
   },
   {
-    id: "market-awareness",
-    title: "Market Awareness",
-    body: "We pay attention to location signals, demand, pricing, and long-term value.",
-    iconKey: "barChart",
-  },
-  {
-    id: "documented-process",
-    title: "Documented Process",
-    body: "Our approach supports cleaner enquiries, inspections, and follow-up decisions.",
+    id: "documents-first",
+    title: "Documents First",
+    body: "C of O, survey plan, governor's consent — we check every title document before you spend a kobo.",
     iconKey: "journalCheck",
   },
   {
-    id: "premium-care",
-    title: "Premium Care",
-    body: "We treat every property goal as important, whether personal, rental, or investment-focused.",
-    iconKey: "stars",
+    id: "we-know-warri",
+    title: "We Know Delta State",
+    body: "GRA, Effurun, Enerhen, Jakpa Road — we know the streets, the fair prices, and who actually owns the land.",
+    iconKey: "geoAlt",
+  },
+  {
+    id: "straight-talk",
+    title: "Straight Talk Only",
+    body: "Our fees are clear from day one. No hidden charges, no add-ons, no surprises at the end of a transaction.",
+    iconKey: "shieldCheck",
   },
 ];

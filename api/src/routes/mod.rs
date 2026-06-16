@@ -1,7 +1,9 @@
 pub mod admin_routes;
 pub mod auth_routes;
+pub mod blog_routes;
 pub mod contact_routes;
 pub mod dashboard_routes;
+pub mod faq_routes;
 pub mod newsletter_routes;
 pub mod notification_routes;
 pub mod property_routes;

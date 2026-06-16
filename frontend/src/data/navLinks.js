@@ -28,6 +28,13 @@ export const navLinks = [
     iconKey: "buildings",
   },
   {
+    id: "blog",
+    label: "Blog",
+    helper: "Property tips",
+    href: "/blog",
+    iconKey: "journalCheck",
+  },
+  {
     id: "contact",
     label: "Contact",
     helper: "Talk to us",

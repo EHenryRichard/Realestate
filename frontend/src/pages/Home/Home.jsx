@@ -2,12 +2,14 @@ import AboutPreview from "../../components/sections/AboutPreview/AboutPreview.js
 import ConsultancyHighlight from "../../components/sections/ConsultancyHighlight/ConsultancyHighlight.jsx";
 import ContactCTA from "../../components/sections/ContactCTA/ContactCTA.jsx";
 import ContactFormSection from "../../components/sections/ContactFormSection/ContactFormSection.jsx";
+import FaqSection from "../../components/sections/FaqSection/FaqSection.jsx";
 import FeaturedProperties from "../../components/sections/FeaturedProperties/FeaturedProperties.jsx";
 import Hero from "../../components/sections/Hero/Hero.jsx";
 import PropertyManagementHighlight from "../../components/sections/PropertyManagementHighlight/PropertyManagementHighlight.jsx";
 import ServicesSection from "../../components/sections/ServicesSection/ServicesSection.jsx";
 import Testimonials from "../../components/sections/Testimonials/Testimonials.jsx";
 import TrustIndicators from "../../components/sections/TrustIndicators/TrustIndicators.jsx";
+import VideoSection from "../../components/sections/VideoSection/VideoSection.jsx";
 import WhyChooseUs from "../../components/sections/WhyChooseUs/WhyChooseUs.jsx";
 import SectionNavigator from "../../components/ui/SectionNavigator/SectionNavigator.jsx";
 import { seoContent } from "../../content/seoContent.js";
@@ -45,6 +47,12 @@ function Home() {
       </div>
       <div className="scroll-mt-24" id="home-testimonials">
         <Testimonials />
+      </div>
+      <div className="scroll-mt-24" id="home-video">
+        <VideoSection />
+      </div>
+      <div className="scroll-mt-24" id="home-faq">
+        <FaqSection />
       </div>
       <div className="scroll-mt-24" id="home-contact">
         <ContactCTA />

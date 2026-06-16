@@ -1,25 +1,25 @@
 export const servicesContent = {
   seoKey: "services",
   hero: {
-    eyebrow: "Our Services",
-    title: "Premium real estate services shaped around practical client needs.",
+    eyebrow: "What We Offer",
+    title: "Every property service you need in Warri and Delta State.",
     subtitle:
-      "Explore property sales, management, inspection, consultancy, investment advisory, and land or housing solutions.",
+      "Sales, inspections, management, consultancy — all handled by a team that knows the Delta State market and works with full transparency.",
     image: "/images/hero/services-hero.webp",
-    imageAlt: "Real estate service consultation with property documents",
+    imageAlt: "Sureboy Realty property consultation and document review in Warri",
   },
   overview:
-    "Every service is designed to reduce uncertainty, improve decision quality, and create a smoother path from interest to action.",
+    "We do not offer services we cannot deliver. Everything on this list is something we do in Warri and Delta State, with a track record behind it.",
   benefits: [
-    "Clear guidance before commitments are made",
-    "Property-focused support for buyers, sellers, landlords, and investors",
-    "Professional communication across inspection, enquiry, and follow-up stages",
-    "API-ready service structure for future backend management",
+    "Every recommendation is backed by a physical inspection",
+    "All document types handled — C of O, Deed of Assignment, Survey, Governor's Consent",
+    "Clear fee structure with no hidden charges",
+    "Same-day response to every enquiry",
   ],
   cta: {
-    title: "Need help choosing the right service?",
-    body: "Tell us your property goal and we will point you toward the best next step.",
-    label: "Contact Sureboy Realty",
+    title: "Not sure which service you need?",
+    body: "Tell us what you are trying to do — buy, sell, rent, manage, or invest — and we will point you in the right direction.",
+    label: "Talk to Us",
     href: "/contact",
   },
 };

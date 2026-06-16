@@ -1,32 +1,38 @@
 export const seoContent = {
   home: {
-    title: "Sureboy Realty | Premium Properties and Real Estate Investments",
+    title: "Sureboy Realty | Verified Properties in Warri, Delta State",
     description:
-      "Sureboy Realty provides premium property sales, management, inspection, consultancy, and investment guidance in Nigeria.",
+      "Sureboy Realty provides verified land and property sales, management, inspection, consultancy, and investment guidance in Warri, Delta State, and Nigeria.",
     ogImage: "/og-image.jpg",
   },
   about: {
-    title: "About Sureboy Realty | Trusted Real Estate Partner",
+    title: "About Sureboy Realty | Trusted Real Estate Partner in Warri, Delta State",
     description:
-      "Learn about Sureboy Realty, a premium real estate brand focused on trust, property value, and professional guidance.",
+      "Learn about Sureboy Realty, a trusted real estate brand in Warri, Delta State — focused on verified properties, client protection, and professional guidance.",
     ogImage: "/og-image.jpg",
   },
   services: {
-    title: "Real Estate Services | Sureboy Realty",
+    title: "Real Estate Services in Warri, Delta State | Sureboy Realty",
     description:
-      "Explore Sureboy Realty services including property sales, management, inspection, consultancy, and investment advisory.",
+      "Sureboy Realty offers property sales, management, inspection, investment consultancy, and land verification services in Warri and across Delta State and Nigeria.",
     ogImage: "/og-image.jpg",
   },
   properties: {
-    title: "Properties and Listings | Sureboy Realty",
+    title: "Property Listings in Warri, Delta State | Sureboy Realty",
     description:
-      "Browse premium property listings and investment opportunities from Sureboy Realty.",
+      "Browse verified land, residential, and commercial property listings in Warri, Delta State, and Nigeria. Inspect, buy, or invest with Sureboy Realty.",
     ogImage: "/og-image.jpg",
   },
   contact: {
-    title: "Contact Sureboy Realty | Speak With an Agent",
+    title: "Contact Sureboy Realty | Speak With a Warri Real Estate Agent",
     description:
-      "Contact Sureboy Realty by phone, email, WhatsApp, or enquiry form for trusted property support.",
+      "Contact Sureboy Realty by phone, email, or WhatsApp for trusted property support in Warri, Delta State, and Nigeria. Book a free consultation today.",
+    ogImage: "/og-image.jpg",
+  },
+  blog: {
+    title: "Property Talk | Real Estate Tips from Sureboy Realty, Warri",
+    description:
+      "Land verification guides, investment tips, and real estate insights for buyers and investors in Warri, Delta State, and Nigeria.",
     ogImage: "/og-image.jpg",
   },
   notFound: {

@@ -39,6 +39,6 @@ export const contactContent = {
   ],
   mapPlaceholder: {
     title: "Service area",
-    body: "Sureboy Realty serves clients across Lagos and growth-focused property markets in Nigeria.",
+    body: "Sureboy Realty is based in Warri, Delta State, and serves clients across Delta State and growth-focused property markets in Nigeria.",
   },
 };

@@ -15,6 +15,7 @@ services:
       retries: 10
 
   api:
+    image: ghcr.io/${GHCR_OWNER:-owner}/sureboy-api:${IMAGE_TAG:-latest}
     build:
       context: ./api
     restart: unless-stopped
@@ -61,6 +62,7 @@ services:
       retries: 10
 
   frontend:
+    image: ghcr.io/${GHCR_OWNER:-owner}/sureboy-frontend:${IMAGE_TAG:-latest}
     build:
       context: ./frontend
       args:

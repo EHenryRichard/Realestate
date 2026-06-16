@@ -6,7 +6,7 @@ export const siteConfig = {
   phoneCompact: "+2349163267765",
   email: "austineokolie57@gmail.com",
   whatsappNumber: "2349163267765",
-  address: "Lagos, Nigeria",
+  address: "Warri, Delta State, Nigeria",
   businessHours: "Mon - Sat, 9:00 AM - 6:00 PM",
   cta: {
     label: "Speak With an Agent",

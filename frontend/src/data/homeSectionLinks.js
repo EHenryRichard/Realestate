@@ -36,6 +36,14 @@ export const homeSectionLinks = [
     label: "Testimonials",
   },
   {
+    id: "home-video",
+    label: "Videos",
+  },
+  {
+    id: "home-faq",
+    label: "FAQ",
+  },
+  {
     id: "home-contact",
     label: "Contact",
   },

@@ -18,6 +18,12 @@ const EditService = lazy(() => import("../pages/Services/EditService.jsx"));
 const AdminTestimonials = lazy(() => import("../pages/Testimonials/AdminTestimonials.jsx"));
 const CreateTestimonial = lazy(() => import("../pages/Testimonials/CreateTestimonial.jsx"));
 const EditTestimonial = lazy(() => import("../pages/Testimonials/EditTestimonial.jsx"));
+const AdminFaqs = lazy(() => import("../pages/FAQs/AdminFaqs.jsx"));
+const CreateFaq = lazy(() => import("../pages/FAQs/CreateFaq.jsx"));
+const EditFaq = lazy(() => import("../pages/FAQs/EditFaq.jsx"));
+const AdminBlog = lazy(() => import("../pages/Blog/AdminBlog.jsx"));
+const CreateBlogPost = lazy(() => import("../pages/Blog/CreateBlogPost.jsx"));
+const EditBlogPost = lazy(() => import("../pages/Blog/EditBlogPost.jsx"));
 const AdminMessages = lazy(() => import("../pages/Messages/AdminMessages.jsx"));
 const AdminMessageDetails = lazy(() => import("../pages/Messages/AdminMessageDetails.jsx"));
 const AdminNewsletter = lazy(() => import("../pages/Newsletter/AdminNewsletter.jsx"));
@@ -43,6 +49,12 @@ function AdminRoutes() {
               <Route element={<AdminTestimonials />} path="testimonials" />
               <Route element={<CreateTestimonial />} path="testimonials/create" />
               <Route element={<EditTestimonial />} path="testimonials/:id/edit" />
+              <Route element={<AdminFaqs />} path="faqs" />
+              <Route element={<CreateFaq />} path="faqs/create" />
+              <Route element={<EditFaq />} path="faqs/:id/edit" />
+              <Route element={<AdminBlog />} path="blog" />
+              <Route element={<CreateBlogPost />} path="blog/create" />
+              <Route element={<EditBlogPost />} path="blog/:id/edit" />
               <Route element={<AdminMessages />} path="messages" />
               <Route element={<AdminMessageDetails />} path="messages/:id" />
               <Route element={<AdminNewsletter />} path="newsletter" />
