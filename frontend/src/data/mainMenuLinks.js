@@ -13,11 +13,4 @@ export const mainMenuUtilityLinks = [
     href: "/projects",
     iconKey: "buildings",
   },
-  {
-    id: "contact-us",
-    label: "Contact us",
-    helper: "Get help now",
-    href: "/contact",
-    iconKey: "telephone",
-  },
 ];
