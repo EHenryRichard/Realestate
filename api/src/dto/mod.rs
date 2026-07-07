@@ -1,5 +1,6 @@
 pub mod auth_dto;
 pub mod blog_post_dto;
+pub mod client_dto;
 pub mod contact_dto;
 pub mod faq_dto;
 pub mod newsletter_dto;

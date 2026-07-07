@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle, ChevronLeft, ChevronRight, GeoAlt } from "react-bootstrap-icons";
 import { Link, useParams } from "react-router-dom";
 import ContactCTA from "../../components/sections/ContactCTA/ContactCTA.jsx";
+import PropertyClientActions from "../../components/property/PropertyClientActions.jsx";
 import Badge from "../../components/ui/Badge/Badge.jsx";
 import Button from "../../components/ui/Button/Button.jsx";
 import Container from "../../components/ui/Container/Container.jsx";
@@ -266,6 +267,10 @@ function PropertyDetails() {
               <Button className="mt-8" icon={ArrowRight} to={contactLink} variant="primary">
                 Enquire About This Property
               </Button>
+
+              {/* Signed-in client actions: save, recently-viewed tracking, and a
+                  quick "message an agent" form (degrades to a sign-in nudge). */}
+              <PropertyClientActions propertyId={property.id} propertyTitle={property.title} />
             </div>
           </div>
 

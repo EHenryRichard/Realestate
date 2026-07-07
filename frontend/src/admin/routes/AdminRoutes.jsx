@@ -9,6 +9,8 @@ import { adminPath } from "../../config/adminConfig.js";
 
 const AdminLogin        = lazy(() => import("../pages/Login/AdminLogin.jsx"));
 const AdminSignup       = lazy(() => import("../pages/Login/AdminSignup.jsx"));
+const AdminForgotPassword = lazy(() => import("../pages/Login/AdminForgotPassword.jsx"));
+const AdminResetPassword  = lazy(() => import("../pages/Login/AdminResetPassword.jsx"));
 const AdminDashboard    = lazy(() => import("../pages/Dashboard/AdminDashboard.jsx"));
 const AdminAgents       = lazy(() => import("../pages/Agents/AdminAgents.jsx"));
 const CreateAgent       = lazy(() => import("../pages/Agents/CreateAgent.jsx"));
@@ -50,6 +52,8 @@ function AdminRoutes() {
         <Routes>
           <Route element={<AdminLogin />} path="login" />
           <Route element={<AdminSignup />} path="signup" />
+          <Route element={<AdminForgotPassword />} path="forgot-password" />
+          <Route element={<AdminResetPassword />} path="reset-password" />
           <Route element={<AdminProtectedRoute />}>
             <Route element={<AdminLayout />}>
               {/* ── Shared (admin + agent) ── */}

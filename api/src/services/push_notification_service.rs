@@ -38,11 +38,14 @@ pub fn spawn_lead_alert(pool: DbPool, config: AppConfig, alert: PushLeadAlert) {
     });
 }
 
+/// Admin lead alerts only go to admin devices (`client_id IS NULL`), so client
+/// browsers subscribed for property alerts never receive them.
 async fn send_to_all(pool: DbPool, config: AppConfig, alert: PushLeadAlert) {
     let subscriptions = match sqlx::query_as::<_, PushSubscription>(
         r#"
         SELECT id, endpoint, p256dh, auth, created_at
         FROM push_subscriptions
+        WHERE client_id IS NULL
         ORDER BY created_at ASC
         "#,
     )
@@ -56,11 +59,56 @@ async fn send_to_all(pool: DbPool, config: AppConfig, alert: PushLeadAlert) {
         }
     };
 
+    dispatch(&pool, &config, subscriptions, &alert).await;
+}
+
+/// Sends a push alert to one client's subscribed browsers. Used by the property
+/// alert fan-out. No-ops when push isn't configured or the client has no devices.
+pub async fn send_to_client(
+    pool: &DbPool,
+    config: &AppConfig,
+    client_id: uuid::Uuid,
+    alert: &PushLeadAlert,
+) {
+    if !config.push_notifications_configured() {
+        return;
+    }
+
+    let subscriptions = match sqlx::query_as::<_, PushSubscription>(
+        r#"
+        SELECT id, endpoint, p256dh, auth, created_at
+        FROM push_subscriptions
+        WHERE client_id = $1
+        ORDER BY created_at ASC
+        "#,
+    )
+    .bind(client_id)
+    .fetch_all(pool)
+    .await
+    {
+        Ok(rows) => rows,
+        Err(error) => {
+            warn!(error = %error, "Failed to load client push subscriptions");
+            return;
+        }
+    };
+
+    dispatch(pool, config, subscriptions, alert).await;
+}
+
+/// Shared delivery loop: signs and sends `alert` to every subscription, pruning
+/// any that the push service reports as gone.
+async fn dispatch(
+    pool: &DbPool,
+    config: &AppConfig,
+    subscriptions: Vec<PushSubscription>,
+    alert: &PushLeadAlert,
+) {
     if subscriptions.is_empty() {
         return;
     }
 
-    let payload = match serde_json::to_vec(&alert) {
+    let payload = match serde_json::to_vec(alert) {
         Ok(payload) => payload,
         Err(error) => {
             warn!(error = %error, "Failed to serialize push payload");
@@ -121,7 +169,7 @@ async fn send_to_all(pool: DbPool, config: AppConfig, alert: PushLeadAlert) {
                 delivered += 1;
             }
             Err(WebPushError::EndpointNotValid(_)) | Err(WebPushError::EndpointNotFound(_)) => {
-                delete_subscription(&pool, subscription.id, &subscription.endpoint).await;
+                delete_subscription(pool, subscription.id, &subscription.endpoint).await;
             }
             Err(error) => {
                 warn!(

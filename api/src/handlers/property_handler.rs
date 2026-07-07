@@ -8,6 +8,7 @@ use crate::{
     dto::property_dto::{PropertyRequest, PropertyStatusRequest, PropertyVideoRequest},
     handlers::common,
     models::property::Property,
+    services::{email_service::Mailer, property_alert_service},
     utils::{
         media_cleanup::{cleanup_unused_uploads, refs_from_json_array},
         media_signing::signed_video_url,
@@ -349,7 +350,9 @@ pub async fn get_admin_by_id(pool: web::Data<DbPool>, path: web::Path<String>) -
 }
 
 pub async fn create_admin(
+    config: web::Data<AppConfig>,
     pool: web::Data<DbPool>,
+    mailer: web::Data<Mailer>,
     payload: web::Json<PropertyRequest>,
 ) -> impl Responder {
     let request = payload.into_inner();
@@ -408,13 +411,35 @@ pub async fn create_admin(
             };
 
             match saved {
-                Ok(()) => match fetch_property_by_id(pool.get_ref(), property.id).await {
-                    Ok(Some(saved_property)) => {
-                        common::created("Property created successfully", saved_property)
-                    }
-                    Ok(None) => common::created("Property created successfully", property),
-                    Err(error) => common::server_error(error),
-                },
+                Ok(()) => {
+                    // Prefer the fully-hydrated property (with gallery/videos);
+                    // fall back to the base row if the re-fetch finds nothing.
+                    let final_property = match fetch_property_by_id(pool.get_ref(), property.id).await
+                    {
+                        Ok(Some(saved_property)) => saved_property,
+                        Ok(None) => property,
+                        Err(error) => return common::server_error(error),
+                    };
+
+                    // Fan out new-listing alerts in the background so publishing
+                    // stays instant. Everything here is Clone + owned so it can
+                    // outlive this request.
+                    let alert_property = final_property.clone();
+                    let alert_pool = pool.get_ref().clone();
+                    let alert_mailer = mailer.get_ref().clone();
+                    let alert_config = config.get_ref().clone();
+                    tokio::spawn(async move {
+                        property_alert_service::notify_matching_clients(
+                            alert_pool,
+                            alert_mailer,
+                            alert_config,
+                            alert_property,
+                        )
+                        .await;
+                    });
+
+                    common::created("Property created successfully", final_property)
+                }
                 Err(error) => common::server_error(error),
             }
         }

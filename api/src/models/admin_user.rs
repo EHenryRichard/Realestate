@@ -12,6 +12,7 @@ pub struct AdminUser {
     pub password_hash: String,
     pub role: String,
     pub is_active: bool,
+    pub is_primary: bool,
     pub phone: Option<String>,
     pub photo: Option<String>,
     pub bio: Option<String>,

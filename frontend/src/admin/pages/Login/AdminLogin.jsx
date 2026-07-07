@@ -63,6 +63,11 @@ function AdminLogin() {
             {isSubmitting ? "Signing in..." : "Enter Dashboard"}
           </AdminButton>
         </form>
+        <p className="mt-4 text-sm font-bold text-brand-muted">
+          <Link className="text-brand-gold hover:text-brand-emerald" to={adminPath("forgot-password")}>
+            Forgot password?
+          </Link>
+        </p>
         <p className="mt-5 text-sm font-bold text-brand-muted">
           Need the first admin account?{" "}
           <Link className="text-brand-gold hover:text-brand-emerald" to={adminPath("signup")}>

@@ -32,10 +32,14 @@ const isSkippedAdminAuthRequest = (config = {}) => {
     "/admin/auth/signup",
     "/admin/auth/refresh",
     "/admin/auth/logout",
+    "/admin/auth/forgot-password",
+    "/admin/auth/reset-password",
     `${adminConfig.apiBasePath}/auth/login`,
     `${adminConfig.apiBasePath}/auth/signup`,
     `${adminConfig.apiBasePath}/auth/refresh`,
     `${adminConfig.apiBasePath}/auth/logout`,
+    `${adminConfig.apiBasePath}/auth/forgot-password`,
+    `${adminConfig.apiBasePath}/auth/reset-password`,
   ].some((path) => url.includes(path));
 };
 

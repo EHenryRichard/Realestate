@@ -2,11 +2,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Bell, ChevronDown, Envelope, Heart, Person } from "react-bootstrap-icons";
 import { siteConfig } from "../../../config/siteConfig.js";
+import { useClientAuth } from "../../../hooks/useClientAuth.jsx";
 import Container from "../../ui/Container/Container.jsx";
 import MobileDrawer from "./MobileDrawer.jsx";
 import MobileNav from "./MobileNav.jsx";
 
 function Header() {
+  // Account-aware: the person icon leads to the dashboard when signed in,
+  // otherwise to the login page.
+  const { isAuthenticated } = useClientAuth();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isPastHero, setIsPastHero] = useState(false);
   const headerRef = useRef(null);
@@ -122,9 +126,9 @@ function Header() {
               <Heart aria-hidden="true" className="h-5 w-5" />
             </Link>
             <Link
-              aria-label="Speak with an agent"
+              aria-label={isAuthenticated ? "My account" : "Sign in"}
               className="relative min-h-10 items-center transition hover:text-brand-gold after:absolute after:bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-brand-gold after:transition-transform hover:after:scale-x-100 sm:inline-flex"
-              to="/contact"
+              to={isAuthenticated ? "/dashboard" : "/login"}
             >
               <Person aria-hidden="true" className="h-5 w-5" />
             </Link>

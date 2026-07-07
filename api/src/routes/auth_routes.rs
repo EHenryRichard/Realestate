@@ -9,6 +9,8 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
             .route("/login",   web::post().to(auth_handler::login))
             .route("/refresh", web::post().to(auth_handler::refresh))
             .route("/logout",  web::post().to(auth_handler::logout))
+            .route("/forgot-password", web::post().to(auth_handler::forgot_password))
+            .route("/reset-password",  web::post().to(auth_handler::reset_password))
             .route("/me",      web::get().to(auth_handler::me))
             .route("/me",      web::patch().to(auth_handler::update_me))
             .route("/me/change-password", web::post().to(auth_handler::change_password))

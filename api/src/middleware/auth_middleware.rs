@@ -18,14 +18,29 @@ fn admin_api_suffix<'a>(path: &'a str, admin_api_prefix: &str) -> Option<&'a str
     path.strip_prefix(&format!("/api{admin_api_prefix}"))
 }
 
+/// The admin API is otherwise locked behind `require_admin_access`. These few
+/// auth endpoints must stay reachable *without* a token — you can't log in or
+/// reset a password if you're required to already be logged in. This returns
+/// true for exactly those public POST endpoints so the guard lets them through.
 fn is_public_admin_auth_path(method: &Method, path: &str, admin_api_prefix: &str) -> bool {
+    // All of these are POSTs; anything else stays protected.
     if method != Method::POST {
         return false;
     }
 
+    // `admin_api_suffix` strips the secret admin prefix so we compare the stable
+    // tail (e.g. "/auth/login"). forgot/reset-password were added for the
+    // password-reset flow, which must work while logged out.
     matches!(
         admin_api_suffix(path, admin_api_prefix),
-        Some("/auth/signup" | "/auth/login" | "/auth/refresh" | "/auth/logout")
+        Some(
+            "/auth/signup"
+                | "/auth/login"
+                | "/auth/refresh"
+                | "/auth/logout"
+                | "/auth/forgot-password"
+                | "/auth/reset-password"
+        )
     )
 }
 

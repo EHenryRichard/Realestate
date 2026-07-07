@@ -41,6 +41,10 @@ async fn main() -> std::io::Result<()> {
     tokio::fs::create_dir_all(&config.upload_dir).await?;
     let rate_limit_state = web::Data::new(RateLimitState::default());
     let video_jobs = web::Data::new(VideoJobs::default());
+    let mailer = web::Data::new(services::email_service::Mailer::from_config(&config));
+    if !mailer.is_enabled() {
+        info!("SMTP is not configured; password reset emails will be skipped.");
+    }
 
     tokio::spawn({
         let pool = conn.clone();
@@ -78,6 +82,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(conn.clone()))
             .app_data(rate_limit_state.clone())
             .app_data(video_jobs.clone())
+            .app_data(mailer.clone())
             .service(Files::new("/uploads", config.upload_dir.clone()))
             .service(web::scope("/api").configure(|cfg| app::configure_api(cfg, &admin_api_path)))
     })

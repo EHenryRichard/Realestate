@@ -10,8 +10,16 @@ pub struct AppConfig {
     pub jwt_secret: String,
     pub jwt_access_expires_in: String,
     pub jwt_refresh_expires_in: String,
+    pub password_reset_expires_in: String,
+    pub email_verification_expires_in: String,
     pub refresh_cookie_secure: bool,
     pub frontend_url: String,
+    pub smtp_host: String,
+    pub smtp_port: u16,
+    pub smtp_username: String,
+    pub smtp_password: String,
+    pub mail_from: String,
+    pub mail_from_name: String,
     pub upload_dir: String,
     pub ffmpeg_path: String,
     pub ffprobe_path: String,
@@ -91,11 +99,27 @@ impl AppConfig {
                 .unwrap_or_else(|_| "15m".to_string()),
             jwt_refresh_expires_in: env::var("JWT_REFRESH_EXPIRES_IN")
                 .unwrap_or_else(|_| "7d".to_string()),
+            password_reset_expires_in: env::var("PASSWORD_RESET_EXPIRES_IN")
+                .unwrap_or_else(|_| "30m".to_string()),
+            email_verification_expires_in: env::var("EMAIL_VERIFICATION_EXPIRES_IN")
+                .unwrap_or_else(|_| "24h".to_string()),
             refresh_cookie_secure: env::var("REFRESH_COOKIE_SECURE")
                 .map(|value| value == "true")
                 .unwrap_or(false),
             frontend_url: env::var("FRONTEND_URL")
                 .unwrap_or_else(|_| "http://localhost:5173".to_string()),
+            smtp_host: env::var("SMTP_HOST").unwrap_or_default(),
+            smtp_port: env::var("SMTP_PORT")
+                .ok()
+                .and_then(|value| value.parse::<u16>().ok())
+                .unwrap_or(587),
+            smtp_username: env::var("SMTP_USERNAME").unwrap_or_default(),
+            smtp_password: env::var("SMTP_PASSWORD").unwrap_or_default(),
+            mail_from: env::var("MAIL_FROM")
+                .or_else(|_| env::var("SMTP_USERNAME"))
+                .unwrap_or_default(),
+            mail_from_name: env::var("MAIL_FROM_NAME")
+                .unwrap_or_else(|_| "Sureboy Realty".to_string()),
             upload_dir: env::var("UPLOAD_DIR").unwrap_or_else(|_| "uploads".to_string()),
             ffmpeg_path: env::var("FFMPEG_PATH").unwrap_or_else(|_| "ffmpeg".to_string()),
             ffprobe_path: env::var("FFPROBE_PATH").unwrap_or_else(|_| "ffprobe".to_string()),

@@ -47,6 +47,22 @@ pub struct ChangePasswordRequest {
     pub new_password: String,
 }
 
+#[derive(Debug, Deserialize, Serialize, Validate)]
+#[serde(rename_all = "camelCase")]
+pub struct ForgotPasswordRequest {
+    #[validate(email)]
+    pub email: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Validate)]
+#[serde(rename_all = "camelCase")]
+pub struct ResetPasswordRequest {
+    #[validate(length(min = 1))]
+    pub token: String,
+    #[validate(length(min = 6))]
+    pub new_password: String,
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateAgentRequest {
@@ -68,6 +84,7 @@ pub struct AdminResponse {
     pub email: String,
     pub role: String,
     pub is_active: bool,
+    pub is_primary: bool,
     pub phone: Option<String>,
     pub photo: Option<String>,
     pub bio: Option<String>,
@@ -90,6 +107,7 @@ impl From<&AdminUser> for AdminResponse {
             email: admin.email.clone(),
             role: admin.role.clone(),
             is_active: admin.is_active,
+            is_primary: admin.is_primary,
             phone: admin.phone.clone(),
             photo: admin.photo.clone(),
             bio: admin.bio.clone(),

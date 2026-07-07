@@ -1,5 +1,7 @@
 pub mod auth_handler;
 pub mod blog_handler;
+pub mod client_activity_handler;
+pub mod client_auth_handler;
 pub mod common;
 pub mod contact_handler;
 pub mod dashboard_handler;

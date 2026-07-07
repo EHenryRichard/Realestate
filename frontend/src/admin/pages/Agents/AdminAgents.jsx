@@ -5,6 +5,7 @@ import { apiConfig } from "../../../config/apiConfig.js";
 import { adminPath } from "../../../config/adminConfig.js";
 import { showError, showSuccess } from "../../../utils/toast.jsx";
 import { adminAgentsApi } from "../../api/adminAgentsApi.js";
+import { useAdminAuth } from "../../hooks/useAdminAuth.js";
 import AdminBadge from "../../components/ui/AdminBadge.jsx";
 import AdminButton from "../../components/ui/AdminButton.jsx";
 import AdminCard from "../../components/ui/AdminCard.jsx";
@@ -15,9 +16,18 @@ import AdminPageHeader from "../../components/ui/AdminPageHeader.jsx";
 const ROLE_TONE = { admin: "active", agent: "unread" };
 
 function AdminAgents() {
+  const { admin } = useAdminAuth();
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Decides whether to show the delete button for a given row. Mirrors the exact
+  // rules the backend enforces (the UI just hides what the API would reject):
+  //   • never the primary founder (`!member.isPrimary`);
+  //   • another admin only if *I* am the primary (`admin?.isPrimary`);
+  //   • ordinary agents: always deletable by any admin.
+  const canDelete = (member) =>
+    !member.isPrimary && (member.role !== "admin" || Boolean(admin?.isPrimary));
 
   const load = async () => {
     if (!apiConfig.useApi) { setAgents([]); return; }
@@ -104,9 +114,12 @@ function AdminAgents() {
                       </div>
                     </td>
                     <td className="py-4 pr-4">
-                      <AdminBadge tone={ROLE_TONE[agent.role] || "default"}>
-                        {agent.role}
-                      </AdminBadge>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <AdminBadge tone={ROLE_TONE[agent.role] || "default"}>
+                          {agent.role}
+                        </AdminBadge>
+                        {agent.isPrimary && <AdminBadge tone="active">primary</AdminBadge>}
+                      </div>
                     </td>
                     <td className="py-4 pr-4 text-brand-muted">{agent.title || "—"}</td>
                     <td className="py-4 pr-4">
@@ -123,17 +136,19 @@ function AdminAgents() {
                         >
                           <PencilSquare className="h-4 w-4" />
                         </Link>
-                        <button
-                          className="grid h-8 w-8 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-forest hover:text-white"
-                          onClick={() => handleToggle(agent)}
-                          title={agent.isActive ? "Deactivate" : "Activate"}
-                          type="button"
-                        >
-                          {agent.isActive
-                            ? <PersonXFill className="h-4 w-4" />
-                            : <PersonCheckFill className="h-4 w-4" />}
-                        </button>
-                        {agent.role !== "admin" && (
+                        {!agent.isPrimary && (
+                          <button
+                            className="grid h-8 w-8 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-forest hover:text-white"
+                            onClick={() => handleToggle(agent)}
+                            title={agent.isActive ? "Deactivate" : "Activate"}
+                            type="button"
+                          >
+                            {agent.isActive
+                              ? <PersonXFill className="h-4 w-4" />
+                              : <PersonCheckFill className="h-4 w-4" />}
+                          </button>
+                        )}
+                        {canDelete(agent) && (
                           <button
                             className="grid h-8 w-8 place-items-center border border-red-200 text-red-600 transition hover:bg-red-600 hover:text-white"
                             onClick={() => handleDelete(agent)}
