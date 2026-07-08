@@ -121,7 +121,8 @@ function AdminUsers() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-brand-forest/10 text-left">
-                    <th className="pb-3 pr-4 text-xs font-extrabold uppercase tracking-widest text-brand-muted">User</th>
+                    <th className="pb-3 pr-4 text-xs font-extrabold uppercase tracking-widest text-brand-muted">Name</th>
+                    <th className="pb-3 pr-4 text-xs font-extrabold uppercase tracking-widest text-brand-muted">Phone</th>
                     <th className="pb-3 pr-4 text-xs font-extrabold uppercase tracking-widest text-brand-muted">Email</th>
                     <th className="pb-3 pr-4 text-xs font-extrabold uppercase tracking-widest text-brand-muted">Status</th>
                     <th className="pb-3 pr-4 text-xs font-extrabold uppercase tracking-widest text-brand-muted">Joined</th>
@@ -132,9 +133,11 @@ function AdminUsers() {
                   {users.map((user) => (
                     <tr key={user.id}>
                       <td className="py-4 pr-4">
-                        <p className="font-extrabold text-brand-forest">{user.fullName}</p>
-                        {user.phone && <p className="text-xs text-brand-muted">{user.phone}</p>}
+                        <p className="font-extrabold text-brand-forest">
+                          {user.fullName || user.full_name || user.name || "—"}
+                        </p>
                       </td>
+                      <td className="py-4 pr-4 text-brand-muted">{user.phone || "—"}</td>
                       <td className="py-4 pr-4">
                         <p className="text-brand-charcoal">{user.email}</p>
                         <AdminBadge tone={user.emailVerified ? "active" : "hidden"}>
