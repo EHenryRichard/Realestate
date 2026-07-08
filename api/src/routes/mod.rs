@@ -1,3 +1,4 @@
+pub mod admin_client_routes;
 pub mod admin_routes;
 pub mod auth_routes;
 pub mod blog_routes;

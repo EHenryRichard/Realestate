@@ -10,8 +10,8 @@ self.addEventListener("push", (event) => {
   const title = payload.title || "Sureboy Realty alert";
   const options = {
     body: payload.body || "A new lead was received.",
-    icon: "/icons/icon-192.png",
-    badge: "/icons/badge-96.png",
+    icon: "/images/logo/logo.png",
+    badge: "/images/logo/logo.png",
     data: {
       url: payload.url || "/",
     },

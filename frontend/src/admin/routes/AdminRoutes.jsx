@@ -15,6 +15,7 @@ const AdminDashboard    = lazy(() => import("../pages/Dashboard/AdminDashboard.j
 const AdminAgents       = lazy(() => import("../pages/Agents/AdminAgents.jsx"));
 const CreateAgent       = lazy(() => import("../pages/Agents/CreateAgent.jsx"));
 const EditAgent         = lazy(() => import("../pages/Agents/EditAgent.jsx"));
+const AdminUsers        = lazy(() => import("../pages/Users/AdminUsers.jsx"));
 const AdminProfile      = lazy(() => import("../pages/Profile/AdminProfile.jsx"));
 const AdminProperties   = lazy(() => import("../pages/Properties/AdminProperties.jsx"));
 const CreateProperty    = lazy(() => import("../pages/Properties/CreateProperty.jsx"));
@@ -70,6 +71,7 @@ function AdminRoutes() {
                 <Route element={<AdminAgents />} path="agents" />
                 <Route element={<CreateAgent />} path="agents/create" />
                 <Route element={<EditAgent />} path="agents/:id/edit" />
+                <Route element={<AdminUsers />} path="users" />
                 <Route element={<AdminServices />} path="services" />
                 <Route element={<CreateService />} path="services/create" />
                 <Route element={<EditService />} path="services/:id/edit" />

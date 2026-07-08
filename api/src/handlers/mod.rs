@@ -1,3 +1,4 @@
+pub mod admin_client_handler;
 pub mod auth_handler;
 pub mod blog_handler;
 pub mod client_activity_handler;

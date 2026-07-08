@@ -4,6 +4,7 @@ export const adminNavLinks = [
   { id: "dashboard",    label: "Dashboard",    href: adminPath(),                 iconKey: "speedometer",  helper: "Overview",     roles: ["admin", "agent"] },
   { id: "properties",   label: "Properties",   href: adminPath("properties"),     iconKey: "houses",       helper: "Listings",     roles: ["admin", "agent"] },
   { id: "agents",       label: "Team",         href: adminPath("agents"),         iconKey: "people",       helper: "Manage users", roles: ["admin"] },
+  { id: "users",        label: "Users",        href: adminPath("users"),          iconKey: "personCheck",  helper: "Client accounts", roles: ["admin"] },
   { id: "services",     label: "Services",     href: adminPath("services"),       iconKey: "briefcase",    helper: "Offerings",    roles: ["admin"] },
   { id: "testimonials", label: "Testimonials", href: adminPath("testimonials"),   iconKey: "stars",        helper: "Client proof", roles: ["admin"] },
   { id: "faqs",         label: "FAQs",         href: adminPath("faqs"),           iconKey: "chatDots",     helper: "Q&A",          roles: ["admin"] },

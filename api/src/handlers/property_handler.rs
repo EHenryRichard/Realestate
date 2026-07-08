@@ -349,6 +349,40 @@ pub async fn get_admin_by_id(pool: web::Data<DbPool>, path: web::Path<String>) -
     }
 }
 
+/// Returns a slug that's free in the `properties` table. If `base` is taken it
+/// appends `-2`, `-3`, … until it finds an unused one. This lets an admin upload
+/// the same/similar listing repeatedly without a "duplicate slug" error and
+/// without refreshing the form.
+async fn unique_slug(pool: &DbPool, base: &str) -> Result<String, sqlx::Error> {
+    let base = if base.trim().is_empty() {
+        "property".to_string()
+    } else {
+        base.to_string()
+    };
+
+    // Grab the base and any "base-<n>" already in use, in one query.
+    let taken: Vec<String> = sqlx::query_scalar(
+        "SELECT slug FROM properties WHERE slug = $1 OR slug LIKE $2",
+    )
+    .bind(&base)
+    .bind(format!("{base}-%"))
+    .fetch_all(pool)
+    .await?;
+
+    if !taken.iter().any(|slug| slug == &base) {
+        return Ok(base);
+    }
+
+    let mut n = 2;
+    loop {
+        let candidate = format!("{base}-{n}");
+        if !taken.iter().any(|slug| slug == &candidate) {
+            return Ok(candidate);
+        }
+        n += 1;
+    }
+}
+
 pub async fn create_admin(
     config: web::Data<AppConfig>,
     pool: web::Data<DbPool>,
@@ -357,10 +391,15 @@ pub async fn create_admin(
 ) -> impl Responder {
     let request = payload.into_inner();
     let id = Uuid::new_v4();
-    let slug = request
+    // Desired slug (from the form or generated from the title), then made unique.
+    let base_slug = request
         .slug
         .filter(|value| !value.trim().is_empty())
         .unwrap_or_else(|| slugify(&request.title));
+    let slug = match unique_slug(pool.get_ref(), &base_slug).await {
+        Ok(slug) => slug,
+        Err(error) => return common::server_error(error),
+    };
     let features = json!(request.features.unwrap_or_default());
     let gallery_images = request.gallery_images;
     let videos = request.videos;

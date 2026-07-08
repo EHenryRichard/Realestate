@@ -68,6 +68,16 @@ pub struct CreateInquiryRequest {
     pub phone: Option<String>,
 }
 
+/// Admin-side edit of a client account. Any field left out is unchanged.
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AdminUpdateClientRequest {
+    pub full_name: Option<String>,
+    pub phone: Option<String>,
+    pub is_active: Option<bool>,
+    pub email_verified: Option<bool>,
+}
+
 /// The safe, outward-facing view of a client (no password hash, etc.).
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
