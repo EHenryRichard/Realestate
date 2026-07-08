@@ -1,0 +1,42 @@
+# docker-mailserver — full mail stack (Postfix, Dovecot, OpenDKIM, OpenDMARC,
+# policyd-SPF, Fail2Ban) for sureboyrealty.com. Runs INDEPENDENTLY of the app
+# compose project:  cd mailserver && docker compose up -d
+#
+# Nothing about the app changes — it just sends via SMTP to mail.sureboyrealty.com.
+services:
+  mailserver:
+    image: ghcr.io/docker-mailserver/docker-mailserver:latest
+    container_name: mailserver
+    # The container's FQDN — MUST be the mail hostname, and MUST match the
+    # Let's Encrypt certificate and the PTR record.
+    hostname: mail.sureboyrealty.com
+    env_file: mailserver.env
+    restart: always
+    stop_grace_period: 1m
+
+    ports:
+      - "25:25"     # SMTP  — server-to-server mail in/out (needs Contabo unblock)
+      - "465:465"   # SMTPS — submission over implicit TLS (app + mail clients)
+      - "587:587"   # Submission over STARTTLS (app + mail clients)
+      - "993:993"   # IMAPS — reading mail in Gmail / Thunderbird / Outlook
+
+    volumes:
+      # Persistent mail data / state / logs (bind mounts = easy to back up).
+      - ./docker-data/dms/mail-data/:/var/mail/
+      - ./docker-data/dms/mail-state/:/var/mail-state/
+      - ./docker-data/dms/mail-logs/:/var/log/mail/
+      # DMS configuration (accounts, aliases, DKIM keys, etc.).
+      - ./docker-data/dms/config/:/tmp/docker-mailserver/
+      # Let's Encrypt certs from the HOST (issued by certbot, read-only).
+      - /etc/letsencrypt/:/etc/letsencrypt/:ro
+      - /etc/localtime:/etc/localtime:ro
+
+    # Fail2Ban needs NET_ADMIN to add/remove firewall (nftables) rules.
+    cap_add:
+      - NET_ADMIN
+
+    # Restart if the SMTP listener ever stops answering.
+    healthcheck:
+      test: "ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1"
+      timeout: 3s
+      retries: 0
