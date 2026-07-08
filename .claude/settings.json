@@ -6,7 +6,8 @@
       "PowerShell(Start-Process \"C:\\\\Program Files\\\\Docker\\\\Docker\\\\Docker Desktop.exe\")",
       "PowerShell(\"Launched Docker Desktop; it needs ~30-90s to be ready.\")",
       "PowerShell(docker run --rm -v \"C:/Users/ricke/Desktop/properProjects/sureboy/api:/app\" -v sureboy_cargo_registry:/usr/local/cargo/registry -e CARGO_TARGET_DIR=/tmp/target -w /app rust:1-bookworm bash -c \"apt-get update -qq && apt-get install -y -qq --no-install-recommends build-essential clang cmake libclang-dev perl pkg-config >/dev/null 2>&1 && cargo check --message-format=short 2>&1 | tail -n 40\")",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(grep -v '^$')"
     ]
   }
 }

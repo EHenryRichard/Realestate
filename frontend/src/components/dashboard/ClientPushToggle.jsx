@@ -14,6 +14,20 @@ const urlBase64ToUint8Array = (base64String) => {
   return output;
 };
 
+// True on iPhone/iPad. iPadOS 13+ masquerades as a Mac, so we also treat a
+// touch-capable "MacIntel" as iOS.
+const isIosDevice = () =>
+  typeof navigator !== "undefined" &&
+  (/iP(hone|ad|od)/i.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+
+// True when the site is running as an installed Home-Screen app (PWA) rather
+// than in a normal browser tab.
+const isStandalone = () =>
+  typeof window !== "undefined" &&
+  (window.matchMedia?.("(display-mode: standalone)")?.matches ||
+    window.navigator.standalone === true);
+
 // Explains why push can't be offered here (or "" when it can).
 const unsupportedReason = () => {
   if (typeof window === "undefined" || !window.isSecureContext) {
@@ -112,6 +126,11 @@ function ClientPushToggle() {
   // Only offer "Enable" when it's actually possible and not already on.
   const canEnable = !reason && permission !== "denied" && !enabled;
 
+  // iOS only supports web push for apps added to the Home Screen (iOS 16.4+), NOT
+  // in a normal Safari tab. For those users we hide the (non-functional) Enable
+  // button and show install instructions instead. Email alerts still cover them.
+  const needsIosInstall = isIosDevice() && !isStandalone();
+
   return (
     <section className="mt-4 rounded-xl border border-brand-forest/10 bg-white p-5 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -121,29 +140,46 @@ function ClientPushToggle() {
           </span>
           <div>
             <h3 className="font-bold text-brand-forest">Phone / browser alerts</h3>
-            <p className="text-sm text-brand-muted">{status}</p>
+            <p className="text-sm text-brand-muted">
+              {needsIosInstall
+                ? "On iPhone/iPad, add this site to your Home Screen to turn on alerts."
+                : status}
+            </p>
           </div>
         </div>
-        {enabled ? (
-          <button
-            className="rounded-md border border-brand-forest/20 px-4 py-2 text-sm font-bold text-brand-forest transition hover:bg-brand-forest hover:text-white disabled:opacity-60"
-            disabled={busy}
-            onClick={disable}
-            type="button"
-          >
-            Disable
-          </button>
-        ) : (
-          <button
-            className="rounded-md bg-brand-forest px-4 py-2 text-sm font-bold text-white transition hover:bg-brand-emerald disabled:opacity-60"
-            disabled={!canEnable || busy}
-            onClick={enable}
-            type="button"
-          >
-            Enable
-          </button>
-        )}
+        {/* No Enable button on an iOS Safari tab — it can't work there. */}
+        {!needsIosInstall &&
+          (enabled ? (
+            <button
+              className="rounded-md border border-brand-forest/20 px-4 py-2 text-sm font-bold text-brand-forest transition hover:bg-brand-forest hover:text-white disabled:opacity-60"
+              disabled={busy}
+              onClick={disable}
+              type="button"
+            >
+              Disable
+            </button>
+          ) : (
+            <button
+              className="rounded-md bg-brand-forest px-4 py-2 text-sm font-bold text-white transition hover:bg-brand-emerald disabled:opacity-60"
+              disabled={!canEnable || busy}
+              onClick={enable}
+              type="button"
+            >
+              Enable
+            </button>
+          ))}
       </div>
+
+      {/* Step-by-step Home-Screen install guide for iPhone/iPad users. */}
+      {needsIosInstall && (
+        <ol className="mt-4 list-decimal space-y-1 rounded-lg bg-brand-cream/50 p-4 pl-8 text-sm text-brand-forest">
+          <li>Tap the <span className="font-bold">Share</span> button in Safari (the square with an up-arrow).</li>
+          <li>Choose <span className="font-bold">Add to Home Screen</span>.</li>
+          <li>Open Sureboy Realty from the new <span className="font-bold">Home Screen icon</span>.</li>
+          <li>Come back to this page and tap <span className="font-bold">Enable</span> to allow alerts.</li>
+          <li className="text-brand-muted">Requires iOS 16.4 or newer. You'll still receive <span className="font-semibold">email</span> alerts regardless.</li>
+        </ol>
+      )}
     </section>
   );
 }
