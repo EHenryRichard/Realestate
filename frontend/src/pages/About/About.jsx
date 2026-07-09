@@ -13,7 +13,7 @@ function About() {
   return (
     <>
       <PageHero
-        cta={{ label: "Speak With an Agent", href: "/contact" }}
+        cta={{ label: "Talk to Us", href: "/contact" }}
         eyebrow={aboutContent.hero.eyebrow}
         image={aboutContent.hero.image}
         imageAlt={aboutContent.hero.imageAlt}
@@ -51,7 +51,7 @@ function About() {
 
               return (
                 <article className="border border-brand-forest/10 bg-white p-6 shadow-sm" key={value.title}>
-                  <span className="grid h-12 w-12 place-items-center bg-brand-forest text-brand-gold">
+                  <span className="grid h-12 w-12 place-items-center bg-brand-forest text-white">
                     <Icon aria-hidden="true" className="h-6 w-6" />
                   </span>
                   <h3 className="mt-5 text-xl font-black tracking-[0] text-brand-forest">{value.title}</h3>

@@ -2,7 +2,7 @@ import AdminEmptyState from "./AdminEmptyState.jsx";
 
 function AdminTable({ columns, rows }) {
   if (!rows.length) {
-    return <AdminEmptyState message="Try changing your search or filters." title="No matching records" />;
+    return <AdminEmptyState message="Try changing your search or filter." title="No matching items" />;
   }
 
   return (

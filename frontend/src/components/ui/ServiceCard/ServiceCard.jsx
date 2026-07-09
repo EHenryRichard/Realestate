@@ -22,7 +22,7 @@ function ServiceCard({ service }) {
           onError={handleImageError}
           src={image}
         />
-        <div className="absolute left-4 top-4 grid h-12 w-12 place-items-center bg-brand-forest text-brand-gold shadow-lg">
+        <div className="absolute left-4 top-4 grid h-12 w-12 place-items-center bg-brand-forest text-white shadow-lg">
           <Icon aria-hidden="true" className="h-6 w-6" />
         </div>
       </div>

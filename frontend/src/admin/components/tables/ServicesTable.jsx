@@ -6,7 +6,7 @@ function ServicesTable({ services }) {
   const columns = [
     {
       key: "title",
-      label: "Service",
+      label: "Help Offered",
       render: (service) => (
         <div>
           <p className="font-extrabold text-brand-forest">{service.title}</p>

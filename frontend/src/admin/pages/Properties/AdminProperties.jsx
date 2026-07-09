@@ -14,9 +14,9 @@ function AdminProperties() {
   return (
     <>
       <AdminPageHeader
-        action={{ icon: PlusLg, label: "Add Property", to: "/admin/properties/create" }}
-        title="Properties"
-        subtitle="Search, filter, edit, feature, and prepare property records for backend persistence."
+        action={{ icon: PlusLg, label: "Add House or Land", to: "/admin/properties/create" }}
+        title="Houses & Land"
+        subtitle="Add, find, edit, or hide the houses and land shown on the website."
       />
       <AdminCard>
         <div className="mb-4 grid min-w-0 max-w-full gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,14rem)]">

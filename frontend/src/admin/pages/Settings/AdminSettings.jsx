@@ -10,7 +10,7 @@ function AdminSettings() {
 
   return (
     <>
-      <AdminPageHeader title="Settings" subtitle="Edit brand and contact details that the backend will later persist." />
+      <AdminPageHeader title="Site Info" subtitle="Update the phone number, email, address, and other public details." />
       <AdminCard>
         {isLoading ? <AdminLoader label="Loading settings" /> : null}
         {error ? <AdminErrorState message={error} /> : null}

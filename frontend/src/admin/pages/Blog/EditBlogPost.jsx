@@ -48,7 +48,7 @@ function EditBlogPost() {
     <>
       <AdminPageHeader
         subtitle={post ? post.title : "Post not found."}
-        title="Edit Blog Post"
+        title="Edit Post"
       />
       <AdminCard>
         {isLoading ? <AdminLoader label="Loading post" /> : null}

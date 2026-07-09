@@ -92,7 +92,7 @@ function AdminProfile() {
   return (
     <>
       <AdminPageHeader
-        subtitle={`Logged in as ${admin?.role || "agent"} · ${admin?.email || ""}`}
+        subtitle={`${admin?.role || "staff"} account - ${admin?.email || ""}`}
         title="My Profile"
       />
 
@@ -100,16 +100,16 @@ function AdminProfile() {
         {/* Profile info */}
         <AdminCard>
           <h2 className="mb-5 text-sm font-extrabold uppercase tracking-widest text-brand-forest">
-            Profile Information
+            My Details
           </h2>
           <form className="grid gap-4" onSubmit={submitProfile}>
             <AdminInput label="Full name" name="fullName" onChange={handleProfile} required value={profile.fullName} />
-            <AdminInput label="Job title" name="title" onChange={handleProfile} placeholder="e.g. Property Agent" value={profile.title} />
+            <AdminInput label="Job title" name="title" onChange={handleProfile} placeholder="e.g. Real estate worker" value={profile.title} />
             <AdminInput label="Phone number" name="phone" onChange={handleProfile} value={profile.phone} />
             {admin?.role === "agent" && (
-              <AdminInput label="Slug (your public URL: /agents/your-slug)" name="slug" onChange={handleProfile} value={profile.slug} />
+              <AdminInput label="Page link name" name="slug" onChange={handleProfile} value={profile.slug} />
             )}
-            <AdminTextarea label="Bio (visible on your public profile)" name="bio" onChange={handleProfile} rows={4} value={profile.bio} />
+            <AdminTextarea label="Short story for your public profile" name="bio" onChange={handleProfile} rows={4} value={profile.bio} />
             <AdminImageUploader label="Profile photo" name="photo" onChange={handleProfile} value={profile.photo} />
 
             {profileError && (
@@ -124,7 +124,7 @@ function AdminProfile() {
         {/* Change password */}
         <AdminCard>
           <h2 className="mb-5 text-sm font-extrabold uppercase tracking-widest text-brand-forest">
-            Change Password
+            Change My Password
           </h2>
           <form className="grid gap-4" onSubmit={submitPassword}>
             <AdminInput
@@ -136,7 +136,7 @@ function AdminProfile() {
               value={passwords.currentPassword}
             />
             <AdminInput
-              label="New password (min 6 chars)"
+              label="New password (at least 6 letters or numbers)"
               name="newPassword"
               onChange={handlePassword}
               required
@@ -155,7 +155,7 @@ function AdminProfile() {
               <div className="border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-700">{passwordError}</div>
             )}
             <AdminButton disabled={submittingPassword} type="submit">
-              {submittingPassword ? "Changing..." : "Change Password"}
+              {submittingPassword ? "Changing..." : "Change My Password"}
             </AdminButton>
           </form>
         </AdminCard>

@@ -5,7 +5,7 @@ export const homeSectionLinks = [
   },
   {
     id: "home-trust",
-    label: "Trust",
+    label: "Why Trust Us",
   },
   {
     id: "home-about",
@@ -13,35 +13,35 @@ export const homeSectionLinks = [
   },
   {
     id: "home-services",
-    label: "Services",
+    label: "Help We Offer",
   },
   {
     id: "home-properties",
-    label: "Properties",
+    label: "Houses & Land",
   },
   {
     id: "home-why-us",
-    label: "Why Us",
+    label: "Why Choose Us",
   },
   {
     id: "home-management",
-    label: "Management",
+    label: "Managing Homes",
   },
   {
     id: "home-consultancy",
-    label: "Consultancy",
+    label: "Advice",
   },
   {
     id: "home-testimonials",
-    label: "Testimonials",
+    label: "Reviews",
   },
   {
     id: "home-video",
-    label: "Videos",
+    label: "Watch Videos",
   },
   {
     id: "home-faq",
-    label: "FAQ",
+    label: "Questions",
   },
   {
     id: "home-contact",

@@ -6,8 +6,8 @@ function CreateFaq() {
   return (
     <>
       <AdminPageHeader
-        subtitle="Save a question now and come back to add the answer anytime."
-        title="Add FAQ"
+        subtitle="Write a question visitors often ask. You can add the answer now or later."
+        title="Add Question"
       />
       <AdminCard>
         <FaqForm />

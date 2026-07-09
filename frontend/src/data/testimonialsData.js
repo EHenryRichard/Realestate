@@ -3,17 +3,17 @@ export const testimonialsData = [
     id: "testimonial-001",
     clientName: "Chinonso E.",
     clientType: "Home Buyer",
-    serviceUsed: "Property Sales",
+    serviceUsed: "Buying and Selling",
     rating: 5,
     quote:
-      "Sureboy Realty made the buying process clearer than I expected. The guidance before inspection helped me ask better questions.",
+      "Sureboy Realty made the buying process clearer than I expected. Their guidance helped me ask better questions before paying.",
     avatar: "/images/testimonials/client-1.png",
   },
   {
     id: "testimonial-002",
     clientName: "Adebayo M.",
-    clientType: "Property Owner",
-    serviceUsed: "Property Management",
+    clientType: "Owner",
+    serviceUsed: "Managing Homes",
     rating: 5,
     quote:
       "I needed a team that could communicate properly and help me think beyond rent alone. Their support has been professional.",
@@ -23,7 +23,7 @@ export const testimonialsData = [
     id: "testimonial-003",
     clientName: "Ifeoma U.",
     clientType: "Investor",
-    serviceUsed: "Investment Advisory",
+    serviceUsed: "Investment Advice",
     rating: 5,
     quote:
       "The investment review was practical and honest. I had a better sense of location, pricing, and next steps.",

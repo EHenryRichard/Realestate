@@ -11,7 +11,7 @@ function AdminMessages() {
 
   return (
     <>
-      <AdminPageHeader title="Messages" subtitle="Review enquiries coming from the public contact form." />
+      <AdminPageHeader title="Messages" subtitle="Read messages from people who contacted Sureboy Realty." />
       <AdminCard>
         <AdminSearchInput className="mb-4" label="Search messages" onChange={(event) => setSearch(event.target.value)} value={search} />
         {isLoading ? <AdminLoader label="Loading messages" /> : null}

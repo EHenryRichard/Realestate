@@ -200,3 +200,47 @@ pub fn verify_email_verification_token(
     )
     .map(|data| data.claims)
 }
+
+/// Claims for the "finish your agent signup" link emailed after an admin approves
+/// an agent request. `sub` is the `agent_requests` row id; `email` is the address
+/// the invite was approved for (so the completed account uses that exact email).
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AgentInviteClaims {
+    pub sub: Uuid,
+    pub email: String,
+    pub token_type: String,
+    pub exp: usize,
+}
+
+pub fn create_agent_invite_token(
+    request_id: Uuid,
+    email: &str,
+    secret: &str,
+    expires_in: &str,
+) -> Result<String, jsonwebtoken::errors::Error> {
+    let expires_at = Utc::now() + expiry_duration(expires_in);
+    let claims = AgentInviteClaims {
+        sub: request_id,
+        email: email.to_string(),
+        token_type: "agent_invite".to_string(),
+        exp: expires_at.timestamp() as usize,
+    };
+    encode(
+        &Header::default(),
+        &claims,
+        &EncodingKey::from_secret(secret.as_bytes()),
+    )
+}
+
+pub fn verify_agent_invite_token(
+    token: &str,
+    secret: &str,
+) -> Result<AgentInviteClaims, jsonwebtoken::errors::Error> {
+    decode::<AgentInviteClaims>(
+        token,
+        &DecodingKey::from_secret(secret.as_bytes()),
+        &Validation::default(),
+    )
+    .map(|data| data.claims)
+}

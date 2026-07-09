@@ -43,8 +43,8 @@ function AdminSidebar({ onNavigate }) {
             <NavLink
               className={({ isActive }) =>
                 [
-                  "group flex min-h-14 items-center gap-3 px-2 text-sm transition hover:-translate-x-1 hover:bg-white/6 hover:text-brand-gold",
-                  isActive ? "bg-white/8 text-brand-gold" : "text-white/82",
+                  "group flex min-h-14 items-center gap-3 px-2 text-sm transition hover:-translate-x-1 hover:bg-white/6 hover:text-white",
+                  isActive ? "bg-white/8 text-white" : "text-white/78",
                 ].join(" ")
               }
               end={link.href === adminConfig.basePath}
@@ -56,9 +56,11 @@ function AdminSidebar({ onNavigate }) {
                 <>
                   <span
                     aria-hidden="true"
-                    className={`h-9 w-1 bg-brand-gold transition ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+                    className={`h-9 w-1 bg-white transition ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
                   />
-                  <span className="grid h-10 w-10 place-items-center border border-brand-gold/25 text-brand-gold">
+                  <span
+                    className={`grid h-10 w-10 place-items-center transition ${isActive ? "text-white" : "text-white/64 group-hover:text-white"}`}
+                  >
                     <Icon aria-hidden="true" className="h-5 w-5" />
                   </span>
                   <span className="min-w-0">
@@ -77,14 +79,14 @@ function AdminSidebar({ onNavigate }) {
         <NavLink
           className={({ isActive }) =>
             [
-              "flex min-h-12 items-center gap-3 px-3 text-sm font-extrabold uppercase tracking-[0.01em] transition hover:bg-white/6 hover:text-brand-gold",
-              isActive ? "text-brand-gold" : "text-white/78",
+              "group flex min-h-12 items-center gap-3 px-3 text-sm font-extrabold uppercase tracking-[0.01em] transition hover:bg-white/6 hover:text-white",
+              isActive ? "bg-white/8 text-white" : "text-white/78",
             ].join(" ")
           }
           onClick={onNavigate}
           to={adminPath("profile")}
         >
-          <PersonCircle aria-hidden="true" className="h-5 w-5 text-brand-gold" />
+          <PersonCircle aria-hidden="true" className="h-5 w-5 text-white/64 transition group-hover:text-white" />
           <span className="min-w-0">
             <span className="block truncate">{admin?.fullName || "My Profile"}</span>
             <span className="block text-xs font-normal normal-case text-white/50">{role}</span>
@@ -95,7 +97,7 @@ function AdminSidebar({ onNavigate }) {
           onClick={handleLogout}
           type="button"
         >
-          <BoxArrowRight aria-hidden="true" className="h-5 w-5 text-brand-gold" />
+          <BoxArrowRight aria-hidden="true" className="h-5 w-5 text-white/64" />
           Logout
         </button>
       </div>

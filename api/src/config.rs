@@ -12,6 +12,7 @@ pub struct AppConfig {
     pub jwt_refresh_expires_in: String,
     pub password_reset_expires_in: String,
     pub email_verification_expires_in: String,
+    pub agent_invite_expires_in: String,
     pub refresh_cookie_secure: bool,
     pub frontend_url: String,
     pub smtp_host: String,
@@ -103,6 +104,8 @@ impl AppConfig {
                 .unwrap_or_else(|_| "30m".to_string()),
             email_verification_expires_in: env::var("EMAIL_VERIFICATION_EXPIRES_IN")
                 .unwrap_or_else(|_| "24h".to_string()),
+            agent_invite_expires_in: env::var("AGENT_INVITE_EXPIRES_IN")
+                .unwrap_or_else(|_| "7d".to_string()),
             refresh_cookie_secure: env::var("REFRESH_COOKIE_SECURE")
                 .map(|value| value == "true")
                 .unwrap_or(false),

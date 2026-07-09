@@ -14,8 +14,8 @@ function AdminDashboard() {
   return (
     <>
       <AdminPageHeader
-        title="Dashboard"
-        subtitle="Manage the public website data from one clean control surface."
+        title="Home"
+        subtitle="Start here to see what needs attention on the website."
       />
       {isLoading ? <AdminLoader label="Loading dashboard" /> : null}
       {error ? <AdminErrorState message={error} /> : null}

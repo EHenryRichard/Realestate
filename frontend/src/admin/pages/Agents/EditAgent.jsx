@@ -71,15 +71,15 @@ function EditAgent() {
 
   return (
     <>
-      <AdminPageHeader subtitle="Update this team member's profile and access level." title="Edit Team Member" />
+      <AdminPageHeader subtitle="Update this staff member's details and access level." title="Edit Staff" />
       <AdminCard className="max-w-2xl">
         <form className="grid gap-5" onSubmit={handleSubmit}>
           <div className="grid gap-4 sm:grid-cols-2">
             <AdminInput label="Full name" name="fullName" onChange={handle} required value={form.fullName} />
             <AdminInput disabled label="Email address" name="email" value={form.email} />
             <AdminInput label="Phone number" name="phone" onChange={handle} value={form.phone} />
-            <AdminInput label="Job title" name="title" onChange={handle} placeholder="e.g. Property Agent" value={form.title} />
-            <AdminInput label="Slug (public profile URL)" name="slug" onChange={handle} placeholder="e.g. john-obi" value={form.slug} />
+            <AdminInput label="Job title" name="title" onChange={handle} placeholder="e.g. Real estate worker" value={form.title} />
+            <AdminInput label="Page link name" name="slug" onChange={handle} placeholder="e.g. john-obi" value={form.slug} />
             <div>
               <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-widest text-brand-forest">Role</label>
               <select
@@ -95,7 +95,7 @@ function EditAgent() {
             </div>
           </div>
 
-          <AdminTextarea label="Bio (public profile)" name="bio" onChange={handle} rows={4} value={form.bio} />
+          <AdminTextarea label="Short story for public profile" name="bio" onChange={handle} rows={4} value={form.bio} />
           <AdminImageUploader label="Profile photo" name="photo" onChange={handle} value={form.photo} />
 
           <label className="flex min-h-12 items-center gap-3 border border-brand-forest/10 bg-white px-4 text-sm font-extrabold text-brand-forest">

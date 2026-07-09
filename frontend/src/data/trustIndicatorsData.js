@@ -7,8 +7,8 @@ export const trustIndicatorsData = [
   },
   {
     id: "physical-inspection",
-    label: "Every Property",
-    value: "Physically Inspected",
+    label: "Every Place",
+    value: "Checked In Person",
     iconKey: "houseCheck",
   },
   {

@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import AdminRoutes from "../admin/routes/AdminRoutes.jsx";
 import ClientProtectedRoute from "../components/auth/ClientProtectedRoute.jsx";
+import ScrollToTop from "../components/util/ScrollToTop.jsx";
 import PageLayout from "../components/layout/PageLayout/PageLayout.jsx";
 import PageLoader from "../components/ui/PageLoader/PageLoader.jsx";
 import { adminConfig } from "../config/adminConfig.js";
@@ -12,6 +13,8 @@ const ClientLogin = lazy(() => import("../pages/Auth/ClientLogin.jsx"));
 const ClientRegister = lazy(() => import("../pages/Auth/ClientRegister.jsx"));
 const VerifyEmail = lazy(() => import("../pages/Auth/VerifyEmail.jsx"));
 const ClientDashboard = lazy(() => import("../pages/Dashboard/ClientDashboard.jsx"));
+const BecomeAgent = lazy(() => import("../pages/Auth/BecomeAgent.jsx"));
+const AgentSignup = lazy(() => import("../pages/Auth/AgentSignup.jsx"));
 const About = lazy(() => import("../pages/About/About.jsx"));
 const Services = lazy(() => import("../pages/Services/Services.jsx"));
 const Properties = lazy(() => import("../pages/Properties/Properties.jsx"));
@@ -28,6 +31,7 @@ const NotFound = lazy(() => import("../pages/NotFound/NotFound.jsx"));
 function AppRoutes() {
   return (
     <Suspense fallback={<PageLoader />}>
+      <ScrollToTop />
       <Routes>
         <Route element={<AdminRoutes />} path={`${adminConfig.basePath}/*`} />
         <Route
@@ -52,6 +56,10 @@ function AppRoutes() {
                   <Route element={<ClientLogin />} path="login" />
                   <Route element={<ClientRegister />} path="register" />
                   <Route element={<VerifyEmail />} path="verify-email" />
+
+                  {/* Become an agent */}
+                  <Route element={<BecomeAgent />} path="become-an-agent" />
+                  <Route element={<AgentSignup />} path="agent-signup" />
                   <Route element={<ClientProtectedRoute />}>
                     <Route element={<ClientDashboard />} path="dashboard" />
                   </Route>

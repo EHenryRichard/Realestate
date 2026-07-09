@@ -170,19 +170,19 @@ function BlogEditor({ value = "", onChange, label, required }) {
       {/* ── Toolbar (pinned) ── */}
       <div className="shrink-0 flex flex-wrap items-center gap-0.5 border-b border-brand-forest/10 bg-brand-cream/40 px-3 py-2">
         {/* Headings */}
-        <ToolBtn icon={TypeH2} title="Heading 2 (##)" onClick={() => cmd((el) => applyLinePrefix(el, "## "))} />
-        <ToolBtn icon={TypeH3} title="Heading 3 (###)" onClick={() => cmd((el) => applyLinePrefix(el, "### "))} />
+        <ToolBtn icon={TypeH2} title="Big heading" onClick={() => cmd((el) => applyLinePrefix(el, "## "))} />
+        <ToolBtn icon={TypeH3} title="Small heading" onClick={() => cmd((el) => applyLinePrefix(el, "### "))} />
         <Divider />
 
         {/* Inline */}
-        <ToolBtn icon={TypeBold}          title="Bold (Ctrl+B)"          onClick={() => cmd((el) => applyInlineWrap(el, "**", "**"))} />
-        <ToolBtn icon={TypeItalic}        title="Italic (Ctrl+I)"        onClick={() => cmd((el) => applyInlineWrap(el, "*", "*"))} />
+        <ToolBtn icon={TypeBold}          title="Bold"                   onClick={() => cmd((el) => applyInlineWrap(el, "**", "**"))} />
+        <ToolBtn icon={TypeItalic}        title="Italic"                 onClick={() => cmd((el) => applyInlineWrap(el, "*", "*"))} />
         <ToolBtn icon={TypeStrikethrough} title="Strikethrough"          onClick={() => cmd((el) => applyInlineWrap(el, "~~", "~~"))} />
         <Divider />
 
         {/* Links & media */}
-        <ToolBtn icon={Link45deg} title="Link (Ctrl+K)"  onClick={() => cmd((el) => applyMedia(el, false))} />
-        <ToolBtn icon={Image}     title="Insert image"   onClick={() => cmd((el) => applyMedia(el, true))} />
+        <ToolBtn icon={Link45deg} title="Add link"       onClick={() => cmd((el) => applyMedia(el, false))} />
+        <ToolBtn icon={Image}     title="Add image"      onClick={() => cmd((el) => applyMedia(el, true))} />
         <Divider />
 
         {/* Lists */}
@@ -191,17 +191,17 @@ function BlogEditor({ value = "", onChange, label, required }) {
         <Divider />
 
         {/* Blocks */}
-        <ToolBtn icon={Quote}    title="Blockquote"   onClick={() => cmd((el) => applyLinePrefix(el, "> "))} />
-        <ToolBtn icon={Code}     title="Inline code"  onClick={() => cmd((el) => applyInlineWrap(el, "`", "`"))} />
-        <ToolBtn icon={CodeSlash} title="Code block"  onClick={() => cmd((el) => applyBlock(el, "```", "```", "code here"))} />
+        <ToolBtn icon={Quote}    title="Quote"        onClick={() => cmd((el) => applyLinePrefix(el, "> "))} />
+        <ToolBtn icon={Code}     title="Code style"   onClick={() => cmd((el) => applyInlineWrap(el, "`", "`"))} />
+        <ToolBtn icon={CodeSlash} title="Code section" onClick={() => cmd((el) => applyBlock(el, "```", "```", "code here"))} />
 
         {/* Spacer */}
         <span className="flex-1" />
 
         {/* View toggle */}
         <div className="flex items-center gap-0.5 rounded border border-brand-forest/15 bg-white p-0.5">
-          <ToolBtn icon={PencilSquare} title="Edit only"   active={view === "edit"}    onClick={() => setView("edit")} />
-          <ToolBtn icon={Eye}          title="Preview only" active={view === "preview"} onClick={() => setView("preview")} />
+          <ToolBtn icon={PencilSquare} title="Write only"  active={view === "edit"}    onClick={() => setView("edit")} />
+          <ToolBtn icon={Eye}          title="See page"    active={view === "preview"} onClick={() => setView("preview")} />
           <button
             className={[
               "px-2 py-1 text-[10px] font-extrabold uppercase tracking-widest rounded transition",
@@ -210,16 +210,16 @@ function BlogEditor({ value = "", onChange, label, required }) {
                 : "text-brand-forest/70 hover:bg-brand-forest/10 hover:text-brand-forest",
             ].join(" ")}
             onMouseDown={(e) => { e.preventDefault(); setView("split"); }}
-            title="Split view"
+            title="Write and see"
             type="button"
           >
-            Split
+            Both
           </button>
         </div>
         <Divider />
         <ToolBtn
           icon={fullscreen ? FullscreenExit : ArrowsFullscreen}
-          title={fullscreen ? "Exit fullscreen" : "Fullscreen"}
+          title={fullscreen ? "Close large view" : "Large view"}
           onClick={() => setFullscreen((f) => !f)}
         />
       </div>
@@ -237,7 +237,7 @@ function BlogEditor({ value = "", onChange, label, required }) {
             name="content"
             onChange={onChange}
             onKeyDown={handleKeyDown}
-            placeholder={"## Start with a heading\n\nWrite your article here. Use the toolbar above or type markdown directly.\n\n**Bold**, *italic*, [links](url), ![images](url), and bullet lists are all supported."}
+            placeholder={"Start with a clear title.\n\nWrite the post here. Keep sentences short and helpful.\n\nAdd important details like location, price range, documents, and who to contact."}
             ref={textareaRef}
             required={required}
             spellCheck
@@ -250,7 +250,7 @@ function BlogEditor({ value = "", onChange, label, required }) {
             {value.trim() ? (
               <MarkdownRenderer content={value} />
             ) : (
-              <p className="text-sm italic text-brand-muted/60">Preview will appear here as you write…</p>
+              <p className="text-sm italic text-brand-muted/60">You will see the post here as you write.</p>
             )}
           </div>
         )}
@@ -263,11 +263,7 @@ function BlogEditor({ value = "", onChange, label, required }) {
           <span>{chars} characters</span>
           <span>~{readMins} min read</span>
         </div>
-        <span className="text-[11px] text-brand-muted">
-          Markdown · <kbd className="rounded bg-brand-forest/8 px-1 py-0.5 font-mono text-[10px]">Ctrl+B</kbd> Bold ·{" "}
-          <kbd className="rounded bg-brand-forest/8 px-1 py-0.5 font-mono text-[10px]">Ctrl+I</kbd> Italic ·{" "}
-          <kbd className="rounded bg-brand-forest/8 px-1 py-0.5 font-mono text-[10px]">Ctrl+K</kbd> Link
-        </span>
+        <span className="text-[11px] text-brand-muted">Write clearly. Keep paragraphs short.</span>
       </div>
     </div>
   );

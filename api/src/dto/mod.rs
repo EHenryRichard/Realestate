@@ -1,3 +1,4 @@
+pub mod agent_dto;
 pub mod auth_dto;
 pub mod blog_post_dto;
 pub mod client_dto;

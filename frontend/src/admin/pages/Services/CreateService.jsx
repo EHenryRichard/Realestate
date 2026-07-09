@@ -5,7 +5,7 @@ import AdminPageHeader from "../../components/ui/AdminPageHeader.jsx";
 function CreateService() {
   return (
     <>
-      <AdminPageHeader title="Create Service" subtitle="Prepare a backend-ready service record." />
+      <AdminPageHeader title="Add Help We Offer" subtitle="Explain one service in simple words visitors will understand." />
       <AdminCard>
         <ServiceForm />
       </AdminCard>

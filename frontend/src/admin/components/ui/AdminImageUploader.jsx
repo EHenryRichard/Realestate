@@ -94,7 +94,7 @@ function AdminImageUploader({ label = "Main image", name = "mainImage", onChange
           </div>
         )}
         <div className="grid gap-2 border-t border-brand-forest/10 bg-white p-2 sm:grid-cols-2">
-          <label className="flex min-h-10 cursor-pointer items-center justify-center gap-2 border border-brand-forest bg-brand-forest px-3 text-center text-xs font-extrabold uppercase text-white transition-colors hover:bg-brand-gold hover:text-white">
+          <label className="flex min-h-10 cursor-pointer items-center justify-center gap-2 border border-brand-forest bg-brand-forest px-3 text-center text-xs font-extrabold uppercase text-white transition-colors hover:bg-brand-emerald hover:!text-white">
             <Upload aria-hidden="true" className="h-4 w-4" />
             <input accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={handleFileChange} type="file" />
             {isUploading ? "Uploading..." : value ? "Replace" : "Upload"}

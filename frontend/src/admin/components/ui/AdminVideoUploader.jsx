@@ -17,7 +17,7 @@ const normalizeVideos = (value) =>
     }))
     .filter((video) => video.url);
 
-function AdminVideoUploader({ label = "Property videos", name = "videos", onChange, value = [] }) {
+function AdminVideoUploader({ label = "Videos", name = "videos", onChange, value = [] }) {
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [processingJobs, setProcessingJobs] = useState([]);
@@ -222,7 +222,7 @@ function AdminVideoUploader({ label = "Property videos", name = "videos", onChan
       )}
 
       <label
-        className={`mt-3 flex min-h-12 min-w-0 w-full max-w-full items-center justify-center gap-2 border border-brand-forest bg-brand-forest px-4 text-center text-sm font-extrabold text-white transition-colors hover:bg-brand-gold hover:text-white ${
+        className={`mt-3 flex min-h-12 min-w-0 w-full max-w-full items-center justify-center gap-2 border border-brand-forest bg-brand-forest px-4 text-center text-sm font-extrabold text-white transition-colors hover:bg-brand-emerald hover:!text-white ${
           isUploading ? "pointer-events-none opacity-45" : "cursor-pointer"
         }`}
       >

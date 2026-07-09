@@ -55,7 +55,7 @@ function AdminMessageDetails() {
 
   return (
     <>
-      <AdminPageHeader title="Message Details" subtitle={message ? message.fullName : "This local fallback message was not found."} />
+      <AdminPageHeader title="Message Details" subtitle={message ? message.fullName : "This message was not found."} />
       <AdminCard>
         {isLoading ? <AdminLoader label="Loading message" /> : null}
         {error ? <AdminErrorState message={error} /> : null}

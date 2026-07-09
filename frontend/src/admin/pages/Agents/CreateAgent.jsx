@@ -28,7 +28,7 @@ function CreateAgent() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!apiConfig.useApi) { showSuccess("Payload ready."); return; }
+    if (!apiConfig.useApi) { showSuccess("Looks good. Saving is not ready yet."); return; }
     setSubmitting(true);
     setError("");
     try {
@@ -45,7 +45,7 @@ function CreateAgent() {
 
   return (
     <>
-      <AdminPageHeader subtitle="Create a login for a new team member." title="Add Team Member" />
+      <AdminPageHeader subtitle="Give a staff member access to the website manager." title="Add Staff" />
       <AdminCard className="max-w-2xl">
         <form className="grid gap-5" onSubmit={handleSubmit}>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -68,9 +68,9 @@ function CreateAgent() {
               </select>
             </div>
             <AdminInput label="Phone number" name="phone" onChange={handle} value={form.phone} />
-            <AdminInput label="Job title (e.g. Property Agent)" name="title" onChange={handle} value={form.title} />
+            <AdminInput label="Job title" name="title" onChange={handle} placeholder="e.g. Real estate worker" value={form.title} />
           </div>
-          <AdminTextarea label="Bio (shown on public profile)" name="bio" onChange={handle} rows={4} value={form.bio} />
+          <AdminTextarea label="Short story for public profile" name="bio" onChange={handle} rows={4} value={form.bio} />
 
           {error && (
             <div className="border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-700">{error}</div>

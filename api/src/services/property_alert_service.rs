@@ -22,6 +22,14 @@ use crate::{
     },
 };
 
+/// Why an alert is being sent — controls the wording of the email/push. New
+/// listings and price drops read differently to the recipient.
+#[derive(Debug, Clone, Copy)]
+pub enum AlertReason {
+    NewListing,
+    PriceDrop,
+}
+
 /// A client's saved-search preferences, parsed from the `search_preferences`
 /// JSONB. Everything is optional; `#[serde(default)]` means missing keys become
 /// empty/None rather than failing to parse.
@@ -95,6 +103,7 @@ pub async fn notify_matching_clients(
     mailer: Mailer,
     config: AppConfig,
     property: Property,
+    reason: AlertReason,
 ) {
     // Only advertise visible listings. We may still deliver via push even if
     // email (SMTP) is off, so we don't require the mailer here.
@@ -132,9 +141,25 @@ pub async fn notify_matching_clients(
     );
     let price = format!("{} {:.0}", property.currency, property.price);
 
+    // Wording depends on why we're alerting (new listing vs. price drop).
+    let (subject, heading, intro, push_title) = match reason {
+        AlertReason::NewListing => (
+            format!("New listing: {}", property.title),
+            "A new property for you",
+            "a new listing matching your saved search just went live:",
+            format!("New property: {}", property.title),
+        ),
+        AlertReason::PriceDrop => (
+            format!("Price drop: {}", property.title),
+            "Price drop",
+            "the price just dropped on a property matching your saved search:",
+            format!("Price drop: {}", property.title),
+        ),
+    };
+
     // The push payload is the same for everyone; build it once.
     let push_alert = PushLeadAlert {
-        title: format!("New property: {}", property.title),
+        title: push_title,
         body: format!("{} — {}", property.location, price),
         url: property_url.clone(),
         tag: "sureboy-property-alert".to_string(),
@@ -158,6 +183,9 @@ pub async fn notify_matching_clients(
                 .send_property_alert(
                     &recipient.email,
                     &recipient.full_name,
+                    &subject,
+                    heading,
+                    intro,
                     &property.title,
                     &property.location,
                     &price,

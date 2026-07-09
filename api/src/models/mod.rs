@@ -1,4 +1,5 @@
 pub mod admin_user;
+pub mod agent_request;
 pub mod blog_post;
 pub mod client_user;
 pub mod contact_message;

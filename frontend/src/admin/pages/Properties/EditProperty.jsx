@@ -54,7 +54,7 @@ function EditProperty() {
 
   return (
     <>
-      <AdminPageHeader title="Edit Property" subtitle={property ? property.title : "This local fallback record was not found."} />
+      <AdminPageHeader title="Edit House or Land" subtitle={property ? property.title : "This item was not found."} />
       <AdminCard>
         {isLoading ? <AdminLoader label="Loading property" /> : null}
         {error ? <AdminErrorState message={error} /> : null}

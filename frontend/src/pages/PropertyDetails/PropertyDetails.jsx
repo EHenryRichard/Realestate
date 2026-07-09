@@ -106,7 +106,7 @@ function PropertyDetails() {
     return (
       <section className="bg-white py-16">
         <Container>
-          <ErrorState message={error} title="Could not load property" />
+          <ErrorState message={error} title="Could not load this house or land" />
         </Container>
       </section>
     );
@@ -117,9 +117,9 @@ function PropertyDetails() {
       <section className="bg-white py-16">
         <Container>
           <EmptyState
-            cta={{ label: "Browse Properties", href: "/properties" }}
-            message="The property you are looking for may have moved or is no longer available."
-            title="Property not found"
+            cta={{ label: "See Houses & Land", href: "/properties" }}
+            message="The house or land you are looking for may have moved or is no longer available."
+            title="House or land not found"
           />
         </Container>
       </section>
@@ -127,7 +127,7 @@ function PropertyDetails() {
   }
 
   const enquiryWhatsApp = getSiteWhatsAppLink(
-    `Hello Sureboy Realty, I am interested in "${property.title}" and would like to schedule an inspection.`
+    `Hello Sureboy Realty, I am interested in "${property.title}" and would like to see it.`
   );
 
   const contactLink = `/contact?property=${encodeURIComponent(property.slug)}&ref=${encodeURIComponent(property.title)}`;
@@ -140,18 +140,18 @@ function PropertyDetails() {
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-white/50">
             <Link className="transition hover:text-brand-gold" to="/">Home</Link>
             <span aria-hidden="true">/</span>
-            <Link className="transition hover:text-brand-gold" to="/properties">Properties</Link>
+            <Link className="transition hover:text-brand-gold" to="/properties">Houses & Land</Link>
             <span aria-hidden="true">/</span>
             <span className="text-white/80 line-clamp-1">{property.title}</span>
           </nav>
 
           <Link
-            aria-label="Back to properties"
+            aria-label="Back to houses and land"
             className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-gold-soft transition hover:text-brand-gold"
             to="/properties"
           >
             <ArrowLeft aria-hidden="true" className="h-4 w-4" />
-            Back to Properties
+            Back to Houses & Land
           </Link>
         </Container>
       </section>
@@ -170,16 +170,16 @@ function PropertyDetails() {
                 {hasGalleryControls ? (
                   <>
                     <button
-                      aria-label="Previous property image"
-                      className="absolute left-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand-forest/85 text-white transition hover:bg-brand-gold"
+                      aria-label="Previous image"
+                      className="absolute left-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand-forest/85 text-white transition hover:bg-brand-emerald hover:!text-white"
                       onClick={showPreviousImage}
                       type="button"
                     >
                       <ChevronLeft aria-hidden="true" className="h-5 w-5" />
                     </button>
                     <button
-                      aria-label="Next property image"
-                      className="absolute right-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand-forest/85 text-white transition hover:bg-brand-gold"
+                      aria-label="Next image"
+                      className="absolute right-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand-forest/85 text-white transition hover:bg-brand-emerald hover:!text-white"
                       onClick={showNextImage}
                       type="button"
                     >
@@ -198,7 +198,7 @@ function PropertyDetails() {
                     {galleryImages.map((galleryImage, index) => (
                       <button
                         aria-current={index === activeImageIndex ? "true" : undefined}
-                        aria-label={`Show property image ${index + 1}`}
+                        aria-label={`Show image ${index + 1}`}
                         className={`relative h-20 w-28 shrink-0 snap-start overflow-hidden border bg-brand-cream transition sm:h-24 sm:w-32 md:w-36 ${
                           index === activeImageIndex ? "border-brand-gold" : "border-transparent hover:border-brand-forest/30"
                         }`}
@@ -219,7 +219,7 @@ function PropertyDetails() {
                     {galleryImages.map((galleryImage, index) => (
                       <button
                         aria-current={index === activeImageIndex ? "true" : undefined}
-                        aria-label={`Show property image ${index + 1}`}
+                        aria-label={`Show image ${index + 1}`}
                         className={`h-2.5 rounded-full transition ${
                           index === activeImageIndex ? "w-6 bg-brand-gold" : "w-2.5 bg-brand-forest/25 hover:bg-brand-forest/50"
                         }`}
@@ -265,7 +265,7 @@ function PropertyDetails() {
                 </div>
               </div>
               <Button className="mt-8" icon={ArrowRight} to={contactLink} variant="primary">
-                Enquire About This Property
+                Ask About This Place
               </Button>
 
               {/* Signed-in client actions: save, recently-viewed tracking, and a
@@ -277,7 +277,7 @@ function PropertyDetails() {
           {/* Features + Inspection CTA */}
           <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_0.8fr]">
             <div>
-              <h2 className="text-2xl font-black tracking-normal text-brand-forest">Property Features</h2>
+              <h2 className="text-2xl font-black tracking-normal text-brand-forest">What You Get</h2>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {property.features.map((feature) => (
                   <div className="flex items-center gap-3 border border-brand-forest/10 bg-brand-cream/45 p-4" key={feature}>
@@ -289,13 +289,13 @@ function PropertyDetails() {
             </div>
 
             <div className="bg-brand-forest p-6 text-white">
-              <h2 className="text-2xl font-black tracking-normal">Need a private inspection?</h2>
+              <h2 className="text-2xl font-black tracking-normal">Want to see it in person?</h2>
               <p className="mt-3 text-sm leading-7 text-white/74">
-                Send an enquiry and Sureboy Realty will confirm availability, inspection timing, and the next step.
+                Send a message and Sureboy Realty will confirm if it is available, when you can see it, and the next step.
               </p>
               <div className="mt-6 grid gap-3">
                 <Button to={contactLink} variant="primary">
-                  Schedule Inspection
+                  Book a Visit
                 </Button>
                 <a
                   className="flex items-center justify-center gap-2 border border-white/20 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.06em] text-white transition hover:border-[#25d366] hover:text-[#25d366]"
@@ -313,23 +313,23 @@ function PropertyDetails() {
           {propertyVideos.length ? (
             <div className="mt-12">
               <h2 className="text-2xl font-black tracking-normal text-brand-forest">
-                {propertyVideos.length > 1 ? "Property Videos" : "Property Video"}
+                {propertyVideos.length > 1 ? "Videos" : "Video"}
               </h2>
               <div className="relative mt-5 overflow-hidden">
                 <VideoPlayer key={activeVideo.url} poster={activeVideo.poster} src={activeVideo.url} />
                 {hasMultipleVideos ? (
                   <>
                     <button
-                      aria-label="Previous property video"
-                      className="absolute left-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand-forest/85 text-white transition hover:bg-brand-gold"
+                      aria-label="Previous video"
+                      className="absolute left-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand-forest/85 text-white transition hover:bg-brand-emerald hover:!text-white"
                       onClick={showPreviousVideo}
                       type="button"
                     >
                       <ChevronLeft aria-hidden="true" className="h-5 w-5" />
                     </button>
                     <button
-                      aria-label="Next property video"
-                      className="absolute right-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand-forest/85 text-white transition hover:bg-brand-gold"
+                      aria-label="Next video"
+                      className="absolute right-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand-forest/85 text-white transition hover:bg-brand-emerald hover:!text-white"
                       onClick={showNextVideo}
                       type="button"
                     >
@@ -345,7 +345,7 @@ function PropertyDetails() {
                 <div className="mt-2 flex flex-wrap justify-center gap-2">
                   {propertyVideos.map((video, index) => (
                     <button
-                      aria-label={`Show property video ${index + 1}`}
+                      aria-label={`Show video ${index + 1}`}
                       className={`h-2.5 w-2.5 rounded-full transition ${
                         index === safeVideoIndex ? "bg-brand-gold" : "bg-brand-forest/25 hover:bg-brand-forest/50"
                       }`}
@@ -363,7 +363,7 @@ function PropertyDetails() {
           {similarProperties.length > 0 ? (
             <div className="mt-16">
               <h2 className="text-2xl font-black tracking-normal text-brand-forest">
-                Similar {property.type} Properties
+                Similar Houses & Land
               </h2>
               <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                 {similarProperties.map((item) => (

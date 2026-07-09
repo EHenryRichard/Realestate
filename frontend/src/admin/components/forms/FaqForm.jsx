@@ -35,8 +35,8 @@ function FaqForm({ initialFaq, mode = "create" }) {
     };
 
     if (!apiConfig.useApi) {
-      showToast(`${mode === "edit" ? "Update" : "Create"} FAQ payload ready for the API.`);
-      setMessage(`${mode === "edit" ? "Update" : "Create"} FAQ payload ready for the API.`);
+      showToast("Looks good. Saving is not ready yet.");
+      setMessage("Looks good. Saving is not ready yet.");
       return;
     }
 
@@ -51,7 +51,7 @@ function FaqForm({ initialFaq, mode = "create" }) {
         await adminFaqApi.create(payload);
       }
 
-      const label = mode === "edit" ? "FAQ updated successfully." : "FAQ created successfully.";
+      const label = mode === "edit" ? "Question updated successfully." : "Question added successfully.";
       setMessage(label);
       showSuccess(label);
     } catch (caughtError) {
@@ -111,10 +111,10 @@ function FaqForm({ initialFaq, mode = "create" }) {
 
       <div className="flex flex-wrap gap-3">
         <AdminButton disabled={isSubmitting} type="submit">
-          {isSubmitting ? "Saving..." : mode === "edit" ? "Update FAQ" : "Create FAQ"}
+          {isSubmitting ? "Saving..." : mode === "edit" ? "Update Question" : "Add Question"}
         </AdminButton>
         <AdminButton to="/admin/faqs" variant="outline">
-          Back to FAQs
+          Back to Questions
         </AdminButton>
       </div>
     </form>

@@ -117,13 +117,13 @@ function Blog() {
       <section className="border-b border-brand-forest/10 bg-brand-forest py-16 text-white">
         <Container>
           <p className="text-xs font-extrabold uppercase tracking-widest text-brand-gold">
-            Property Talk
+            News & Tips
           </p>
           <h1 className="mt-3 max-w-2xl text-4xl font-black leading-tight tracking-normal sm:text-5xl">
-            Real Estate Insights from Warri.
+            Simple real estate tips from Warri.
           </h1>
           <p className="mt-4 max-w-xl text-base leading-7 text-white/72">
-            Land verification guides, investment tips, and straight talk about the Delta State property market.
+            Clear advice on land documents, buying safely, and finding the right place in Delta State.
           </p>
         </Container>
       </section>

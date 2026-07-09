@@ -45,8 +45,8 @@ function ServiceForm({ initialService, mode = "create" }) {
     };
 
     if (!apiConfig.useApi) {
-      setMessage(`${mode === "edit" ? "Update" : "Create"} service payload is ready for the API.`);
-      showToast(`${mode === "edit" ? "Update" : "Create"} service payload is ready for the API.`);
+      setMessage("Looks good. Saving is not ready yet.");
+      showToast("Looks good. Saving is not ready yet.");
       return;
     }
 
@@ -74,28 +74,28 @@ function ServiceForm({ initialService, mode = "create" }) {
   return (
     <form className="grid gap-5" onSubmit={handleSubmit}>
       <div className="grid gap-4 md:grid-cols-2">
-        <AdminInput label="Service title" name="title" onChange={handleChange} required value={formData.title} />
-        <AdminInput label="Slug" name="slug" onChange={handleChange} value={formData.slug} />
-        <AdminInput label="Icon key" name="iconKey" onChange={handleChange} value={formData.iconKey} />
-        <AdminInput label="CTA text" name="ctaText" onChange={handleChange} value={formData.ctaText} />
-        <AdminInput label="Link" name="link" onChange={handleChange} value={formData.link} />
+        <AdminInput label="Service name" name="title" onChange={handleChange} required value={formData.title} />
+        <AdminInput label="Page link name" name="slug" onChange={handleChange} value={formData.slug} />
+        <AdminInput label="Icon name" name="iconKey" onChange={handleChange} value={formData.iconKey} />
+        <AdminInput label="Button text" name="ctaText" onChange={handleChange} value={formData.ctaText} />
+        <AdminInput label="Button link" name="link" onChange={handleChange} value={formData.link} />
       </div>
-      <AdminImageUploader label="Service image path" name="image" onChange={handleChange} value={formData.image} />
+      <AdminImageUploader label="Service image" name="image" onChange={handleChange} value={formData.image} />
       <AdminTextarea label="Short description" name="shortDescription" onChange={handleChange} required value={formData.shortDescription} />
       <AdminTextarea label="Full description" name="fullDescription" onChange={handleChange} required value={formData.fullDescription} />
       <AdminInput label="Features" name="features" onChange={handleChange} value={formData.features} />
       <label className="flex min-h-12 items-center gap-3 border border-brand-forest/10 bg-white px-4 text-sm font-extrabold text-brand-forest">
         <input checked={formData.isActive} className="h-4 w-4 accent-brand-forest" name="isActive" onChange={handleChange} type="checkbox" />
-        Active service
+        Show this service on the website
       </label>
       {message ? <div className="border border-brand-gold/35 bg-brand-gold/12 p-4 text-sm font-bold text-brand-forest">{message}</div> : null}
       {error ? <div className="border border-red-700/25 bg-red-50 p-4 text-sm font-bold text-red-800">{error}</div> : null}
       <div className="flex flex-wrap gap-3">
         <AdminButton disabled={isSubmitting} type="submit">
-          {isSubmitting ? "Saving..." : mode === "edit" ? "Update Service" : "Create Service"}
+          {isSubmitting ? "Saving..." : mode === "edit" ? "Update Service" : "Add Service"}
         </AdminButton>
         <AdminButton to="/admin/services" variant="outline">
-          Back to Services
+          Back to Help We Offer
         </AdminButton>
       </div>
     </form>

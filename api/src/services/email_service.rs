@@ -132,6 +132,39 @@ impl Mailer {
 
     // ─── Public senders ────────────────────────────────────────────────────────
 
+    /// Sent after an admin approves an agent request: a one-time link to finish
+    /// creating the agent account.
+    pub async fn send_agent_invite(
+        &self,
+        to_email: &str,
+        signup_url: &str,
+    ) -> Result<(), String> {
+        let text = format!(
+            "Hello,\n\nGood news — your request to become a Sureboy Realty agent has been approved!\n\
+             Use the link below to finish setting up your agent account (it expires soon):\n\n\
+             {signup_url}\n\nIf you didn't request this, you can ignore this email.\n"
+        );
+        let inner = format!(
+            "{heading}{intro}{button}{fallback}{ignore}",
+            heading = email_heading("You're approved as an agent"),
+            intro = email_paragraph(
+                "Good news — your request to become a Sureboy Realty agent has been approved! \
+                 Click below to finish setting up your account (name + password). The link expires soon."
+            ),
+            button = email_button("Complete agent signup", signup_url),
+            fallback = email_fallback_link(signup_url),
+            ignore = email_muted("If you didn't request this, you can ignore this email."),
+        );
+        self.send(
+            to_email,
+            "New agent",
+            "Your Sureboy Realty agent request was approved",
+            text,
+            branded_email(&self.base_url, &inner),
+        )
+        .await
+    }
+
     pub async fn send_password_reset(
         &self,
         to_email: &str,
@@ -200,13 +233,18 @@ impl Mailer {
         &self,
         to_email: &str,
         to_name: &str,
+        subject: &str,
+        heading: &str,
+        intro: &str,
         title: &str,
         location: &str,
         price: &str,
         property_url: &str,
     ) -> Result<(), String> {
+        // `intro` is a mid-sentence fragment (e.g. "a new listing …just went live:")
+        // so it reads naturally after "Hello {name}, ".
         let text = format!(
-            "Hello {to_name},\n\nA new property matching your saved search is now available:\n\n\
+            "Hello {to_name}, {intro}\n\n\
              {title}\n{location} — {price}\n\nView it here:\n{property_url}\n\n\
              You're receiving this because you enabled new-listing alerts. Turn them off any time\n\
              from your dashboard.\n"
@@ -223,11 +261,9 @@ impl Mailer {
              </table>"
         );
         let inner = format!(
-            "{heading}{intro}{card}{button}{note}",
-            heading = email_heading("A new property for you"),
-            intro = email_paragraph(&format!(
-                "Hello {to_name}, a new listing matching your saved search just went live:"
-            )),
+            "{heading_html}{intro_html}{card}{button}{note}",
+            heading_html = email_heading(heading),
+            intro_html = email_paragraph(&format!("Hello {to_name}, {intro}")),
             card = card,
             button = email_button("View property", property_url),
             note = email_muted(
@@ -238,7 +274,7 @@ impl Mailer {
         self.send(
             to_email,
             to_name,
-            &format!("New listing: {title}"),
+            subject,
             text,
             branded_email(&self.base_url, &inner),
         )

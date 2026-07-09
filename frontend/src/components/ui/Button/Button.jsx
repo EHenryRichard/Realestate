@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 
 const variantClasses = {
   primary:
-    "brand-sheen bg-brand-gold text-brand-charcoal shadow-[0_16px_34px_rgba(201,154,46,0.28)] hover:bg-brand-emerald hover:text-white",
+    "brand-sheen border border-brand-gold bg-brand-emerald !text-white shadow-[0_16px_34px_rgba(6,63,44,0.24)] hover:bg-brand-forest hover:!text-white",
   secondary: "bg-white text-brand-forest hover:bg-brand-cream",
   outline:
-    "border border-brand-gold/70 text-brand-gold hover:border-brand-emerald hover:bg-brand-emerald hover:text-white",
+    "border border-brand-gold/70 text-brand-gold hover:border-brand-emerald hover:bg-brand-emerald hover:!text-white",
   dark: "bg-brand-forest !text-white hover:bg-brand-emerald hover:!text-white",
   ghost: "text-brand-forest hover:bg-brand-cream",
 };
@@ -38,12 +38,15 @@ function Button({
   ]
     .filter(Boolean)
     .join(" ");
+  const forceLightText = variant === "primary" || variant === "dark";
+  const contentClass = forceLightText ? "relative z-10 !text-white text-white" : "relative z-10";
+  const iconClass = `h-4 w-4 ${forceLightText ? "!text-white text-white" : ""}`.trim();
 
   const content = (
     <>
-      {Icon && iconPosition === "left" ? <Icon aria-hidden="true" className="h-4 w-4" /> : null}
-      <span>{children}</span>
-      {Icon && iconPosition === "right" ? <Icon aria-hidden="true" className="h-4 w-4" /> : null}
+      {Icon && iconPosition === "left" ? <Icon aria-hidden="true" className={iconClass} /> : null}
+      <span className={contentClass}>{children}</span>
+      {Icon && iconPosition === "right" ? <Icon aria-hidden="true" className={iconClass} /> : null}
     </>
   );
 

@@ -52,7 +52,7 @@ function AdminLogin() {
         <p className="text-xs font-extrabold uppercase tracking-[0.08em] text-brand-gold">Admin Access</p>
         <h1 className="mt-2 font-display text-4xl font-bold text-brand-forest">{siteConfig.brandName}</h1>
         <p className="mt-2 text-sm leading-6 text-brand-muted">
-          Sign in to manage properties, messages, services, testimonials, newsletter subscribers, and site settings.
+          Sign in to update houses, land, messages, customer reviews, the email list, and site information.
         </p>
 
         <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
@@ -60,7 +60,7 @@ function AdminLogin() {
           <AdminInput label="Password" name="password" onChange={handleChange} required type="password" value={formData.password} />
           {error ? <p className="text-sm font-bold text-red-700">{error}</p> : null}
           <AdminButton disabled={isSubmitting} type="submit">
-            {isSubmitting ? "Signing in..." : "Enter Dashboard"}
+            {isSubmitting ? "Signing in..." : "Sign In"}
           </AdminButton>
         </form>
         <p className="mt-4 text-sm font-bold text-brand-muted">

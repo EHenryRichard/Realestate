@@ -1,3 +1,4 @@
+
 import PageHero from "../../components/sections/PageHero/PageHero.jsx";
 import Container from "../../components/ui/Container/Container.jsx";
 import EmptyState from "../../components/ui/EmptyState/EmptyState.jsx";
@@ -25,7 +26,7 @@ function Projects() {
       <section className="bg-white py-16 sm:py-24">
         <Container>
           <EmptyState
-            cta={{ label: "Speak With an Agent", href: "/contact" }}
+            cta={{ label: "Talk to Us", href: "/contact" }}
             message={content.emptyBody}
             title={content.emptyTitle}
           />

@@ -68,9 +68,9 @@ function NotificationPreferences() {
 
   return (
     <section className="mt-8 rounded-xl border border-brand-forest/10 bg-white p-5 shadow-sm">
-      <h2 className="font-bold text-brand-forest">New-listing alerts</h2>
+      <h2 className="font-bold text-brand-forest">New house and land alerts</h2>
       <p className="mt-1 text-sm text-brand-muted">
-        Get an email when a new property matches what you're looking for.
+        Get an email when we add something that matches what you want.
       </p>
 
       <form className="mt-4 grid gap-4" onSubmit={handleSubmit}>
@@ -81,11 +81,11 @@ function NotificationPreferences() {
             onChange={(event) => setForm((c) => ({ ...c, emailAlerts: event.target.checked }))}
             type="checkbox"
           />
-          Email me about new matching properties
+          Email me when there is a match
         </label>
 
         <label className="grid gap-1 text-sm font-semibold text-brand-forest">
-          Locations (comma-separated)
+          Locations
           <input
             className="rounded-md border border-brand-forest/15 px-3 py-2.5 text-brand-charcoal focus:border-brand-forest focus:outline-none"
             onChange={(event) => setForm((c) => ({ ...c, locations: event.target.value }))}
@@ -95,7 +95,7 @@ function NotificationPreferences() {
         </label>
 
         <div className="grid gap-1 text-sm font-semibold text-brand-forest">
-          Property types
+          Types of places
           <div className="flex flex-wrap gap-2">
             {PROPERTY_TYPES.map((type) => (
               <button
@@ -116,7 +116,7 @@ function NotificationPreferences() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="grid gap-1 text-sm font-semibold text-brand-forest">
-            Max price (₦)
+            Highest price
             <input
               className="rounded-md border border-brand-forest/15 px-3 py-2.5 text-brand-charcoal focus:border-brand-forest focus:outline-none"
               min="0"
@@ -127,7 +127,7 @@ function NotificationPreferences() {
             />
           </label>
           <label className="grid gap-1 text-sm font-semibold text-brand-forest">
-            Min bedrooms
+            Lowest number of bedrooms
             <input
               className="rounded-md border border-brand-forest/15 px-3 py-2.5 text-brand-charcoal focus:border-brand-forest focus:outline-none"
               min="0"
@@ -144,7 +144,7 @@ function NotificationPreferences() {
           disabled={saving}
           type="submit"
         >
-          {saving ? "Saving..." : "Save preferences"}
+          {saving ? "Saving..." : "Save Alerts"}
         </button>
       </form>
     </section>

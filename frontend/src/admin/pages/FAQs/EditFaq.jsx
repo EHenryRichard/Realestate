@@ -55,14 +55,14 @@ function EditFaq() {
   const subtitle = faq
     ? faq.answer
       ? faq.question
-      : `${faq.question} — no answer yet`
-    : "FAQ not found.";
+      : `${faq.question} - no answer yet`
+    : "Question not found.";
 
   return (
     <>
-      <AdminPageHeader subtitle={subtitle} title="Edit FAQ" />
+      <AdminPageHeader subtitle={subtitle} title="Edit Question" />
       <AdminCard>
-        {isLoading ? <AdminLoader label="Loading FAQ" /> : null}
+        {isLoading ? <AdminLoader label="Loading question" /> : null}
         {error ? <AdminErrorState message={error} /> : null}
         {!isLoading && !error && faq ? <FaqForm initialFaq={faq} mode="edit" /> : null}
       </AdminCard>

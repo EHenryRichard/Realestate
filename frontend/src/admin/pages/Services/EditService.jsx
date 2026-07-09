@@ -54,7 +54,7 @@ function EditService() {
 
   return (
     <>
-      <AdminPageHeader title="Edit Service" subtitle={service ? service.title : "This local fallback record was not found."} />
+      <AdminPageHeader title="Edit Help We Offer" subtitle={service ? service.title : "This service was not found."} />
       <AdminCard>
         {isLoading ? <AdminLoader label="Loading service" /> : null}
         {error ? <AdminErrorState message={error} /> : null}

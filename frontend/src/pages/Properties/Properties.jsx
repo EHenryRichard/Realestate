@@ -117,8 +117,8 @@ function Properties() {
       <section className="bg-white py-16 sm:py-24">
         <Container>
           <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-2xl font-black tracking-[0] text-brand-forest">Available Listings</h2>
-            <p className="text-sm font-semibold text-brand-muted">{properties.length} property result{properties.length === 1 ? "" : "s"}</p>
+            <h2 className="text-2xl font-black tracking-[0] text-brand-forest">Available Houses & Land</h2>
+            <p className="text-sm font-semibold text-brand-muted">{properties.length} result{properties.length === 1 ? "" : "s"}</p>
           </div>
 
           {loading ? (
@@ -128,10 +128,10 @@ function Properties() {
               ))}
             </div>
           ) : null}
-          {error ? <ErrorState message={error} title="Could not load properties" /> : null}
+          {error ? <ErrorState message={error} title="Could not load houses and land" /> : null}
           {empty ? (
             <EmptyState
-              cta={{ label: "Contact an Agent", href: "/contact" }}
+              cta={{ label: "Talk to Us", href: "/contact" }}
               message={propertiesContent.empty.body}
               title={propertiesContent.empty.title}
             />

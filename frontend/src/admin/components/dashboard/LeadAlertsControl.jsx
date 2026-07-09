@@ -21,19 +21,19 @@ const urlBase64ToUint8Array = (base64String) => {
 
 const getUnsupportedReason = () => {
   if (!apiConfig.useApi) {
-    return "Lead alerts require API mode.";
+    return "New-message alerts are not ready yet.";
   }
 
   if (!window.isSecureContext) {
-    return "Lead alerts require HTTPS in production, or localhost during development.";
+    return "New-message alerts need a secure website connection.";
   }
 
   if (!("Notification" in window) || !("serviceWorker" in navigator) || !("PushManager" in window)) {
-    return "This browser does not support Web Push notifications.";
+    return "This browser cannot show new-message alerts.";
   }
 
   if (!pushConfig.vapidPublicKey.trim()) {
-    return "VAPID public key is not configured for this build.";
+    return "New-message alerts are not ready on this build.";
   }
 
   return "";
@@ -80,7 +80,7 @@ function LeadAlertsControl() {
       setPermission(nextPermission);
 
       if (nextPermission !== "granted") {
-        throw new Error("Notification permission was not granted.");
+        throw new Error("Your browser did not allow alerts.");
       }
 
       const existingSubscription = await registration.pushManager.getSubscription();
@@ -93,14 +93,14 @@ function LeadAlertsControl() {
       const subscriptionPayload = subscription.toJSON();
 
       if (!subscriptionPayload.endpoint || !subscriptionPayload.keys?.p256dh || !subscriptionPayload.keys?.auth) {
-        throw new Error("Browser returned an incomplete push subscription.");
+        throw new Error("Your browser could not finish setting up alerts.");
       }
 
       await adminNotificationApi.subscribe(subscriptionPayload);
       setIsEnabled(true);
-      setMessage("Lead alerts are enabled on this browser.");
+      setMessage("New-message alerts are on for this browser.");
     } catch (caughtError) {
-      setError(caughtError.message || "Could not enable lead alerts.");
+      setError(caughtError.message || "Could not turn on new-message alerts.");
     } finally {
       setIsBusy(false);
     }
@@ -121,15 +121,15 @@ function LeadAlertsControl() {
       }
 
       setIsEnabled(false);
-      setMessage("Lead alerts are disabled on this browser.");
+      setMessage("New-message alerts are off for this browser.");
     } catch (caughtError) {
-      setError(caughtError.message || "Could not disable lead alerts.");
+      setError(caughtError.message || "Could not turn off new-message alerts.");
     } finally {
       setIsBusy(false);
     }
   };
 
-  const statusText = unsupportedReason || (permission === "denied" ? "Notification permission is blocked in this browser." : isEnabled ? "Enabled" : "Not enabled");
+  const statusText = unsupportedReason || (permission === "denied" ? "Alerts are blocked in this browser." : isEnabled ? "Alerts are on" : "Alerts are off");
   const canEnable = !unsupportedReason && permission !== "denied" && !isEnabled;
 
   return (
@@ -141,12 +141,12 @@ function LeadAlertsControl() {
               <Bell aria-hidden="true" className="h-5 w-5" />
             </span>
             <div>
-              <h2 className="font-display text-2xl font-bold text-brand-forest">Lead Alerts</h2>
+              <h2 className="font-display text-2xl font-bold text-brand-forest">New Message Alerts</h2>
               <p className="mt-1 text-sm font-semibold text-brand-muted">{statusText}</p>
             </div>
           </div>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-brand-muted">
-            Enable browser push alerts for new contact enquiries and newsletter subscribers on this admin device.
+            Turn this on to get a browser alert when someone sends a message or joins the email list.
           </p>
           {message ? <p className="mt-3 text-sm font-extrabold text-emerald-700">{message}</p> : null}
           {error ? <p className="mt-3 text-sm font-extrabold text-red-700">{error}</p> : null}
@@ -154,11 +154,11 @@ function LeadAlertsControl() {
         <div className="flex shrink-0 flex-wrap gap-2">
           {isEnabled ? (
             <AdminButton disabled={isBusy} onClick={disableAlerts} variant="outline">
-              Disable Alerts
+              Turn Off Alerts
             </AdminButton>
           ) : (
             <AdminButton disabled={!canEnable || isBusy} onClick={enableAlerts}>
-              Enable Alerts
+              Turn On Alerts
             </AdminButton>
           )}
         </div>

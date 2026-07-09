@@ -6,7 +6,7 @@ function TestimonialsTable({ testimonials }) {
   const columns = [
     {
       key: "clientName",
-      label: "Client",
+      label: "Customer",
       render: (testimonial) => (
         <div>
           <p className="font-extrabold text-brand-forest">{testimonial.clientName}</p>

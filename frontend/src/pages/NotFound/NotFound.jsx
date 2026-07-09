@@ -13,18 +13,19 @@ function NotFound() {
           <p className="text-sm font-extrabold uppercase tracking-[0.16em] text-brand-gold">404</p>
           <h1 className="mt-4 text-balance text-4xl font-black tracking-[0] text-brand-forest sm:text-5xl">Page not found</h1>
           <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-brand-muted">
-            The page you requested does not exist. Return home or browse current property opportunities.
+            We could not find that page. Go home or see the houses and land available now.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button to="/" variant="primary">
               Go Home
             </Button>
             <Button to="/properties" variant="dark">
-              Browse Properties
+              See Houses & Land
             </Button>
           </div>
         </div>
       </Container>
+      
     </section>
   );
 }

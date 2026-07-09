@@ -65,7 +65,7 @@ function AgentCard({ agent }) {
       <div className="mt-6 flex flex-col gap-2 w-full">
         {agent.phone && (
           <a
-            className="flex items-center justify-center gap-2 border border-brand-forest/15 px-4 py-2.5 text-sm font-extrabold text-brand-forest transition hover:bg-brand-forest hover:text-white"
+            className="flex items-center justify-center gap-2 border border-brand-forest/15 px-4 py-2.5 text-sm font-extrabold text-brand-forest transition hover:bg-brand-forest hover:!text-white"
             href={`tel:${agent.phone}`}
           >
             <TelephoneFill aria-hidden="true" className="h-4 w-4" />
@@ -73,7 +73,7 @@ function AgentCard({ agent }) {
           </a>
         )}
         <a
-          className="flex items-center justify-center gap-2 bg-brand-forest px-4 py-2.5 text-sm font-extrabold text-white transition hover:bg-brand-gold hover:text-brand-charcoal"
+          className="flex items-center justify-center gap-2 bg-brand-forest px-4 py-2.5 text-sm font-extrabold text-white transition hover:bg-brand-emerald hover:!text-white"
           href={getSiteWhatsAppLink(`Hello, I'd like to speak with ${agent.fullName} at Sureboy Realty.`)}
           rel="noreferrer"
           target="_blank"

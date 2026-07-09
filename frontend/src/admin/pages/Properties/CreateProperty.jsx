@@ -5,7 +5,7 @@ import AdminPageHeader from "../../components/ui/AdminPageHeader.jsx";
 function CreateProperty() {
   return (
     <>
-      <AdminPageHeader title="Create Property" subtitle="Add a listing payload that matches the public website and Rust API model." />
+      <AdminPageHeader title="Add House or Land" subtitle="Fill in the details visitors need before they call or send a message." />
       <AdminCard>
         <PropertyForm />
       </AdminCard>

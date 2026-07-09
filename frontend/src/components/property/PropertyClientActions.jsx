@@ -83,7 +83,7 @@ function PropertyClientActions({ propertyId, propertyTitle }) {
         <Link className="font-bold text-brand-gold hover:text-brand-emerald" to="/login">
           Sign in
         </Link>{" "}
-        to save this property and message an agent from your account.
+        to save this place and message our team from your account.
       </p>
     );
   }
@@ -101,18 +101,18 @@ function PropertyClientActions({ propertyId, propertyTitle }) {
         type="button"
       >
         {saved ? <HeartFill className="h-4 w-4 text-brand-gold" /> : <Heart className="h-4 w-4" />}
-        {saved ? "Saved" : "Save property"}
+        {saved ? "Saved" : "Save this place"}
       </button>
 
       <form className="grid gap-2" onSubmit={sendInquiry}>
         <label className="text-sm font-semibold text-brand-forest" htmlFor="inquiry-message">
-          Message an agent about {propertyTitle}
+          Message us about {propertyTitle}
         </label>
         <textarea
           className="rounded-md border border-brand-forest/15 px-3 py-2.5 text-sm text-brand-charcoal focus:border-brand-forest focus:outline-none"
           id="inquiry-message"
           onChange={(event) => setMessage(event.target.value)}
-          placeholder="e.g. Is this still available? I'd like to book an inspection."
+          placeholder="e.g. Is this still available? I would like to see it."
           rows={3}
           value={message}
         />

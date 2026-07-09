@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import AppLoader from "./components/ui/AppLoader/AppLoader.jsx";
-import WhatsAppButton from "./components/ui/WhatsAppButton/WhatsAppButton.jsx";
 import AppRoutes from "./routes/AppRoutes.jsx";
 import { AppToaster } from "./utils/toast.jsx";
 
@@ -23,7 +22,6 @@ function App() {
       </a>
       <AppToaster />
       <AppRoutes />
-      <WhatsAppButton />
     </>
   );
 }

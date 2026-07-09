@@ -99,7 +99,7 @@ function AgentProfile() {
             <div className="flex flex-col gap-2 w-full max-w-xs">
               {agent.phone && (
                 <a
-                  className="flex items-center justify-center gap-2 border border-brand-forest/15 px-5 py-3 text-sm font-extrabold text-brand-forest transition hover:bg-brand-forest hover:text-white"
+                  className="flex items-center justify-center gap-2 border border-brand-forest/15 px-5 py-3 text-sm font-extrabold text-brand-forest transition hover:bg-brand-forest hover:!text-white"
                   href={`tel:${agent.phone}`}
                 >
                   <TelephoneFill aria-hidden="true" className="h-4 w-4" />
@@ -108,7 +108,7 @@ function AgentProfile() {
               )}
               {agent.email && (
                 <a
-                  className="flex items-center justify-center gap-2 border border-brand-forest/15 px-5 py-3 text-sm font-extrabold text-brand-forest transition hover:bg-brand-forest hover:text-white"
+                  className="flex items-center justify-center gap-2 border border-brand-forest/15 px-5 py-3 text-sm font-extrabold text-brand-forest transition hover:bg-brand-forest hover:!text-white"
                   href={`mailto:${agent.email}`}
                 >
                   <EnvelopeFill aria-hidden="true" className="h-4 w-4" />
@@ -116,7 +116,7 @@ function AgentProfile() {
                 </a>
               )}
               <a
-                className="flex items-center justify-center gap-2 bg-brand-forest px-5 py-3 text-sm font-extrabold text-white transition hover:bg-brand-gold hover:text-brand-charcoal"
+                className="flex items-center justify-center gap-2 bg-brand-forest px-5 py-3 text-sm font-extrabold text-white transition hover:bg-brand-emerald hover:!text-white"
                 href={getSiteWhatsAppLink(`Hello, I'd like to speak with ${agent.fullName} at Sureboy Realty.`)}
                 rel="noreferrer"
                 target="_blank"

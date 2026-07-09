@@ -54,7 +54,7 @@ function EditTestimonial() {
 
   return (
     <>
-      <AdminPageHeader title="Edit Testimonial" subtitle={testimonial ? testimonial.clientName : "This local fallback record was not found."} />
+      <AdminPageHeader title="Edit Customer Review" subtitle={testimonial ? testimonial.clientName : "This review was not found."} />
       <AdminCard>
         {isLoading ? <AdminLoader label="Loading testimonial" /> : null}
         {error ? <AdminErrorState message={error} /> : null}

@@ -119,8 +119,8 @@ function Footer() {
           {/* Link columns */}
           <div className="grid gap-10 sm:grid-cols-3">
             <FooterColumn links={footerLinks.company} title="Company" />
-            <FooterColumn links={footerLinks.services} title="Services" />
-            <FooterColumn links={footerLinks.properties} title="Properties" />
+            <FooterColumn links={footerLinks.services} title="Help We Offer" />
+            <FooterColumn links={footerLinks.properties} title="Houses & Land" />
           </div>
         </div>
 

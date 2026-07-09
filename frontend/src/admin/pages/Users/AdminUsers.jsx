@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  Eye,
   PatchCheckFill,
   PatchExclamationFill,
   PersonCheckFill,
@@ -30,6 +31,7 @@ function AdminUsers() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState(null); // the user open in the edit modal
+  const [viewing, setViewing] = useState(null); // the user open in the details modal
 
   const load = useCallback(async () => {
     if (!apiConfig.useApi) {
@@ -97,8 +99,8 @@ function AdminUsers() {
   return (
     <>
       <AdminPageHeader
-        subtitle="Everyone who signed up on the website. Only admins can manage these accounts."
-        title="Users"
+        subtitle="People who created an account on the website."
+        title="Customers"
       />
 
       <AdminCard>
@@ -175,7 +177,7 @@ function AdminUsers() {
                         <div className="flex items-center gap-2">
                           {!user.emailVerified && (
                             <button
-                              className="grid h-8 w-8 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-forest hover:text-white"
+                              className="grid h-8 w-8 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-forest hover:!text-white"
                               onClick={() => handleVerify(user)}
                               title="Mark email verified"
                               type="button"
@@ -184,7 +186,7 @@ function AdminUsers() {
                             </button>
                           )}
                           <button
-                            className="grid h-8 w-8 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-forest hover:text-white"
+                            className="grid h-8 w-8 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-forest hover:!text-white"
                             onClick={() => handleToggle(user)}
                             title={user.isActive ? "Deactivate" : "Activate"}
                             type="button"
@@ -194,7 +196,15 @@ function AdminUsers() {
                               : <PersonCheckFill className="h-4 w-4" />}
                           </button>
                           <button
-                            className="border border-brand-forest/15 px-2.5 py-1 text-xs font-bold text-brand-forest transition hover:bg-brand-forest hover:text-white"
+                            className="grid h-8 w-8 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-forest hover:!text-white"
+                            onClick={() => setViewing(user)}
+                            title="View details"
+                            type="button"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          <button
+                            className="border border-brand-forest/15 px-2.5 py-1 text-xs font-bold text-brand-forest transition hover:bg-brand-forest hover:!text-white"
                             onClick={() => setEditing(user)}
                             type="button"
                           >
@@ -252,23 +262,87 @@ function AdminUsers() {
           user={editing}
         />
       )}
+
+      {viewing && <UserDetailsModal onClose={() => setViewing(null)} user={viewing} />}
     </>
   );
 }
 
-// A small modal to edit a client's name/phone and see their activity counts.
-function EditUserModal({ user, onClose, onSaved }) {
-  const [form, setForm] = useState({ fullName: user.fullName || "", phone: user.phone || "" });
+// Read-only modal: the user's activity (saved / viewed / inquiries / devices)
+// and push status. Opened from the "eye" button in the row.
+function UserDetailsModal({ user, onClose }) {
   const [detail, setDetail] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Pull the fuller detail (activity counts) for this user.
     adminUsersApi
       .getById(user.id)
       .then((res) => setDetail(res?.data || null))
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [user.id]);
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" onClick={onClose}>
+      <div
+        className="w-full max-w-md border border-brand-forest/10 bg-white p-6 shadow-xl"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h2 className="font-display text-xl font-bold text-brand-forest">User details</h2>
+        <p className="mt-1 text-sm font-semibold text-brand-forest">{user.fullName || "—"}</p>
+        <p className="text-sm text-brand-muted">{user.email}</p>
+
+        {loading ? (
+          <p className="py-6 text-center text-sm text-brand-muted">Loading…</p>
+        ) : (
+          <>
+            <div className="mt-4 grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
+              {[
+                ["Saved", detail?.savedCount],
+                ["Viewed", detail?.viewedCount],
+                ["Inquiries", detail?.inquiryCount],
+                ["Devices", detail?.pushCount],
+              ].map(([label, value]) => (
+                <div className="border border-brand-forest/10 bg-brand-cream/50 p-2" key={label}>
+                  <p className="text-lg font-black text-brand-forest">{value ?? 0}</p>
+                  <p className="text-[11px] uppercase tracking-wide text-brand-muted">{label}</p>
+                </div>
+              ))}
+            </div>
+            {/* Push can only be enabled by the user on their own device. */}
+            <p className="mt-3 text-sm">
+              Push alerts:{" "}
+              {(detail?.pushCount || 0) > 0 ? (
+                <span className="font-bold text-emerald-700">
+                  enabled on {detail.pushCount} device{detail.pushCount === 1 ? "" : "s"}
+                </span>
+              ) : (
+                <span className="font-bold text-brand-muted">
+                  not enabled (the user must turn this on from their own device)
+                </span>
+              )}
+            </p>
+            <div className="mt-3 grid gap-1 text-sm text-brand-muted">
+              <p>Phone: <span className="text-brand-forest">{detail?.phone || user.phone || "—"}</span></p>
+              <p>Email verified: <span className="text-brand-forest">{detail?.emailVerified ? "Yes" : "No"}</span></p>
+              <p>Joined: <span className="text-brand-forest">{fmtDate(detail?.createdAt || user.createdAt)}</span></p>
+            </div>
+          </>
+        )}
+
+        <div className="mt-5 flex justify-end">
+          <AdminButton onClick={onClose} type="button" variant="outline">Close</AdminButton>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Edit modal: just the editable fields (name + phone). Activity/details live in
+// the separate details modal.
+function EditUserModal({ user, onClose, onSaved }) {
+  const [form, setForm] = useState({ fullName: user.fullName || "", phone: user.phone || "" });
+  const [saving, setSaving] = useState(false);
 
   const save = async (event) => {
     event.preventDefault();
@@ -292,38 +366,6 @@ function EditUserModal({ user, onClose, onSaved }) {
       >
         <h2 className="font-display text-xl font-bold text-brand-forest">Edit user</h2>
         <p className="mt-1 text-sm text-brand-muted">{user.email}</p>
-
-        {detail && (
-          <>
-            <div className="mt-4 grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
-              {[
-                ["Saved", detail.savedCount],
-                ["Viewed", detail.viewedCount],
-                ["Inquiries", detail.inquiryCount],
-                ["Devices", detail.pushCount],
-              ].map(([label, value]) => (
-                <div className="border border-brand-forest/10 bg-brand-cream/50 p-2" key={label}>
-                  <p className="text-lg font-black text-brand-forest">{value ?? 0}</p>
-                  <p className="text-[11px] uppercase tracking-wide text-brand-muted">{label}</p>
-                </div>
-              ))}
-            </div>
-            {/* Push status. It can only be turned on by the user on their own
-                device — an admin can't enable it for them. */}
-            <p className="mt-3 text-sm">
-              Push alerts:{" "}
-              {detail.pushCount > 0 ? (
-                <span className="font-bold text-emerald-700">
-                  enabled on {detail.pushCount} device{detail.pushCount === 1 ? "" : "s"}
-                </span>
-              ) : (
-                <span className="font-bold text-brand-muted">
-                  not enabled (the user must turn this on from their own device)
-                </span>
-              )}
-            </p>
-          </>
-        )}
 
         <form className="mt-5 grid gap-4" onSubmit={save}>
           <label className="grid gap-1 text-sm font-semibold text-brand-forest">

@@ -1,15 +1,15 @@
 export const mainMenuUtilityLinks = [
   {
     id: "professionals",
-    label: "For Professionals",
-    helper: "Agents and partners",
+    label: "Join Our Team",
+    helper: "Work with Sureboy",
     href: "/services",
     iconKey: "briefcase",
   },
   {
     id: "projects",
-    label: "Projects",
-    helper: "New developments",
+    label: "New Projects",
+    helper: "New buildings and land",
     href: "/projects",
     iconKey: "buildings",
   },

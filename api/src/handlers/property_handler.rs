@@ -473,6 +473,7 @@ pub async fn create_admin(
                             alert_mailer,
                             alert_config,
                             alert_property,
+                            property_alert_service::AlertReason::NewListing,
                         )
                         .await;
                     });
@@ -489,6 +490,7 @@ pub async fn create_admin(
 pub async fn update_admin(
     config: web::Data<AppConfig>,
     pool: web::Data<DbPool>,
+    mailer: web::Data<Mailer>,
     path: web::Path<String>,
     payload: web::Json<PropertyRequest>,
 ) -> impl Responder {
@@ -565,29 +567,55 @@ pub async fn update_admin(
             };
 
             match saved {
-                Ok(()) => match fetch_property_by_id(pool.get_ref(), property.id).await {
-                    Ok(Some(saved_property)) => {
-                        cleanup_unused_uploads(
-                            pool.get_ref(),
-                            &config.upload_dir,
-                            property_media_refs(&old_property),
-                            property_media_refs(&saved_property),
-                        )
-                        .await;
-                        common::ok("Property updated successfully", saved_property)
+                Ok(()) => {
+                    // Prefer the fully-hydrated row; fall back to the base row.
+                    let final_property = match fetch_property_by_id(pool.get_ref(), property.id).await
+                    {
+                        Ok(Some(saved_property)) => saved_property,
+                        Ok(None) => property,
+                        Err(error) => return common::server_error(error),
+                    };
+
+                    cleanup_unused_uploads(
+                        pool.get_ref(),
+                        &config.upload_dir,
+                        property_media_refs(&old_property),
+                        property_media_refs(&final_property),
+                    )
+                    .await;
+
+                    // Meaningful-change alerts only: a listing going live (hidden →
+                    // visible) or a price drop on an already-visible listing. Routine
+                    // edits stay silent so we don't spam users.
+                    let became_visible = !old_property.is_visible && final_property.is_visible;
+                    let price_dropped = old_property.is_visible
+                        && final_property.is_visible
+                        && final_property.price < old_property.price;
+
+                    if became_visible || price_dropped {
+                        let reason = if became_visible {
+                            property_alert_service::AlertReason::NewListing
+                        } else {
+                            property_alert_service::AlertReason::PriceDrop
+                        };
+                        let alert_property = final_property.clone();
+                        let alert_pool = pool.get_ref().clone();
+                        let alert_mailer = mailer.get_ref().clone();
+                        let alert_config = config.get_ref().clone();
+                        tokio::spawn(async move {
+                            property_alert_service::notify_matching_clients(
+                                alert_pool,
+                                alert_mailer,
+                                alert_config,
+                                alert_property,
+                                reason,
+                            )
+                            .await;
+                        });
                     }
-                    Ok(None) => {
-                        cleanup_unused_uploads(
-                            pool.get_ref(),
-                            &config.upload_dir,
-                            property_media_refs(&old_property),
-                            property_media_refs(&property),
-                        )
-                        .await;
-                        common::ok("Property updated successfully", property)
-                    }
-                    Err(error) => common::server_error(error),
-                },
+
+                    common::ok("Property updated successfully", final_property)
+                }
                 Err(error) => common::server_error(error),
             }
         }

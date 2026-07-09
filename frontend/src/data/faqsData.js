@@ -1,49 +1,49 @@
 export const faqsData = [
   {
     id: "faq-001",
-    question: "How do I verify land documents in Warri and Delta State?",
+    question: "How do I check land documents in Warri and Delta State?",
     answer:
-      "Confirm the title type — Certificate of Occupancy (C of O), Deed of Assignment, or Gazette. Then conduct a search at the Delta State Lands Bureau to check for encumbrances or disputes, and engage a licensed surveyor to confirm boundaries. Sureboy Realty guides clients through every step of land verification in Warri and Delta State.",
+      "First, know the document type, such as C of O, Deed of Assignment, or Gazette. Then check it at the Delta State Lands Bureau and let a licensed surveyor confirm the land boundaries. Sureboy Realty can guide you through these steps.",
     sortOrder: 1,
     isVisible: true,
   },
   {
     id: "faq-002",
-    question: "What areas does Sureboy Realty cover?",
+    question: "Where does Sureboy Realty work?",
     answer:
-      "Sureboy Realty is based in Warri, Delta State, and serves clients across Delta State and Nigeria, helping buyers, sellers, landlords, and investors find verified properties and trusted real estate solutions.",
+      "We are based in Warri, Delta State, and we help buyers, sellers, landlords, and investors across Delta State and Nigeria.",
     sortOrder: 2,
     isVisible: true,
   },
   {
     id: "faq-003",
-    question: "How do I buy land or property in Warri, Delta State?",
+    question: "How do I buy land or a house in Warri?",
     answer:
-      "Identify your preferred location and budget, verify all title documents, conduct a physical inspection, agree on terms and pricing, then process the deed of assignment and payment. Sureboy Realty provides full end-to-end support — from listing to handover in Warri and across Delta State.",
+      "Choose your location and budget, check the documents, visit the place, agree on price, then complete the payment and transfer papers. Sureboy Realty helps from the first search to handover.",
     sortOrder: 3,
     isVisible: true,
   },
   {
     id: "faq-004",
-    question: "What real estate services does Sureboy Realty offer?",
+    question: "What help does Sureboy Realty offer?",
     answer:
-      "We offer property sales, property management, property inspection, real estate consultancy, investment advisory, and land verification — covering residential, commercial, and land across Nigeria.",
+      "We help with buying, selling, managing homes, planning visits, real estate advice, investment advice, and land document checks.",
     sortOrder: 4,
     isVisible: true,
   },
   {
     id: "faq-005",
-    question: "How do I list my property with Sureboy Realty?",
+    question: "How do I list my house or land with Sureboy Realty?",
     answer:
-      "Contact us via phone, WhatsApp, or email. Our team will assess the property, agree on pricing strategy, handle photography, and actively market it to qualified buyers and investors.",
+      "Call, WhatsApp, or email us. We will look at the place, agree on a price plan, take photos, and show it to serious buyers.",
     sortOrder: 5,
     isVisible: true,
   },
   {
     id: "faq-006",
-    question: "How do I book a free property consultation?",
+    question: "How do I ask for free advice?",
     answer:
-      "Call us on +234 916 326 7765, send a WhatsApp message, or fill out the contact form on our website. We respond within one business day and offer a free initial consultation for all new clients.",
+      "Call +234 916 326 7765, send a WhatsApp message, or fill the contact form. We reply as soon as we can and give first-time customers clear direction.",
     sortOrder: 6,
     isVisible: true,
   },

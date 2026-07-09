@@ -12,12 +12,12 @@ function AdminFaqs() {
   return (
     <>
       <AdminPageHeader
-        action={{ icon: PlusLg, label: "Add FAQ", to: "/admin/faqs/create" }}
-        subtitle="Manage questions and answers. Unanswered FAQs are saved but not shown publicly."
-        title="FAQs"
+        action={{ icon: PlusLg, label: "Add Question", to: "/admin/faqs/create" }}
+        subtitle="Add common questions and clear answers for visitors."
+        title="Questions"
       />
       <AdminCard>
-        {isLoading ? <AdminLoader label="Loading FAQs" /> : null}
+        {isLoading ? <AdminLoader label="Loading questions" /> : null}
         {error ? <AdminErrorState message={error} /> : null}
         {!isLoading && !error ? <FaqsTable faqs={faqs} /> : null}
       </AdminCard>

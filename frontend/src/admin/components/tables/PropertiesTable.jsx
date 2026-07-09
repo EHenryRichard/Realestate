@@ -8,7 +8,7 @@ function PropertiesTable({ properties }) {
   const columns = [
     {
       key: "title",
-      label: "Property",
+      label: "House / Land",
       render: (property) => (
         <div>
           <p className="font-extrabold text-brand-forest">{property.title}</p>

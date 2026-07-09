@@ -6,8 +6,8 @@ function CreateBlogPost() {
   return (
     <>
       <AdminPageHeader
-        subtitle="Write your article using markdown formatting. You can save as draft and publish later."
-        title="New Blog Post"
+        subtitle="Write a helpful post. You can save it first and publish it later."
+        title="New Post"
       />
       <AdminCard>
         <BlogPostForm />

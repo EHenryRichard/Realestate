@@ -35,8 +35,8 @@ function SettingsForm({ settings }) {
     };
 
     if (!apiConfig.useApi) {
-      setMessage("Settings payload is ready for backend persistence.");
-      showToast("Settings payload is ready for backend persistence.");
+      setMessage("Looks good. Saving is not ready yet.");
+      showToast("Looks good. Saving is not ready yet.");
       return;
     }
 
@@ -46,8 +46,8 @@ function SettingsForm({ settings }) {
 
     try {
       await adminSettingsApi.update(payload);
-      setMessage("Settings saved successfully.");
-      showSuccess("Settings saved successfully.");
+      setMessage("Site info saved successfully.");
+      showSuccess("Site info saved successfully.");
     } catch (caughtError) {
       setError(caughtError.message);
       showError(caughtError.message);
@@ -69,7 +69,7 @@ function SettingsForm({ settings }) {
       {message ? <div className="border border-brand-gold/35 bg-brand-gold/12 p-4 text-sm font-bold text-brand-forest">{message}</div> : null}
       {error ? <div className="border border-red-700/25 bg-red-50 p-4 text-sm font-bold text-red-800">{error}</div> : null}
       <AdminButton disabled={isSubmitting} type="submit">
-        {isSubmitting ? "Saving..." : "Save Settings"}
+        {isSubmitting ? "Saving..." : "Save Site Info"}
       </AdminButton>
     </form>
   );

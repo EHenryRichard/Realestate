@@ -19,7 +19,7 @@ function FeaturedProperties() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <SectionHeader eyebrow={section.eyebrow} subtitle={section.subtitle} title={section.title} />
           <Button icon={ArrowRight} to="/properties" variant="ghost">
-            View All Properties
+            See All Houses & Land
           </Button>
         </div>
 
@@ -31,12 +31,12 @@ function FeaturedProperties() {
               ))}
             </div>
           ) : null}
-          {error ? <ErrorState message={error} title="Could not load properties" /> : null}
+          {error ? <ErrorState message={error} title="Could not load houses and land" /> : null}
           {empty ? (
             <EmptyState
               cta={{ label: "Contact Us", href: "/contact" }}
-              message="New property opportunities are being prepared."
-              title="No featured properties yet"
+              message="New houses and land are being prepared."
+              title="Nothing featured yet"
             />
           ) : null}
           {!loading && !error && !empty ? (

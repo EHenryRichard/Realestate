@@ -37,8 +37,8 @@ function TestimonialForm({ initialTestimonial, mode = "create" }) {
     };
 
     if (!apiConfig.useApi) {
-      setMessage(`${mode === "edit" ? "Update" : "Create"} testimonial payload is ready for the API.`);
-      showToast(`${mode === "edit" ? "Update" : "Create"} testimonial payload is ready for the API.`);
+      setMessage("Looks good. Saving is not ready yet.");
+      showToast("Looks good. Saving is not ready yet.");
       return;
     }
 
@@ -53,8 +53,8 @@ function TestimonialForm({ initialTestimonial, mode = "create" }) {
         await adminTestimonialApi.create(payload);
       }
 
-      setMessage(`${mode === "edit" ? "Update" : "Create"} testimonial saved successfully.`);
-      showSuccess(`${mode === "edit" ? "Update" : "Create"} testimonial saved successfully.`);
+      setMessage(`${mode === "edit" ? "Review updated" : "Review added"} successfully.`);
+      showSuccess(`${mode === "edit" ? "Review updated" : "Review added"} successfully.`);
     } catch (caughtError) {
       setError(caughtError.message);
       showError(caughtError.message);
@@ -66,25 +66,25 @@ function TestimonialForm({ initialTestimonial, mode = "create" }) {
   return (
     <form className="grid gap-5" onSubmit={handleSubmit}>
       <div className="grid gap-4 md:grid-cols-2">
-        <AdminInput label="Client name" name="clientName" onChange={handleChange} required value={formData.clientName} />
-        <AdminInput label="Client role" name="clientRole" onChange={handleChange} value={formData.clientRole} />
+        <AdminInput label="Customer name" name="clientName" onChange={handleChange} required value={formData.clientName} />
+        <AdminInput label="Customer type" name="clientRole" onChange={handleChange} value={formData.clientRole} />
         <AdminInput label="Service used" name="serviceUsed" onChange={handleChange} value={formData.serviceUsed} />
         <AdminInput label="Rating" max="5" min="1" name="rating" onChange={handleChange} type="number" value={formData.rating} />
       </div>
-      <AdminImageUploader label="Avatar path" name="avatar" onChange={handleChange} value={formData.avatar} />
-      <AdminTextarea label="Quote" name="quote" onChange={handleChange} required value={formData.quote} />
+      <AdminImageUploader label="Customer photo" name="avatar" onChange={handleChange} value={formData.avatar} />
+      <AdminTextarea label="Customer comment" name="quote" onChange={handleChange} required value={formData.quote} />
       <label className="flex min-h-12 items-center gap-3 border border-brand-forest/10 bg-white px-4 text-sm font-extrabold text-brand-forest">
         <input checked={formData.isVisible} className="h-4 w-4 accent-brand-forest" name="isVisible" onChange={handleChange} type="checkbox" />
-        Visible testimonial
+        Show this review on the website
       </label>
       {message ? <div className="border border-brand-gold/35 bg-brand-gold/12 p-4 text-sm font-bold text-brand-forest">{message}</div> : null}
       {error ? <div className="border border-red-700/25 bg-red-50 p-4 text-sm font-bold text-red-800">{error}</div> : null}
       <div className="flex flex-wrap gap-3">
         <AdminButton disabled={isSubmitting} type="submit">
-          {isSubmitting ? "Saving..." : mode === "edit" ? "Update Testimonial" : "Create Testimonial"}
+          {isSubmitting ? "Saving..." : mode === "edit" ? "Update Review" : "Add Review"}
         </AdminButton>
         <AdminButton to="/admin/testimonials" variant="outline">
-          Back to Testimonials
+          Back to Customer Reviews
         </AdminButton>
       </div>
     </form>

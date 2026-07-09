@@ -94,7 +94,7 @@ function SectionNavigator({ sections = [] }) {
           aria-controls="home-section-navigator"
           aria-expanded={isOpen}
           aria-label={isOpen ? "Close home section navigator" : "Open home section navigator"}
-          className="grid min-h-12 min-w-11 place-items-center border-l border-t border-b border-brand-gold/24 bg-brand-forest text-white shadow-[0_14px_32px_rgba(6,63,44,0.22)] transition hover:text-brand-gold focus:outline-none focus:ring-0"
+          className="grid min-h-12 min-w-11 place-items-center border-l border-t border-b border-brand-gold/24 bg-brand-forest text-white shadow-[0_14px_32px_rgba(6,63,44,0.22)] transition hover:bg-brand-emerald hover:!text-white focus:outline-none focus:ring-0"
           onClick={() => setIsOpen((currentValue) => !currentValue)}
           ref={triggerRef}
           type="button"
@@ -105,7 +105,7 @@ function SectionNavigator({ sections = [] }) {
 
       <button
         aria-label="Back to top"
-        className="fixed bottom-5 right-4 z-40 grid h-12 w-12 place-items-center border border-brand-gold/35 bg-brand-forest/92 text-white shadow-[0_14px_32px_rgba(6,63,44,0.22)] backdrop-blur transition hover:bg-brand-emerald hover:text-brand-gold focus:outline-none focus:ring-0 md:bottom-6 md:right-6"
+        className="fixed bottom-5 right-4 z-40 grid h-12 w-12 place-items-center border border-brand-gold/35 bg-brand-forest/92 text-white shadow-[0_14px_32px_rgba(6,63,44,0.22)] backdrop-blur transition hover:bg-brand-emerald hover:!text-white focus:outline-none focus:ring-0 md:bottom-6 md:right-6"
         onClick={() => scrollToSection(sections[0].id)}
         type="button"
       >

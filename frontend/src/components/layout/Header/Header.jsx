@@ -16,6 +16,8 @@ function Header() {
   const headerRef = useRef(null);
   const triggerRef = useRef(null);
   const location = useLocation();
+  const isHome = location.pathname === "/";
+  const shouldUseSolidHeader = !isHome || isPastHero || isDrawerOpen;
   const navTextActionClass =
     "relative hidden min-h-10 items-center text-xs font-normal uppercase tracking-[0.01em] transition hover:text-brand-gold after:absolute after:bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-brand-gold after:transition-transform hover:after:scale-x-100";
   const navIconActionClass =
@@ -43,6 +45,11 @@ function Header() {
 
   useEffect(() => {
     const updateHeaderState = () => {
+      if (!isHome) {
+        setIsPastHero(true);
+        return;
+      }
+
       const heroElement = document.querySelector("[data-page-hero]");
       const headerHeight = headerRef.current?.offsetHeight || 0;
 
@@ -63,7 +70,7 @@ function Header() {
       window.removeEventListener("scroll", updateHeaderState);
       window.removeEventListener("resize", updateHeaderState);
     };
-  }, [location.pathname]);
+  }, [isHome, location.pathname]);
 
   return (
     <>
@@ -71,7 +78,7 @@ function Header() {
         ref={headerRef}
         className={[
           "fixed left-0 right-0 top-0 z-40 border-b text-white transition",
-          isPastHero
+          shouldUseSolidHeader
             ? "border-transparent bg-[#063f2ca1] shadow-[0_12px_45px_rgba(6,63,44,0.2)] backdrop-blur-md"
             : "border-transparent bg-transparent",
         ]

@@ -94,3 +94,74 @@ Setup steps are in `MAIL_SETUP.md`. Verify the setup itself first, then delivery
 ## 10. Deploy-specific (hosted)
 - [ ] `REFRESH_COOKIE_SECURE=true` on HTTPS; both admin and client login persist across reload.
 - [ ] For mailcow: port 25 unblocked, PTR/SPF/DKIM set, and a real mail-tester score before trusting alerts.
+
+---
+
+# Latest additions (agent signup, admin users, update alerts, UI)
+
+## 11. Test locally (no email/push needed)
+
+### 11a. Agent signup / approval flow
+- [ ] Footer → **"Join Our Team"** (`/become-an-agent`) → fill form → submit → "request received".
+- [ ] Admin → **Agent Forms** → the request appears under **Pending**.
+- [ ] **Approve** → status becomes *approved* (locally the invite email is only logged). **Reject** works too.
+- [ ] Status filter tabs (pending / approved / completed / rejected / all) filter correctly.
+- [ ] (Server rule) The invite link is single-use: once an account is created the request becomes *completed* and the link stops working.
+
+### 11b. Admin "Customers" (Users) page
+- [ ] Columns: Name · Phone · Email (green ✓ verified / amber ! pending icon + hover tooltip) · Status · Joined.
+- [ ] **Eye (Details)** button → modal with Saved / Viewed / Inquiries / Devices counts + push status + phone/verified/joined.
+- [ ] **Edit** button → only Name + Phone (no stats block).
+- [ ] Mark verified / Activate–Deactivate / Delete each work.
+- [ ] Search + pagination work.
+
+### 11c. Property slug / edits
+- [ ] Re-create a property with the **same title** → saves as `…-2` (no refresh, no "duplicate slug" error).
+- [ ] Editing a property saves cleanly.
+
+### 11d. UI tweaks
+- [ ] **Back-to-top** button appears on public pages after scrolling ~320px and smooth-scrolls up; **not** shown on the home page (it has its own via SectionNavigator).
+- [ ] Active nav accent is **white**, not gold (admin sidebar/drawer + public mobile menu).
+- [ ] **WhatsApp** floating button shows on the public site but **NOT** in the admin panel.
+
+## 12. Test on the VPS (needs SMTP + VAPID configured)
+- [ ] All emails are branded with the **green logo** (verification / reset / new-listing / agent invite).
+- [ ] Approving an agent request actually **emails the invite link** → clicking it → set name + password → the agent can log in to the admin panel (agent role).
+- [ ] **Update alerts** fire only on meaningful changes:
+  - [ ] hidden → visible (goes live) → "new listing" alert
+  - [ ] price drop on a visible property → "price drop" alert (email subject + push say *price drop*)
+  - [ ] description/photo edits / price increase → **no** alert
+- [ ] Push notification click opens the **specific property** (requires `PUBLIC_ORIGIN=https://sureboyrealty.com`).
+- [ ] **Add to Home Screen** icon is the logo (delete + re-add the shortcut after deploying).
+- [ ] Push notification icon/badge shows the logo.
+
+## 13. Faster builds (verify once)
+- [ ] First `docker compose build api` runs full; a **second** build after changing only app code finishes in well under 2 min (cargo-chef caches deps; mold speeds linking).
+
+## Reminder
+Email/push items require the VPS `.env`: `PUBLIC_ORIGIN=https://sureboyrealty.com`, the `SMTP_*` / `MAIL_FROM` values, and the `VAPID_*` keys — then `docker compose up -d api` and rebuild the frontend.
+
+Test these:
+Public website
+Home page: are buttons clear?
+Menu: do labels make sense? Houses & Land, Help We Offer, News & Tips
+Properties page: can someone search/filter easily?
+Property details: are actions clear? Ask About This Place, Book a Visit
+Contact page: does it feel easy to send a message?
+About/Services/FAQ: is the English simple enough?
+
+Admin
+Login page: clear?
+Admin home: does it feel less cluttered?
+Sidebar/mobile drawer: icons and labels easy to understand?
+Add/Edit house or land form: can someone fill it without confusion?
+Reviews, Questions, Staff, Messages: labels make sense?
+
+Visual checks
+Text must not overflow container.
+Text should wrap properly.
+White/green/gold contrast must be readable.
+Buttons should look clickable.
+Mobile view should not feel squeezed.
+
+The main question while testing is:

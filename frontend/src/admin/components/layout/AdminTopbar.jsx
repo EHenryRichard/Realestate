@@ -1,45 +1,26 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { List, PlusLg } from "react-bootstrap-icons";
-import { adminNavLinks } from "../../data/adminNavLinks.js";
 import { useAdminAuth } from "../../hooks/useAdminAuth.js";
 import AdminButton from "../ui/AdminButton.jsx";
 
-const getAdminTitle = (pathname) => {
-  if (pathname.includes("/create")) {
-    return "Create Record";
-  }
-
-  if (pathname.includes("/edit")) {
-    return "Edit Record";
-  }
-
-  const match = [...adminNavLinks]
-    .sort((first, second) => second.href.length - first.href.length)
-    .find((link) => pathname === link.href || pathname.startsWith(`${link.href}/`));
-
-  return match?.label || "Admin";
-};
-
 function AdminTopbar({ onMenuClick }) {
   const { admin } = useAdminAuth();
-  const location = useLocation();
-  const title = getAdminTitle(location.pathname);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-brand-gold/35 bg-white/94 px-4 py-3 backdrop-blur md:px-6">
-      <div className="flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-30 border-b border-brand-forest/10 bg-white/95 px-4 py-2.5 backdrop-blur md:px-6">
+      <div className="flex min-h-11 items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
           <button
             aria-label="Open admin navigation"
-            className="grid h-11 w-11 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-emerald hover:text-white focus:outline-none focus:ring-0 lg:hidden"
+            className="grid h-10 w-10 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-emerald hover:!text-white focus:outline-none focus:ring-0 lg:hidden"
             onClick={onMenuClick}
             type="button"
           >
-            <List aria-hidden="true" className="h-6 w-6" />
+            <List aria-hidden="true" className="h-5 w-5" />
           </button>
           <div className="min-w-0">
-            <p className="truncate text-xs font-extrabold uppercase tracking-[0.08em] text-brand-gold">Admin Dashboard</p>
-            <h2 className="truncate font-display text-2xl font-bold leading-tight text-brand-forest">{title}</h2>
+            <p className="truncate text-sm font-extrabold text-brand-forest">Website Manager</p>
+            <p className="hidden truncate text-xs font-semibold text-brand-muted sm:block">Update the website from here</p>
           </div>
         </div>
 
@@ -49,10 +30,10 @@ function AdminTopbar({ onMenuClick }) {
             <p className="text-sm font-bold text-brand-forest">{admin?.fullName || "Sureboy Admin"}</p>
           </div>
           <AdminButton icon={PlusLg} size="sm" to="/admin/properties/create">
-            Add Property
+            Add House or Land
           </AdminButton>
           <Link
-            className="hidden min-h-9 items-center border border-brand-forest/15 px-3 text-xs font-extrabold uppercase text-brand-forest transition hover:bg-brand-emerald hover:text-white md:inline-flex"
+            className="hidden min-h-9 items-center border border-brand-forest/15 px-3 text-xs font-extrabold uppercase text-brand-forest transition hover:bg-brand-emerald hover:!text-white md:inline-flex"
             to="/"
           >
             View Site

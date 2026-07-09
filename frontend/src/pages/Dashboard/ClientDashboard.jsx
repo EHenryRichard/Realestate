@@ -164,12 +164,12 @@ function ClientDashboard() {
         <p className="mt-10 text-center text-sm text-brand-muted">Loading your dashboard…</p>
       ) : (
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
-          <Card count={saved.length} title="Saved properties">
+          <Card count={saved.length} title="Saved houses and land">
             {saved.length === 0 ? (
               <p className="py-4 text-sm text-brand-muted">
-                No saved properties yet.{" "}
+                Nothing saved yet.{" "}
                 <Link className="font-bold text-brand-gold" to="/properties">
-                  Browse listings
+                  See houses and land
                 </Link>
               </p>
             ) : (
@@ -183,7 +183,7 @@ function ClientDashboard() {
 
           <Card count={viewed.length} title="Recently viewed">
             {viewed.length === 0 ? (
-              <p className="py-4 text-sm text-brand-muted">Properties you open will show up here.</p>
+              <p className="py-4 text-sm text-brand-muted">Houses and land you open will show up here.</p>
             ) : (
               <ul className="divide-y divide-brand-forest/8">
                 {viewed.map((item) => (
@@ -193,9 +193,9 @@ function ClientDashboard() {
             )}
           </Card>
 
-          <Card count={inquiries.length} title="My inquiries">
+          <Card count={inquiries.length} title="My messages">
             {inquiries.length === 0 ? (
-              <p className="py-4 text-sm text-brand-muted">You haven't contacted any agents yet.</p>
+              <p className="py-4 text-sm text-brand-muted">You have not sent any messages yet.</p>
             ) : (
               <ul className="divide-y divide-brand-forest/8">
                 {inquiries.map((item) => (
@@ -207,7 +207,7 @@ function ClientDashboard() {
                             {item.propertyTitle}
                           </Link>
                         ) : (
-                          "General inquiry"
+                          "General message"
                         )}
                       </p>
                       <span className="shrink-0 rounded-full bg-brand-forest/5 px-2 py-0.5 text-[11px] font-bold uppercase text-brand-muted">

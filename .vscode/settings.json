@@ -1,0 +1,11 @@
+{
+  "// note": "Applied SQL migrations are immutable — never let the editor reformat them, or sqlx fails with a checksum VersionMismatch.",
+  "[sql]": {
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
+    "editor.defaultFormatter": null
+  },
+  "files.associations": {
+    "api/migrations/*.sql": "sql"
+  }
+}

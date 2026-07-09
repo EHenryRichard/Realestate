@@ -11,7 +11,7 @@ function AdminNewsletter() {
 
   return (
     <>
-      <AdminPageHeader title="Newsletter" subtitle="Manage public newsletter subscribers and prepare for export/status actions." />
+      <AdminPageHeader title="Email List" subtitle="See the people who asked to receive updates." />
       <AdminCard>
         <AdminSearchInput className="mb-4" label="Search subscribers" onChange={(event) => setSearch(event.target.value)} value={search} />
         {isLoading ? <AdminLoader label="Loading subscribers" /> : null}

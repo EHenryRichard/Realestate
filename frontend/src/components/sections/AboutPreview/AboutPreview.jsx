@@ -22,7 +22,7 @@ function AboutPreview() {
             />
             <div className="absolute bottom-5 left-5 right-5 bg-white/92 p-5 shadow-lg backdrop-blur">
               <p className="text-sm font-extrabold uppercase tracking-[0.16em] text-brand-gold">Sureboy Standard</p>
-              <p className="mt-2 text-lg font-black tracking-[0] text-brand-forest">Premium support from enquiry to decision.</p>
+              <p className="mt-2 text-lg font-black tracking-[0] text-brand-forest">Clear support from first message to decision.</p>
             </div>
           </div>
           <div>

@@ -57,8 +57,8 @@ function BlogPostForm({ initialPost, mode = "create" }) {
     };
 
     if (!apiConfig.useApi) {
-      showToast("Blog post payload ready for the API.");
-      setMessage("Blog post payload ready for the API.");
+      showToast("Looks good. Saving is not ready yet.");
+      setMessage("Looks good. Saving is not ready yet.");
       return;
     }
 
@@ -95,7 +95,7 @@ function BlogPostForm({ initialPost, mode = "create" }) {
           value={formData.title}
         />
         <AdminInput
-          label="Slug (auto-generated)"
+          label="Page link name"
           name="slug"
           onChange={handleChange}
           required
@@ -124,7 +124,7 @@ function BlogPostForm({ initialPost, mode = "create" }) {
       />
 
       <AdminTextarea
-        label="Excerpt (short summary shown on the blog listing page)"
+        label="Short summary shown on the blog page"
         name="excerpt"
         onChange={handleChange}
         required
@@ -166,7 +166,7 @@ function BlogPostForm({ initialPost, mode = "create" }) {
           {isSubmitting ? "Saving..." : mode === "edit" ? "Update Post" : "Create Post"}
         </AdminButton>
         <AdminButton to="/admin/blog" variant="outline">
-          Back to Blog
+          Back to News & Tips
         </AdminButton>
       </div>
     </form>

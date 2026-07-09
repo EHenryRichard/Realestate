@@ -49,7 +49,7 @@ function PropertyForm({ initialProperty, mode = "create" }) {
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
-  const title = mode === "edit" ? "Update Property" : "Create Property";
+  const title = mode === "edit" ? "Update House or Land" : "Add House or Land";
 
   const payloadPreview = useMemo(
     () => ({
@@ -83,7 +83,7 @@ function PropertyForm({ initialProperty, mode = "create" }) {
     const nextErrors = {};
 
     if (!formData.title.trim()) {
-      nextErrors.title = "Property title is required.";
+      nextErrors.title = "Please enter a name for this house or land.";
     }
 
     if (!formData.location.trim()) {
@@ -113,8 +113,8 @@ function PropertyForm({ initialProperty, mode = "create" }) {
     }
 
     if (!apiConfig.useApi) {
-      setSubmitMessage(`${title} payload is ready for the Rust API.`);
-      showToast(`${title} payload is ready for the Rust API.`);
+      setSubmitMessage("Looks good. Saving is not ready yet.");
+      showToast("Looks good. Saving is not ready yet.");
       return;
     }
 
@@ -142,12 +142,12 @@ function PropertyForm({ initialProperty, mode = "create" }) {
   return (
     <form className="grid min-w-0 w-full max-w-full gap-5" onSubmit={handleSubmit}>
       <div className="grid min-w-0 max-w-full gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <AdminInput error={errors.title} label="Property title" name="title" onChange={handleChange} value={formData.title} />
-        <AdminInput label="Slug" name="slug" onChange={handleChange} value={formData.slug} />
+        <AdminInput error={errors.title} label="Name of house or land" name="title" onChange={handleChange} value={formData.title} />
+        <AdminInput label="Page link name" name="slug" onChange={handleChange} value={formData.slug} />
         <AdminInput error={errors.location} label="Location" name="location" onChange={handleChange} value={formData.location} />
         <AdminInput error={errors.price} label="Price" name="price" onChange={handleChange} type="number" value={formData.price} />
         <AdminSelect
-          label="Property type"
+          label="Type"
           name="type"
           onChange={handleChange}
           options={propertyTypeOptions}
@@ -163,7 +163,7 @@ function PropertyForm({ initialProperty, mode = "create" }) {
         <AdminInput label="Bedrooms" name="bedrooms" onChange={handleChange} type="number" value={formData.bedrooms} />
         <AdminInput label="Bathrooms" name="bathrooms" onChange={handleChange} type="number" value={formData.bathrooms} />
         <AdminInput label="Area" name="area" onChange={handleChange} value={formData.area} />
-        <AdminInput label="Image alt text" name="imageAlt" onChange={handleChange} value={formData.imageAlt} />
+        <AdminInput label="Image description for screen readers" name="imageAlt" onChange={handleChange} value={formData.imageAlt} />
       </div>
 
       <AdminTextarea
@@ -211,7 +211,7 @@ function PropertyForm({ initialProperty, mode = "create" }) {
       ) : null}
 
       <details className="min-w-0 max-w-full border border-brand-forest/10 bg-white p-4 text-xs text-brand-muted">
-        <summary className="cursor-pointer font-extrabold uppercase text-brand-forest">API payload preview</summary>
+        <summary className="cursor-pointer font-extrabold uppercase text-brand-forest">Saved details preview</summary>
         <pre className="mt-3 max-w-full overflow-x-auto whitespace-pre-wrap break-words">
           {JSON.stringify(payloadPreview, null, 2)}
         </pre>
@@ -222,7 +222,7 @@ function PropertyForm({ initialProperty, mode = "create" }) {
           {isSubmitting ? "Saving..." : title}
         </AdminButton>
         <AdminButton to="/admin/properties" variant="outline">
-          Back to Properties
+          Back to Houses & Land
         </AdminButton>
       </div>
     </form>

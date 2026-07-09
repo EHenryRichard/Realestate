@@ -13,8 +13,8 @@ function AdminServices() {
     <>
       <AdminPageHeader
         action={{ icon: PlusLg, label: "Add Service", to: "/admin/services/create" }}
-        title="Services"
-        subtitle="Manage the service cards and descriptions shown on the public website."
+        title="Help We Offer"
+        subtitle="Edit the ways Sureboy Realty can help visitors."
       />
       <AdminCard>
         {isLoading ? <AdminLoader label="Loading services" /> : null}

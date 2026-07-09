@@ -61,9 +61,9 @@ function FaqSection() {
         />
 
         <div className="mx-auto mt-12 max-w-3xl">
-          {loading ? <LoadingState label="Loading FAQs" /> : null}
+          {loading ? <LoadingState label="Loading questions" /> : null}
           {error ? <ErrorState message={error} /> : null}
-          {empty ? <EmptyState message="No FAQs available yet." /> : null}
+          {empty ? <EmptyState message="No questions available yet." /> : null}
 
           {!loading && !error && !empty ? (
             <>
@@ -78,7 +78,7 @@ function FaqSection() {
                     onClick={() => setShowAll(true)}
                     type="button"
                   >
-                    View More FAQs
+                    View More Questions
                     <ChevronDown aria-hidden="true" className="h-4 w-4" />
                   </button>
                 </div>

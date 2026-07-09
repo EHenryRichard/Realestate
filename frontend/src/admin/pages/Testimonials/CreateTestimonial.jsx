@@ -5,7 +5,7 @@ import AdminPageHeader from "../../components/ui/AdminPageHeader.jsx";
 function CreateTestimonial() {
   return (
     <>
-      <AdminPageHeader title="Create Testimonial" subtitle="Prepare a client story for homepage and testimonial sections." />
+      <AdminPageHeader title="Add Customer Review" subtitle="Share a short comment from a happy customer." />
       <AdminCard>
         <TestimonialForm />
       </AdminCard>

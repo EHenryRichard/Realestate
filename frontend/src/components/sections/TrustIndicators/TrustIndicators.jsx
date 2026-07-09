@@ -12,7 +12,7 @@ function TrustIndicators() {
 
             return (
               <article className="flex items-center gap-4 bg-white p-5 shadow-sm" key={indicator.id}>
-                <span className="grid h-12 w-12 shrink-0 place-items-center bg-brand-forest text-brand-gold">
+                <span className="grid h-12 w-12 shrink-0 place-items-center bg-brand-forest text-white">
                   <Icon aria-hidden="true" className="h-6 w-6" />
                 </span>
                 <div>

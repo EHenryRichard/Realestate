@@ -26,13 +26,13 @@ function SavedHouses() {
       <section className="bg-white py-16 sm:py-24">
         <Container>
           <EmptyState
-            cta={{ label: "Browse Properties", href: "/properties" }}
+            cta={{ label: "See Houses & Land", href: "/properties" }}
             message={content.emptyBody}
             title={content.emptyTitle}
           />
           <div className="mt-8 text-center">
             <Button to="/projects" variant="dark">
-              View Projects
+              See Projects
             </Button>
           </div>
         </Container>

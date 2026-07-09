@@ -15,7 +15,7 @@ function NewsletterTable({ subscribers }) {
     },
     {
       key: "createdAt",
-      label: "Created",
+      label: "Joined",
     },
   ];
 

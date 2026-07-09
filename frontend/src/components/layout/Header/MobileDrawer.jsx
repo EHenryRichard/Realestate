@@ -126,7 +126,7 @@ function MobileDrawer({ isOpen, onClose }) {
             </span>
           </a>
           <a
-            className="flex min-h-14 items-center gap-3 border border-brand-gold/45 bg-brand-forest px-3 py-2 text-white transition hover:bg-brand-gold hover:text-brand-forest focus:outline-none focus:ring-0"
+            className="flex min-h-14 items-center gap-3 border border-brand-gold/45 bg-brand-forest px-3 py-2 text-white transition hover:bg-brand-emerald hover:!text-white focus:outline-none focus:ring-0"
             href={getSiteWhatsAppLink()}
             onClick={onClose}
             rel="noreferrer"
@@ -150,8 +150,8 @@ function MobileDrawer({ isOpen, onClose }) {
               <NavLink
                 className={({ isActive }) =>
                   [
-                    'drawer-link group flex min-h-14 items-center gap-3 border-b border-white/10 py-2 pr-2 text-white transition duration-300 hover:-translate-x-1 hover:bg-white/5 hover:text-brand-gold md:min-h-[3.75rem]',
-                    isActive ? 'text-brand-gold' : 'text-white',
+                    'drawer-link group flex min-h-14 items-center gap-3 border-b border-white/10 py-2 pr-2 text-white transition duration-300 hover:-translate-x-1 hover:bg-white/5 hover:text-white md:min-h-[3.75rem]',
+                    isActive ? 'bg-white/8 text-white' : 'text-white/82',
                   ]
                     .filter(Boolean)
                     .join(' ')
@@ -166,7 +166,7 @@ function MobileDrawer({ isOpen, onClose }) {
                   <>
                     <span
                       className={[
-                        'h-9 w-1 shrink-0 bg-brand-gold transition duration-200',
+                        'h-9 w-1 shrink-0 bg-white transition duration-200',
                         isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
                       ]
                         .filter(Boolean)
@@ -175,10 +175,10 @@ function MobileDrawer({ isOpen, onClose }) {
                     />
                     <span
                       className={[
-                        'grid h-10 w-10 shrink-0 place-items-center border transition duration-200',
+                        'grid h-10 w-10 shrink-0 place-items-center transition duration-200',
                         isActive
-                          ? 'border-brand-gold bg-brand-forest text-brand-gold'
-                          : 'border-white/14 bg-white/6 text-white/78 group-hover:border-brand-gold group-hover:text-brand-gold',
+                          ? 'text-white'
+                          : 'text-white/64 group-hover:text-white',
                       ]
                         .filter(Boolean)
                         .join(' ')}
@@ -210,14 +210,14 @@ function MobileDrawer({ isOpen, onClose }) {
 
               return (
                 <NavLink
-                  className="drawer-link flex min-h-12 items-center gap-3 text-sm font-normal text-white/78 transition duration-300 hover:-translate-x-1 hover:text-brand-gold"
+                  className="drawer-link group flex min-h-12 items-center gap-3 text-sm font-normal text-white/78 transition duration-300 hover:-translate-x-1 hover:bg-white/5 hover:text-white"
                   key={link.id}
                   onClick={onClose}
                   style={{ animationDelay: `${315 + index * 35}ms` }}
                   to={link.href}
                 >
                   <span
-                    className="grid h-9 w-9 shrink-0 place-items-center border border-brand-gold/52 text-brand-gold"
+                    className="grid h-9 w-9 shrink-0 place-items-center text-white/64 transition group-hover:text-white"
                     aria-hidden="true"
                   >
                     <UtilityIcon className="h-4 w-4" />

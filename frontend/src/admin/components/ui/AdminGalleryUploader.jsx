@@ -117,7 +117,7 @@ function AdminGalleryUploader({ label = "Gallery images", name = "galleryImages"
         </div>
       )}
 
-      <label className="mt-3 flex min-h-12 min-w-0 w-full max-w-full cursor-pointer items-center justify-center gap-2 border border-brand-forest bg-brand-forest px-4 text-center text-sm font-extrabold text-white transition-colors hover:bg-brand-gold hover:text-white">
+      <label className="mt-3 flex min-h-12 min-w-0 w-full max-w-full cursor-pointer items-center justify-center gap-2 border border-brand-forest bg-brand-forest px-4 text-center text-sm font-extrabold text-white transition-colors hover:bg-brand-emerald hover:!text-white">
         <Upload aria-hidden="true" className="h-4 w-4" />
         <input accept="image/jpeg,image/png,image/webp" className="sr-only" multiple onChange={handleFileChange} type="file" />
         {isUploading ? "Uploading..." : galleryItems.length ? "Add Images" : "Upload Images"}

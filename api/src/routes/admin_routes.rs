@@ -5,10 +5,17 @@ use super::{
     notification_routes, property_routes, service_routes, settings_routes, testimonial_routes,
     upload_routes,
 };
+use crate::handlers::agent_handler;
 use crate::routes::contact_routes;
 
 pub fn configure(cfg: &mut web::ServiceConfig) {
-    cfg.configure(auth_routes::configure)
+    cfg.service(
+        web::scope("/agent-requests")
+            .route("", web::get().to(agent_handler::list_requests))
+            .route("/{id}/approve", web::patch().to(agent_handler::approve_request))
+            .route("/{id}/reject", web::patch().to(agent_handler::reject_request)),
+    )
+    .configure(auth_routes::configure)
         .configure(admin_client_routes::configure)
         .configure(dashboard_routes::configure_admin)
         .configure(property_routes::configure_admin)

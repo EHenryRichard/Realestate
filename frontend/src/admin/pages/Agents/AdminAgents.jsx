@@ -70,9 +70,9 @@ function AdminAgents() {
   return (
     <>
       <AdminPageHeader
-        action={<AdminButton to={adminPath("agents/create")}>+ Add Member</AdminButton>}
-        subtitle="Everyone who has access to this admin panel. Only admins can manage team members."
-        title="Team"
+        action={<AdminButton to={adminPath("agents/create")}>+ Add Staff</AdminButton>}
+        subtitle="Add or remove the people who can use this website manager."
+        title="Staff"
       />
 
       <AdminCard>
@@ -102,7 +102,7 @@ function AdminAgents() {
                         {agent.photo ? (
                           <img alt={agent.fullName} className="h-10 w-10 rounded-full object-cover" src={agent.photo} />
                         ) : (
-                          <div className="grid h-10 w-10 shrink-0 place-items-center bg-brand-forest text-sm font-extrabold text-brand-gold">
+                          <div className="grid h-10 w-10 shrink-0 place-items-center bg-brand-forest text-sm font-extrabold text-white">
                             {agent.fullName.charAt(0).toUpperCase()}
                           </div>
                         )}
@@ -130,7 +130,7 @@ function AdminAgents() {
                     <td className="py-4">
                       <div className="flex items-center gap-2">
                         <Link
-                          className="grid h-8 w-8 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-forest hover:text-white"
+                          className="grid h-8 w-8 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-forest hover:!text-white"
                           title="Edit"
                           to={adminPath(`agents/${agent.id}/edit`)}
                         >
@@ -138,7 +138,7 @@ function AdminAgents() {
                         </Link>
                         {!agent.isPrimary && (
                           <button
-                            className="grid h-8 w-8 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-forest hover:text-white"
+                            className="grid h-8 w-8 place-items-center border border-brand-forest/15 text-brand-forest transition hover:bg-brand-forest hover:!text-white"
                             onClick={() => handleToggle(agent)}
                             title={agent.isActive ? "Deactivate" : "Activate"}
                             type="button"

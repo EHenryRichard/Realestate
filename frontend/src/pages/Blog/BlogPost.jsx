@@ -46,7 +46,7 @@ function BlogPost() {
             to="/blog"
           >
             <ArrowLeft aria-hidden="true" className="h-4 w-4" />
-            Back to Blog
+            Back to News & Tips
           </Link>
 
           {post.category ? (
@@ -104,14 +104,14 @@ function BlogPost() {
                 Want to discuss this?
               </p>
               <p className="mt-2 text-base text-brand-charcoal/80">
-                Call or WhatsApp Sureboy Realty directly — we answer every enquiry.
+                Call or WhatsApp Sureboy Realty directly. We answer every message.
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
                 <Link
                   className="inline-flex items-center gap-2 bg-brand-forest px-5 py-3 text-sm font-extrabold uppercase tracking-[0.06em] text-white transition hover:bg-brand-emerald"
                   to="/contact"
                 >
-                  Speak With an Agent
+                  Talk to Us
                 </Link>
                 <Link
                   className="inline-flex items-center gap-2 border border-brand-forest px-5 py-3 text-sm font-extrabold uppercase tracking-[0.06em] text-brand-forest transition hover:bg-brand-forest hover:text-white"

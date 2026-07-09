@@ -1,4 +1,4 @@
-function AdminLoader({ label = "Loading admin data" }) {
+function AdminLoader({ label = "Loading" }) {
   return (
     <div className="grid min-h-64 w-full place-items-center bg-white p-8">
       <div className="flex flex-col items-center text-center">

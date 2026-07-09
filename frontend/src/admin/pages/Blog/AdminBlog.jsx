@@ -13,8 +13,8 @@ function AdminBlog() {
     <>
       <AdminPageHeader
         action={{ icon: PlusLg, label: "New Post", to: "/admin/blog/create" }}
-        subtitle="Write and publish articles, land tips, and investment guides for the public blog."
-        title="Blog"
+        subtitle="Write news and simple property tips for website visitors."
+        title="News & Tips"
       />
       <AdminCard>
         {isLoading ? <AdminLoader label="Loading posts" /> : null}

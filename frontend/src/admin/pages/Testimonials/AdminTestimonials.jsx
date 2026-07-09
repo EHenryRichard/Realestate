@@ -12,9 +12,9 @@ function AdminTestimonials() {
   return (
     <>
       <AdminPageHeader
-        action={{ icon: PlusLg, label: "Add Testimonial", to: "/admin/testimonials/create" }}
-        title="Testimonials"
-        subtitle="Manage client stories, ratings, visibility, and avatar paths."
+        action={{ icon: PlusLg, label: "Add Review", to: "/admin/testimonials/create" }}
+        title="Customer Reviews"
+        subtitle="Add or hide the good comments customers have shared."
       />
       <AdminCard>
         {isLoading ? <AdminLoader label="Loading testimonials" /> : null}

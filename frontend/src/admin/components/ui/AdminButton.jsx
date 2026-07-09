@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 import { adminPath } from "../../../config/adminConfig.js";
 
 const variantClasses = {
-  primary: "border border-brand-gold bg-brand-gold text-brand-forest hover:bg-brand-emerald hover:text-white",
+  primary: "border border-brand-gold bg-brand-forest !text-white hover:bg-brand-emerald hover:!text-white",
   dark: "border border-brand-forest bg-brand-forest text-white hover:bg-brand-emerald hover:text-white",
-  outline: "border border-brand-gold/60 text-brand-gold hover:bg-brand-emerald hover:text-white",
-  ghost: "text-brand-forest hover:bg-brand-emerald hover:text-white",
+  outline: "border border-brand-gold/60 text-brand-gold hover:bg-brand-forest hover:!text-white",
+  ghost: "text-brand-forest hover:bg-brand-forest hover:!text-white",
   danger: "border border-red-800 bg-red-800 text-white hover:bg-brand-emerald hover:text-white",
 };
 
