@@ -1,0 +1,4 @@
+# Applied database migrations are immutable — reformatting them changes their
+# checksum and makes sqlx fail to start (VersionMismatch). Never format these.
+api/migrations/
+frontend/**/migrations/
