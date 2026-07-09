@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { PatchCheckFill, PersonCheckFill, PersonXFill, Search, Trash } from "react-bootstrap-icons";
+import {
+  PatchCheckFill,
+  PatchExclamationFill,
+  PersonCheckFill,
+  PersonXFill,
+  Search,
+  Trash,
+} from "react-bootstrap-icons";
 import { apiConfig } from "../../../config/apiConfig.js";
 import { showError, showSuccess } from "../../../utils/toast.jsx";
 import { adminUsersApi } from "../../api/adminUsersApi.js";
@@ -139,10 +146,24 @@ function AdminUsers() {
                       </td>
                       <td className="py-4 pr-4 text-brand-muted">{user.phone || "—"}</td>
                       <td className="py-4 pr-4">
-                        <p className="text-brand-charcoal">{user.email}</p>
-                        <AdminBadge tone={user.emailVerified ? "active" : "hidden"}>
-                          {user.emailVerified ? "Verified" : "Unverified"}
-                        </AdminBadge>
+                        <span className="inline-flex items-center gap-1.5 text-brand-charcoal">
+                          {user.email}
+                          {/* Small status icon + native hover tooltip (green = verified,
+                              amber = pending confirmation). */}
+                          {user.emailVerified ? (
+                            <PatchCheckFill
+                              aria-label="Email verified"
+                              className="h-4 w-4 shrink-0 text-emerald-600"
+                              title="Verified"
+                            />
+                          ) : (
+                            <PatchExclamationFill
+                              aria-label="Email pending verification"
+                              className="h-4 w-4 shrink-0 text-amber-500"
+                              title="Pending verification"
+                            />
+                          )}
+                        </span>
                       </td>
                       <td className="py-4 pr-4">
                         <AdminBadge tone={user.isActive ? "active" : "hidden"}>
