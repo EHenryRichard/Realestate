@@ -1,3 +1,4 @@
+pub mod about_routes;
 pub mod admin_client_routes;
 pub mod admin_routes;
 pub mod auth_routes;
@@ -12,6 +13,7 @@ pub mod property_routes;
 pub mod public_routes;
 pub mod service_routes;
 pub mod settings_routes;
+pub mod team_routes;
 pub mod testimonial_routes;
 pub mod upload_routes;
 

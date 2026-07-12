@@ -14,7 +14,12 @@
       "Bash(git rev-list *)",
       "PowerShell(\"Launched Docker Desktop\")",
       "Bash(docker info *)",
-      "PowerShell(docker run --rm -v \"C:/Users/ricke/Desktop/properProjects/sureboy/api:/app\" -v sureboy_cargo_registry:/usr/local/cargo/registry -e CARGO_TARGET_DIR=/tmp/target -w /app rust:1-bookworm bash -c \"apt-get update -qq && apt-get install -y -qq --no-install-recommends build-essential clang cmake libclang-dev perl pkg-config >/dev/null 2>&1 && cargo check --message-format=short 2>&1 | tail -n 35\")"
+      "PowerShell(docker run --rm -v \"C:/Users/ricke/Desktop/properProjects/sureboy/api:/app\" -v sureboy_cargo_registry:/usr/local/cargo/registry -e CARGO_TARGET_DIR=/tmp/target -w /app rust:1-bookworm bash -c \"apt-get update -qq && apt-get install -y -qq --no-install-recommends build-essential clang cmake libclang-dev perl pkg-config >/dev/null 2>&1 && cargo check --message-format=short 2>&1 | tail -n 35\")",
+      "Bash(curl -s http://localhost:8080/api/about)",
+      "Bash(ls -la .github/workflows)",
+      "Bash(cat frontend/vite.config.js)",
+      "Bash(cat frontend/vite.config.*)",
+      "Bash(docker compose *)"
     ]
   }
 }

@@ -1,5 +1,12 @@
 export const aboutContent = {
   seoKey: "about",
+  seo: {
+    title: "About Sureboy Realty | Trusted Real Estate Help in Warri",
+    description:
+      "Learn about Sureboy Realty, a trusted Warri real estate team focused on checked property, customer protection, and clear guidance.",
+    ogImage: "/og-image.jpg",
+  },
+  showFounderOnTeam: false,
   hero: {
     eyebrow: "About Sureboy Realty",
     title: "Built in Warri. Built on truth.",

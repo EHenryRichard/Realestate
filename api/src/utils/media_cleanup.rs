@@ -150,6 +150,10 @@ async fn live_upload_keys(pool: &DbPool) -> Result<HashSet<String>, sqlx::Error>
             UNION ALL SELECT logo_url FROM site_settings WHERE logo_url IS NOT NULL
             UNION ALL SELECT favicon_url FROM site_settings WHERE favicon_url IS NOT NULL
             UNION ALL SELECT og_image_url FROM site_settings WHERE og_image_url IS NOT NULL
+            UNION ALL SELECT content->'hero'->>'image' FROM about_content WHERE content->'hero'->>'image' IS NOT NULL
+            UNION ALL SELECT content->'founder'->>'photo' FROM about_content WHERE content->'founder'->>'photo' IS NOT NULL
+            UNION ALL SELECT content->'seo'->>'ogImage' FROM about_content WHERE content->'seo'->>'ogImage' IS NOT NULL
+            UNION ALL SELECT photo FROM team_members WHERE photo IS NOT NULL
         ) AS media_refs
         "#,
     )

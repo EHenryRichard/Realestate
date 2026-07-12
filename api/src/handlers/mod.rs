@@ -1,3 +1,4 @@
+pub mod about_handler;
 pub mod admin_client_handler;
 pub mod agent_handler;
 pub mod auth_handler;
@@ -15,5 +16,6 @@ pub mod notification_handler;
 pub mod property_handler;
 pub mod service_handler;
 pub mod settings_handler;
+pub mod team_member_handler;
 pub mod testimonial_handler;
 pub mod upload_handler;

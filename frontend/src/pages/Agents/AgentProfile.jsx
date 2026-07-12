@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, EnvelopeFill, TelephoneFill } from "react-bootstrap-icons";
-import { agentsApi } from "../../api/agentsApi.js";
+import { teamApi } from "../../api/teamApi.js";
 import { apiConfig } from "../../config/apiConfig.js";
 import { getSiteWhatsAppLink } from "../../config/siteConfig.js";
 import { usePageMeta } from "../../hooks/usePageMeta.js";
@@ -27,7 +27,7 @@ function AgentProfile() {
           if (active) setAgent({ fullName: "Agent Name", title: "Property Agent", bio: "Bio here.", slug });
           return;
         }
-        const res = await agentsApi.getBySlug(slug);
+        const res = await teamApi.getBySlug(slug);
         const data = res?.data?.data || res?.data || null;
         if (active) setAgent(data);
       } catch (err) {

@@ -17,6 +17,9 @@ const CreateAgent       = lazy(() => import("../pages/Agents/CreateAgent.jsx"));
 const EditAgent         = lazy(() => import("../pages/Agents/EditAgent.jsx"));
 const AdminUsers        = lazy(() => import("../pages/Users/AdminUsers.jsx"));
 const AgentRequests     = lazy(() => import("../pages/Agents/AgentRequests.jsx"));
+const AdminTeam         = lazy(() => import("../pages/Team/AdminTeam.jsx"));
+const CreateTeamMember  = lazy(() => import("../pages/Team/CreateTeamMember.jsx"));
+const EditTeamMember    = lazy(() => import("../pages/Team/EditTeamMember.jsx"));
 const AdminProfile      = lazy(() => import("../pages/Profile/AdminProfile.jsx"));
 const AdminProperties   = lazy(() => import("../pages/Properties/AdminProperties.jsx"));
 const CreateProperty    = lazy(() => import("../pages/Properties/CreateProperty.jsx"));
@@ -36,6 +39,7 @@ const EditBlogPost      = lazy(() => import("../pages/Blog/EditBlogPost.jsx"));
 const AdminMessages     = lazy(() => import("../pages/Messages/AdminMessages.jsx"));
 const AdminMessageDetails = lazy(() => import("../pages/Messages/AdminMessageDetails.jsx"));
 const AdminNewsletter   = lazy(() => import("../pages/Newsletter/AdminNewsletter.jsx"));
+const AdminAbout        = lazy(() => import("../pages/About/AdminAbout.jsx"));
 const AdminSettings     = lazy(() => import("../pages/Settings/AdminSettings.jsx"));
 
 // Redirects agents away from admin-only routes
@@ -69,6 +73,9 @@ function AdminRoutes() {
 
               {/* ── Admin only ── */}
               <Route element={<AdminOnlyRoute />}>
+                <Route element={<AdminTeam />} path="team" />
+                <Route element={<CreateTeamMember />} path="team/create" />
+                <Route element={<EditTeamMember />} path="team/:id/edit" />
                 <Route element={<AdminAgents />} path="agents" />
                 <Route element={<CreateAgent />} path="agents/create" />
                 <Route element={<EditAgent />} path="agents/:id/edit" />
@@ -87,6 +94,7 @@ function AdminRoutes() {
                 <Route element={<CreateBlogPost />} path="blog/create" />
                 <Route element={<EditBlogPost />} path="blog/:id/edit" />
                 <Route element={<AdminNewsletter />} path="newsletter" />
+                <Route element={<AdminAbout />} path="about" />
                 <Route element={<AdminSettings />} path="settings" />
               </Route>
             </Route>

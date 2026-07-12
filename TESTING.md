@@ -138,6 +138,51 @@ Setup steps are in `MAIL_SETUP.md`. Verify the setup itself first, then delivery
 ## 13. Faster builds (verify once)
 - [ ] First `docker compose build api` runs full; a **second** build after changing only app code finishes in well under 2 min (cargo-chef caches deps; mold speeds linking).
 
+## 14. Admin-editable About page + categorized sidebar (test locally)
+
+### 14a. About page from the admin
+- [ ] Admin → **Website Content → About Page** → editor loads pre-filled with the current copy (falls back to the shipped copy the first time).
+- [ ] Edit the banner title, intro, a value card (add/remove works), founder bio, and closing → **Save** → success toast.
+- [ ] Public `/about` reflects the saved changes on reload; images uploaded in the editor show on the page.
+- [ ] Blank / never-saved state: `/about` still renders the bundled default content (no blank sections).
+
+### 14b. Categorized sidebar + agent sub-list
+- [ ] Sidebar now shows **groups**: Home · Houses & Land (flat) · **Agents** · **Customers** · **Website Content** · Messages · Site Info.
+- [ ] Clicking a group heading expands/collapses it; the group holding the current page auto-opens.
+- [ ] **Agents** group expands to *All Staff / Add Staff / Applications* **plus a live "Their details" list** of each staff member → clicking a name opens their edit/details page.
+- [ ] An **agent-role** login sees only the flat items it's allowed (Home, Houses & Land, Messages) — no admin-only groups.
+- [ ] Mobile drawer mirrors the same grouped nav.
+- [ ] Each agent sub-link shows a small **avatar** (photo, or initial when no photo).
+
+### 14c. About editor extras
+- [ ] Value cards use an **icon dropdown** (searchable) with a live icon preview beside it — no more typing raw icon names.
+- [ ] **Preview page** button in the header opens `/about` in a new tab.
+- [ ] **Search & sharing (SEO)** section: editing title/description/share-image changes the browser tab title + meta on `/about` after save.
+- [ ] Replacing the banner or founder image and saving deletes the **old** file (no orphaned uploads); About images survive the periodic orphan sweep.
+- [ ] Ticking **"Also show the founder on the Team page"** → founder appears as the first card on `/agents`, linking to `/about`; unticking removes it.
+
+## 15. Team Members = admin-managed public profiles (separate from logins)
+
+> **Behaviour change:** the public **Our Team** page (`/agents`) is now driven by the new
+> **Team Members** system, NOT by login accounts. People with panel logins no longer
+> auto-appear on the site — you add team profiles explicitly.
+
+### 15a. Admin management (Our Team)
+- [ ] Sidebar → **Our Team** group → **All Members** (empty at first) and **Add Member**.
+- [ ] Add a member (name, title, phone/WhatsApp/email, photo, bio, order, visible) → saves; slug auto-generates from the name (or use the custom "Page link name").
+- [ ] Two members with the same name → second slug becomes `…-2` (no clash).
+- [ ] **Show/Hide** toggle flips whether they appear on the site; **Edit** and **Delete** work.
+- [ ] Replacing a photo and saving removes the old file; deleting a member removes their photo.
+- [ ] The **Our Team** nav group expands to a live **"Their details"** list of members (avatars) → click → edit.
+
+### 15b. Public site
+- [ ] `/agents` shows the visible members ordered by **Display order** then name; hidden ones don't show.
+- [ ] Click a member → `/agents/:slug` shows full details (photo, title, bio, phone/email/WhatsApp).
+- [ ] The founder card (if enabled in the About editor) still shows first, before the members.
+
+### 15c. Website Access (unchanged logins)
+- [ ] Sidebar → **Website Access** → **Staff Logins / Add Login / Applications** still manage who can *use* the admin panel (agent/admin accounts + the become-an-agent requests). These no longer affect the public team page.
+
 ## Reminder
 Email/push items require the VPS `.env`: `PUBLIC_ORIGIN=https://sureboyrealty.com`, the `SMTP_*` / `MAIL_FROM` values, and the `VAPID_*` keys — then `docker compose up -d api` and rebuild the frontend.
 

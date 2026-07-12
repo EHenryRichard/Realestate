@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { EnvelopeFill, TelephoneFill } from "react-bootstrap-icons";
 import { seoContent } from "../../content/seoContent.js";
-import { useAgents } from "../../hooks/useAgents.js";
+import { useAbout } from "../../hooks/useAbout.js";
+import { useTeam } from "../../hooks/useTeam.js";
 import { usePageMeta } from "../../hooks/usePageMeta.js";
 import { getSiteWhatsAppLink } from "../../config/siteConfig.js";
 import Container from "../../components/ui/Container/Container.jsx";
@@ -34,7 +35,7 @@ function AgentAvatar({ agent }) {
 }
 
 function AgentCard({ agent }) {
-  const href = agent.slug ? `/agents/${agent.slug}` : null;
+  const href = agent.href || (agent.slug ? `/agents/${agent.slug}` : null);
 
   return (
     <div className="flex flex-col items-center bg-white border border-brand-forest/10 p-8 text-center transition hover:-translate-y-1 hover:shadow-xl">
@@ -85,10 +86,30 @@ function AgentCard({ agent }) {
   );
 }
 
+// The founder is About-page content, not an agent record; when the admin opts in
+// we surface them as the first card, linking through to the full About page.
+const founderCardFrom = (about) => {
+  const founder = about?.founder;
+  if (!about?.showFounderOnTeam || !founder?.name) {
+    return null;
+  }
+  return {
+    id: "founder",
+    fullName: founder.name,
+    title: founder.role,
+    bio: Array.isArray(founder.bio) ? founder.bio[0] : founder.bio,
+    photo: founder.photo,
+    href: "/about",
+  };
+};
+
 function Team() {
   usePageMeta(seoContent.team);
 
-  const { agents, loading, error, empty } = useAgents();
+  const { members: agents, loading, error, empty } = useTeam();
+  const { content: about } = useAbout();
+  const founderCard = founderCardFrom(about);
+  const hasCards = founderCard || agents.length > 0;
 
   return (
     <>
@@ -102,16 +123,19 @@ function Team() {
         <Container>
           {loading ? (
             <LoadingState />
-          ) : error ? (
+          ) : error && !founderCard ? (
             <ErrorState message={error} />
-          ) : empty ? (
+          ) : empty && !founderCard ? (
             <EmptyState message="No team members to show at this time." />
-          ) : (
+          ) : hasCards ? (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {founderCard ? <AgentCard agent={founderCard} key={founderCard.id} /> : null}
               {agents.map((agent) => (
                 <AgentCard agent={agent} key={agent.id} />
               ))}
             </div>
+          ) : (
+            <EmptyState message="No team members to show at this time." />
           )}
         </Container>
       </section>

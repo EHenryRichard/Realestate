@@ -3,12 +3,13 @@ import Container from "../../components/ui/Container/Container.jsx";
 import SectionHeader from "../../components/ui/SectionHeader/SectionHeader.jsx";
 import PageHero from "../../components/sections/PageHero/PageHero.jsx";
 import { getIcon } from "../../config/iconConfig.js";
-import { aboutContent } from "../../content/aboutContent.js";
 import { seoContent } from "../../content/seoContent.js";
+import { useAbout } from "../../hooks/useAbout.js";
 import { usePageMeta } from "../../hooks/usePageMeta.js";
 
 function About() {
-  usePageMeta(seoContent.about);
+  const { content: aboutContent } = useAbout();
+  usePageMeta(aboutContent.seo || seoContent.about);
 
   return (
     <>

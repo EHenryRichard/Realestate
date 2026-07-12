@@ -150,7 +150,7 @@ function MobileDrawer({ isOpen, onClose }) {
               <NavLink
                 className={({ isActive }) =>
                   [
-                    'drawer-link group flex min-h-14 items-center gap-3 border-b border-white/10 py-2 pr-2 text-white transition duration-300 hover:-translate-x-1 hover:bg-white/5 hover:text-white md:min-h-[3.75rem]',
+                    'drawer-link group flex min-h-14 items-center gap-3 border-b border-white/10 px-3 py-2 text-white transition duration-300 hover:-translate-x-1 hover:bg-white/5 hover:text-white md:min-h-[3.75rem]',
                     isActive ? 'bg-white/8 text-white' : 'text-white/82',
                   ]
                     .filter(Boolean)
@@ -164,15 +164,6 @@ function MobileDrawer({ isOpen, onClose }) {
               >
                 {({ isActive }) => (
                   <>
-                    <span
-                      className={[
-                        'h-9 w-1 shrink-0 bg-white transition duration-200',
-                        isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                      aria-hidden="true"
-                    />
                     <span
                       className={[
                         'grid h-10 w-10 shrink-0 place-items-center transition duration-200',

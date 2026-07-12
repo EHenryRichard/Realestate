@@ -1,3 +1,4 @@
+pub mod about_content;
 pub mod admin_user;
 pub mod agent_request;
 pub mod blog_post;
@@ -9,4 +10,5 @@ pub mod property;
 pub mod push_subscription;
 pub mod service;
 pub mod site_settings;
+pub mod team_member;
 pub mod testimonial;

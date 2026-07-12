@@ -1,9 +1,9 @@
 use actix_web::web;
 
 use super::{
-    admin_client_routes, auth_routes, blog_routes, dashboard_routes, faq_routes, newsletter_routes,
-    notification_routes, property_routes, service_routes, settings_routes, testimonial_routes,
-    upload_routes,
+    about_routes, admin_client_routes, auth_routes, blog_routes, dashboard_routes, faq_routes,
+    newsletter_routes, notification_routes, property_routes, service_routes, settings_routes,
+    team_routes, testimonial_routes, upload_routes,
 };
 use crate::handlers::agent_handler;
 use crate::routes::contact_routes;
@@ -27,5 +27,7 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
         .configure(newsletter_routes::configure_admin)
         .configure(notification_routes::configure_admin)
         .configure(settings_routes::configure_admin)
+        .configure(about_routes::configure_admin)
+        .configure(team_routes::configure_admin)
         .configure(upload_routes::configure_admin);
 }

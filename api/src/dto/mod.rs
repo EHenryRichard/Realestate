@@ -1,3 +1,4 @@
+pub mod about_dto;
 pub mod agent_dto;
 pub mod auth_dto;
 pub mod blog_post_dto;
@@ -9,4 +10,5 @@ pub mod notification_dto;
 pub mod property_dto;
 pub mod service_dto;
 pub mod settings_dto;
+pub mod team_member_dto;
 pub mod testimonial_dto;
