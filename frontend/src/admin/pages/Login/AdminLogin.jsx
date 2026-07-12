@@ -74,6 +74,12 @@ function AdminLogin() {
             Sign up
           </Link>
         </p>
+        <p className="mt-2 text-sm font-bold text-brand-muted">
+          Are you an agent?{" "}
+          <Link className="text-brand-gold hover:text-brand-emerald" to="/agent-login">
+            Sign in as an agent
+          </Link>
+        </p>
       </section>
     </main>
   );

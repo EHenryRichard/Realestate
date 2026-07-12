@@ -103,6 +103,12 @@ function BecomeAgent() {
                 {submitting ? "Submitting..." : "Submit request"}
               </button>
             </form>
+            <p className="mt-5 text-sm text-brand-muted">
+              Already on the team?{" "}
+              <Link className="font-bold text-brand-gold hover:text-brand-emerald" to="/agent-login">
+                Agent sign in
+              </Link>
+            </p>
           </>
         )}
       </section>

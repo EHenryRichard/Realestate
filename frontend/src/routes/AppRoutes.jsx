@@ -6,6 +6,7 @@ import ScrollToTop from "../components/util/ScrollToTop.jsx";
 import PageLayout from "../components/layout/PageLayout/PageLayout.jsx";
 import PageLoader from "../components/ui/PageLoader/PageLoader.jsx";
 import { adminConfig } from "../config/adminConfig.js";
+import { AdminAuthProvider } from "../admin/hooks/useAdminAuth.js";
 import { ClientAuthProvider } from "../hooks/useClientAuth.jsx";
 
 const Home = lazy(() => import("../pages/Home/Home.jsx"));
@@ -15,6 +16,7 @@ const VerifyEmail = lazy(() => import("../pages/Auth/VerifyEmail.jsx"));
 const ClientDashboard = lazy(() => import("../pages/Dashboard/ClientDashboard.jsx"));
 const BecomeAgent = lazy(() => import("../pages/Auth/BecomeAgent.jsx"));
 const AgentSignup = lazy(() => import("../pages/Auth/AgentSignup.jsx"));
+const AgentLogin = lazy(() => import("../pages/Auth/AgentLogin.jsx"));
 const About = lazy(() => import("../pages/About/About.jsx"));
 const Services = lazy(() => import("../pages/Services/Services.jsx"));
 const Properties = lazy(() => import("../pages/Properties/Properties.jsx"));
@@ -59,6 +61,17 @@ function AppRoutes() {
                   {/* Become an agent */}
                   <Route element={<BecomeAgent />} path="become-an-agent" />
                   <Route element={<AgentSignup />} path="agent-signup" />
+                  {/* Agent workspace sign-in (agents only; admins are turned
+                      away). Wrapped in its own AdminAuthProvider since it lives
+                      outside the admin panel's route tree. */}
+                  <Route
+                    element={
+                      <AdminAuthProvider>
+                        <AgentLogin />
+                      </AdminAuthProvider>
+                    }
+                    path="agent-login"
+                  />
                   <Route element={<ClientProtectedRoute requireVerified />}>
                     <Route element={<SavedHouses />} path="saved-houses" />
                   </Route>

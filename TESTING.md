@@ -221,6 +221,14 @@ Setup steps are in `MAIL_SETUP.md`. Verify the setup itself first, then delivery
 - [ ] Saving, messaging, and enabling phone alerts all work again.
 - [ ] Deactivated accounts (admin toggled off) are blocked the same way.
 
+## 18. Join Our Team in navbar + agent sign-in page
+- [ ] Desktop navbar (and mobile menu) shows **Join Our Team** → `/become-an-agent`.
+- [ ] `/agent-login` shows the branded **Agent sign in** page (inside the normal site layout).
+- [ ] An **agent** account signs in there → lands in the workspace with only agent items (Home, Houses & Land, Messages).
+- [ ] An **admin** account tries it → refused with "This sign-in is for agents…" and is signed straight back out.
+- [ ] `/become-an-agent` has the "Already on the team? Agent sign in" link; `/agent-login` links back to "Apply to join".
+- [ ] An already-signed-in agent visiting `/agent-login` is bounced straight to the workspace.
+
 ## Reminder
 Email/push items require the VPS `.env`: `PUBLIC_ORIGIN=https://sureboyrealty.com`, the `SMTP_*` / `MAIL_FROM` values, and the `VAPID_*` keys — then `docker compose up -d api` and rebuild the frontend.
 

@@ -42,6 +42,13 @@ export const navLinks = [
     iconKey: "people",
   },
   {
+    id: "join-team",
+    label: "Join Our Team",
+    helper: "Work with us",
+    href: "/become-an-agent",
+    iconKey: "personCheck",
+  },
+  {
     id: "contact",
     label: "Contact",
     helper: "Call or message us",

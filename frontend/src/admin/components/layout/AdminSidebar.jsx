@@ -115,6 +115,9 @@ function NavGroup({ section, isOpen, onToggle, onNavigate, pathname }) {
         <div className="mt-0.5 grid gap-0.5 pb-1">
           {section.items.map((item) => (
             <NavRow
+              // Exact match only — otherwise "/team" also lights up on
+              // "/team/create" because it's a path prefix.
+              end
               icon={ChildIconFor(item.iconKey)}
               indented
               key={item.id}
