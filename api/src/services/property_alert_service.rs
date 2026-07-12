@@ -40,7 +40,35 @@ struct SearchPrefs {
     property_types: Vec<String>,
     max_price: Option<f64>,
     min_bedrooms: Option<i32>,
+    /// Legacy flag from before the channel picker existed.
     email_alerts: bool,
+    /// "both" | "email" | "push" | "off" — how the client wants to be told.
+    channel: Option<String>,
+}
+
+impl SearchPrefs {
+    /// The effective channel, honouring accounts saved before the picker
+    /// existed: an explicit value wins; legacy `emailAlerts: true` means
+    /// email-only; anything else (never chose) defaults to "both" so nobody
+    /// misses listings while the choice modal is pending.
+    fn effective_channel(&self) -> &str {
+        match self.channel.as_deref() {
+            Some("email") => "email",
+            Some("push") => "push",
+            Some("off") => "off",
+            Some("both") => "both",
+            _ if self.email_alerts => "email",
+            _ => "both",
+        }
+    }
+
+    fn wants_email(&self) -> bool {
+        matches!(self.effective_channel(), "email" | "both")
+    }
+
+    fn wants_push(&self) -> bool {
+        matches!(self.effective_channel(), "push" | "both")
+    }
 }
 
 /// One recipient row: what we need to decide a match and reach them by email
@@ -112,16 +140,19 @@ pub async fn notify_matching_clients(
     }
     let email_enabled = mailer.is_enabled();
 
-    // Candidates: active + verified clients who opted into alerts by EITHER
-    // enabling email alerts OR subscribing a browser for push. DISTINCT because
-    // a client can have several push subscriptions.
+    // Candidates: active + verified clients whose channel isn't "off". A client
+    // who never chose ("no preference") counts as "both" and is included. Those
+    // on push-only must actually have a subscribed browser to be reachable.
+    // DISTINCT because a client can have several push subscriptions. The
+    // per-recipient channel check below is the final word — this query only
+    // trims the obviously unreachable.
     let recipients = sqlx::query_as::<_, AlertRecipient>(
         "SELECT DISTINCT c.id, c.full_name, c.email, c.search_preferences \
          FROM client_users c \
          LEFT JOIN push_subscriptions ps ON ps.client_id = c.id \
          WHERE c.is_active = TRUE AND c.email_verified = TRUE \
-           AND (COALESCE((c.search_preferences->>'emailAlerts')::boolean, FALSE) = TRUE \
-                OR ps.id IS NOT NULL)",
+           AND COALESCE(c.search_preferences->>'channel', '') <> 'off' \
+           AND (COALESCE(c.search_preferences->>'channel', '') <> 'push' OR ps.id IS NOT NULL)",
     )
     .fetch_all(&pool)
     .await;
@@ -177,8 +208,8 @@ pub async fn notify_matching_clients(
             continue;
         }
 
-        // Email: only if SMTP is on and this client turned email alerts on.
-        if email_enabled && prefs.email_alerts {
+        // Email: only if SMTP is on and this client's channel includes email.
+        if email_enabled && prefs.wants_email() {
             if let Err(error) = mailer
                 .send_property_alert(
                     &recipient.email,
@@ -197,7 +228,11 @@ pub async fn notify_matching_clients(
             }
         }
 
-        // Push: sent to any browsers this client subscribed (no-ops if none).
-        push_notification_service::send_to_client(&pool, &config, recipient.id, &push_alert).await;
+        // Push: only if their channel includes it; still no-ops with no
+        // subscribed browsers.
+        if prefs.wants_push() {
+            push_notification_service::send_to_client(&pool, &config, recipient.id, &push_alert)
+                .await;
+        }
     }
 }

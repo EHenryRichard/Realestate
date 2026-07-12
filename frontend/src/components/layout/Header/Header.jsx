@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Bell, ChevronDown, Envelope, Heart, Person } from "react-bootstrap-icons";
-import { siteConfig } from "../../../config/siteConfig.js";
+import { Heart, Person } from "react-bootstrap-icons";
 import { useClientAuth } from "../../../hooks/useClientAuth.jsx";
+import { navLinks } from "../../../data/navLinks.js";
 import Container from "../../ui/Container/Container.jsx";
+import DesktopNav from "./DesktopNav.jsx";
 import MobileDrawer from "./MobileDrawer.jsx";
 import MobileNav from "./MobileNav.jsx";
 
 function Header() {
   // Account-aware: the person icon leads to the dashboard when signed in,
   // otherwise to the login page.
-  const { isAuthenticated } = useClientAuth();
+  const { client, isAuthenticated, isCheckingSession } = useClientAuth();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isPastHero, setIsPastHero] = useState(false);
   const headerRef = useRef(null);
@@ -18,10 +19,9 @@ function Header() {
   const location = useLocation();
   const isHome = location.pathname === "/";
   const shouldUseSolidHeader = !isHome || isPastHero || isDrawerOpen;
-  const navTextActionClass =
-    "relative hidden min-h-10 items-center text-xs font-normal uppercase tracking-[0.01em] transition hover:text-brand-gold after:absolute after:bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-brand-gold after:transition-transform hover:after:scale-x-100";
+  const canUseSavedHouses = isAuthenticated && client?.emailVerified;
   const navIconActionClass =
-    "relative hidden min-h-10 items-center transition hover:text-brand-gold after:absolute after:bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-brand-gold after:transition-transform hover:after:scale-x-100";
+    "inline-flex min-h-10 items-center gap-1.5 px-2 text-xs font-extrabold uppercase tracking-[0.01em] text-white/82 transition hover:bg-white/8 hover:text-brand-gold sm:px-3";
 
   const openDrawer = () => setIsDrawerOpen((currentValue) => !currentValue);
 
@@ -85,69 +85,53 @@ function Header() {
           .filter(Boolean)
           .join(" ")}
       >
-        <Container className="grid min-h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 md:min-h-[4.5rem]">
-          <div className="flex min-w-0 items-center gap-4">
+        <Container className="flex min-h-16 items-center justify-between gap-4 md:min-h-[4.5rem]">
+          <div className="flex min-w-0 items-center gap-3">
             <MobileNav isOpen={isDrawerOpen} onOpen={openDrawer} triggerRef={triggerRef} />
-            <Link
-              className={`${navTextActionClass} gap-3 md:inline-flex`}
-              to="/properties"
-            >
-              <Bell aria-hidden="true" className="h-5 w-5" />
-              <span>Create an Alert</span>
-            </Link>
-            <Link
-              className={`${navTextActionClass} xl:inline-flex`}
-              to="/services#real-estate-consultancy"
-            >
-              Real Estate Valuation
+            <Link className="flex items-center justify-center transition" to="/">
+              <img
+                alt="Sureboy Realty"
+                className="h-10 w-auto object-contain md:h-12"
+                src="/images/logo/logo.png"
+              />
             </Link>
           </div>
 
-          <Link className="flex items-center justify-center transition" to="/">
-            <img
-              alt="Sureboy Realty"
-              className="h-10 w-auto object-contain md:h-12"
-              src="/images/logo/logo.png"
-            />
-          </Link>
+          <DesktopNav links={navLinks} />
 
-          <div className="flex min-w-0 items-center justify-end gap-3">
-            <Link
-              className={`${navTextActionClass} xl:inline-flex`}
-              to="/contact"
-            >
-              Become Advertiser
-            </Link>
-            <a
-              aria-label="Email Sureboy Realty"
-              className={`${navIconActionClass} sm:inline-flex`}
-              href={`mailto:${siteConfig.email}`}
-            >
-              <Envelope aria-hidden="true" className="h-5 w-5" />
-            </a>
-            <Link
-              aria-label="View saved houses"
-              className={`${navIconActionClass} md:inline-flex`}
-              to="/saved-houses"
-            >
-              <Heart aria-hidden="true" className="h-5 w-5" />
-            </Link>
-            <Link
-              aria-label={isAuthenticated ? "My account" : "Sign in"}
-              className="relative min-h-10 items-center transition hover:text-brand-gold after:absolute after:bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-brand-gold after:transition-transform hover:after:scale-x-100 sm:inline-flex"
-              to={isAuthenticated ? "/dashboard" : "/login"}
-            >
-              <Person aria-hidden="true" className="h-5 w-5" />
-            </Link>
-            <span className="hidden h-7 w-px bg-white/32 md:block" aria-hidden="true" />
-            <button
-              aria-label="Change language"
-              className="hidden min-h-10 items-center gap-2 text-xs font-normal uppercase tracking-[0.01em] transition hover:text-brand-gold focus:outline-none focus:ring-0 md:inline-flex"
-              type="button"
-            >
-              EN
-              <ChevronDown aria-hidden="true" className="h-4 w-4" />
-            </button>
+          <div className="flex shrink-0 items-center justify-end gap-1">
+            {!isCheckingSession && isAuthenticated ? (
+              <>
+                {canUseSavedHouses ? (
+                  <Link
+                    aria-label="View saved houses"
+                    className={navIconActionClass}
+                    to="/saved-houses"
+                  >
+                    <Heart aria-hidden="true" className="h-5 w-5" />
+                    <span>Saved</span>
+                  </Link>
+                ) : null}
+                <Link
+                  aria-label="My account"
+                  className={navIconActionClass}
+                  to="/dashboard"
+                >
+                  <Person aria-hidden="true" className="h-5 w-5" />
+                  <span>Account</span>
+                </Link>
+              </>
+            ) : null}
+            {!isCheckingSession && !isAuthenticated ? (
+              <Link
+                aria-label="Sign in"
+                className={navIconActionClass}
+                to="/login"
+              >
+                <Person aria-hidden="true" className="h-5 w-5" />
+                <span>Sign in</span>
+              </Link>
+            ) : null}
           </div>
         </Container>
       </header>

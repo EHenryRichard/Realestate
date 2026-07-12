@@ -44,7 +44,6 @@ function AppRoutes() {
                   <Route element={<Services />} path="services" />
                   <Route element={<Properties />} path="properties" />
                   <Route element={<PropertyDetails />} path="properties/:slug" />
-                  <Route element={<SavedHouses />} path="saved-houses" />
                   <Route element={<Projects />} path="projects" />
                   <Route element={<Contact />} path="contact" />
                   <Route element={<Blog />} path="blog" />
@@ -60,6 +59,9 @@ function AppRoutes() {
                   {/* Become an agent */}
                   <Route element={<BecomeAgent />} path="become-an-agent" />
                   <Route element={<AgentSignup />} path="agent-signup" />
+                  <Route element={<ClientProtectedRoute requireVerified />}>
+                    <Route element={<SavedHouses />} path="saved-houses" />
+                  </Route>
                   <Route element={<ClientProtectedRoute />}>
                     <Route element={<ClientDashboard />} path="dashboard" />
                   </Route>

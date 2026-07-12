@@ -183,6 +183,44 @@ Setup steps are in `MAIL_SETUP.md`. Verify the setup itself first, then delivery
 ### 15c. Website Access (unchanged logins)
 - [ ] Sidebar → **Website Access** → **Staff Logins / Add Login / Applications** still manage who can *use* the admin panel (agent/admin accounts + the become-an-agent requests). These no longer affect the public team page.
 
+## 16. Alert channel choice (phone / email / both) + dashboard fix
+
+### 16a. Layout
+- [ ] `/dashboard` content starts **below** the fixed navbar (no overlap), mobile and desktop.
+
+### 16b. First-time modal
+- [ ] A verified client who has **never chosen** a channel sees the "How should we let you know?" modal on the dashboard.
+- [ ] Picking **By email** → saves and closes; modal never returns.
+- [ ] Picking **On my phone** or **Both** → saves, then shows the "turn on alerts on this device" step (browser permission + enable).
+- [ ] Closing the modal without choosing → it reappears on the next visit; meanwhile the client still gets alerts (unset = Both).
+
+### 16c. Preferences panel
+- [ ] "How we tell you about new matches" shows four cards: On my phone · By email · Both · Don't send me alerts; the saved one is highlighted.
+- [ ] Choosing On my phone / Both reveals the device-enable toggle with the nudge text.
+- [ ] Filters (locations / types / price / bedrooms) still save; "Leave these empty to hear about everything" hint shows.
+
+### 16d. Delivery rules (publish a matching property; needs SMTP/VAPID on VPS)
+- [ ] `channel: email` → email only, no push.
+- [ ] `channel: push` (with a subscribed browser) → push only, no email.
+- [ ] `channel: both` → both arrive.
+- [ ] `channel: off` → nothing.
+- [ ] No channel chosen yet → treated as both.
+- [ ] Old account with legacy `emailAlerts: true` → still gets email (mapped to email-only).
+- [ ] Empty filters still match every new listing; set filters still gate as before.
+
+## 17. Email verification gates all features
+
+### 17a. Unverified account (register, don't click the link)
+- [ ] `/dashboard` shows ONLY the "Confirm your email to use your dashboard" screen (with Resend) — no saved/viewed/messages cards, no alert preferences, no channel modal.
+- [ ] Saving a property / messaging an agent from a property page → rejected with "Please confirm your email address to use this feature."
+- [ ] API-level (server rule): `/client/saved`, `/client/views`, `/client/inquiries`, `/client/notifications/subscribe`, and profile/preferences updates all return 403 for an unverified account, even with a valid token.
+- [ ] Browsing stays open — home, properties, property details, agents all work signed-in-but-unverified.
+
+### 17b. After clicking the verification link
+- [ ] Dashboard unlocks: cards + alert preferences appear; the channel modal shows (first time).
+- [ ] Saving, messaging, and enabling phone alerts all work again.
+- [ ] Deactivated accounts (admin toggled off) are blocked the same way.
+
 ## Reminder
 Email/push items require the VPS `.env`: `PUBLIC_ORIGIN=https://sureboyrealty.com`, the `SMTP_*` / `MAIL_FROM` values, and the `VAPID_*` keys — then `docker compose up -d api` and rebuild the frontend.
 

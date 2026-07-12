@@ -27,7 +27,7 @@ function FaqsTable({ faqs }) {
       key: "status",
       label: "Status",
       render: (faq) => (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-wrap items-center gap-2">
           <AdminBadge tone={faq.isVisible ? "active" : "hidden"}>
             {faq.isVisible ? "Visible" : "Hidden"}
           </AdminBadge>

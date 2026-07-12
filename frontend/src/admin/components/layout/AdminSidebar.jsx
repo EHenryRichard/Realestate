@@ -11,7 +11,7 @@ import { useAdminAuth } from "../../hooks/useAdminAuth.js";
 
 const rowBase =
   "group flex min-h-12 items-center gap-3 px-3 text-sm transition hover:bg-white/6 hover:text-white";
-const rowState = (isActive) => (isActive ? "bg-white/8 text-white" : "text-white/78");
+const rowState = (isActive) => (isActive ? "bg-white/10 text-brand-gold" : "text-white/78");
 
 // A single tappable navigation row (used for solo links and group children).
 function NavRow({ to, end, icon: Icon, label, onNavigate, indented }) {
@@ -22,18 +22,32 @@ function NavRow({ to, end, icon: Icon, label, onNavigate, indented }) {
       onClick={onNavigate}
       to={to}
     >
-      {Icon ? (
-        <span className="grid h-9 w-9 shrink-0 place-items-center text-white/64 transition group-hover:text-white">
-          <Icon aria-hidden="true" className="h-[1.15rem] w-[1.15rem]" />
-        </span>
-      ) : (
-        <span className="grid h-9 w-9 shrink-0 place-items-center" aria-hidden="true">
-          <span className="h-1.5 w-1.5 rounded-full bg-white/45 transition group-hover:bg-white" />
-        </span>
+      {({ isActive }) => (
+        <>
+          {Icon ? (
+            <span
+              className={[
+                "grid h-9 w-9 shrink-0 place-items-center transition group-hover:text-white",
+                isActive ? "text-brand-gold" : "text-white/64",
+              ].join(" ")}
+            >
+              <Icon aria-hidden="true" className="h-[1.15rem] w-[1.15rem]" />
+            </span>
+          ) : (
+            <span className="grid h-9 w-9 shrink-0 place-items-center" aria-hidden="true">
+              <span
+                className={[
+                  "h-1.5 w-1.5 rounded-full transition group-hover:bg-white",
+                  isActive ? "bg-brand-gold" : "bg-white/45",
+                ].join(" ")}
+              />
+            </span>
+          )}
+          <span className="min-w-0 truncate font-extrabold uppercase leading-tight tracking-[0.01em]">
+            {label}
+          </span>
+        </>
       )}
-      <span className="min-w-0 truncate font-extrabold uppercase leading-tight tracking-[0.01em]">
-        {label}
-      </span>
     </NavLink>
   );
 }
@@ -76,24 +90,29 @@ function NavGroup({ section, isOpen, onToggle, onNavigate, pathname }) {
     <div>
       <button
         aria-expanded={isOpen}
-        className={[rowBase, "w-full", containsActive ? "text-white" : "text-white/78"].join(" ")}
+        className={[rowBase, "w-full", containsActive ? "bg-white/10 text-brand-gold" : "text-white/78"].join(" ")}
         onClick={onToggle}
         type="button"
       >
-        <span className="grid h-9 w-9 shrink-0 place-items-center text-white/64 transition group-hover:text-white">
+        <span
+          className={[
+            "grid h-9 w-9 shrink-0 place-items-center transition group-hover:text-white",
+            containsActive ? "text-brand-gold" : "text-white/64",
+          ].join(" ")}
+        >
           <GroupIcon aria-hidden="true" className="h-[1.15rem] w-[1.15rem]" />
         </span>
-        <span className="min-w-0 flex-1 truncate text-left font-extrabold uppercase leading-tight tracking-[0.06em]">
+        <span className="min-w-0 flex-1 truncate text-left font-extrabold uppercase leading-tight tracking-[0.02em]">
           {section.label}
         </span>
         <ChevronRight
           aria-hidden="true"
-          className={`h-4 w-4 shrink-0 text-white/50 transition-transform ${isOpen ? "rotate-90" : ""}`}
+          className={`h-4 w-4 shrink-0 transition-transform ${containsActive ? "text-brand-gold" : "text-white/50"} ${isOpen ? "rotate-90" : ""}`}
         />
       </button>
 
       {isOpen ? (
-        <div className="mt-0.5 grid gap-0.5 border-l border-white/10 pb-1 pl-1">
+        <div className="mt-0.5 grid gap-0.5 pb-1">
           {section.items.map((item) => (
             <NavRow
               icon={ChildIconFor(item.iconKey)}
@@ -112,7 +131,7 @@ function NavGroup({ section, isOpen, onToggle, onNavigate, pathname }) {
               </p>
               {agents.length === 0 ? (
                 <p className="px-3 pb-1 pl-11 text-xs text-white/45">
-                  {loadedAgents ? "No members yet." : "Loading…"}
+                  {loadedAgents ? "No members yet." : "Loading..."}
                 </p>
               ) : (
                 agents.map((agent) => (
@@ -152,23 +171,21 @@ function AdminSidebar({ onNavigate }) {
     [role],
   );
 
-  // Track which groups are open; auto-open the one holding the current route.
-  const [openGroups, setOpenGroups] = useState({});
+  // Accordion: only one group open at a time. Auto-open the one holding the
+  // current route so navigating keeps the active section expanded.
+  const [openGroup, setOpenGroup] = useState(null);
 
   useEffect(() => {
-    setOpenGroups((current) => {
-      const next = { ...current };
-      visibleSections.forEach((section) => {
-        if (section.items?.some((item) => location.pathname.startsWith(item.href))) {
-          next[section.id] = true;
-        }
-      });
-      return next;
-    });
+    const activeSection = visibleSections.find((section) =>
+      section.items?.some((item) => location.pathname.startsWith(item.href)),
+    );
+    if (activeSection) {
+      setOpenGroup(activeSection.id);
+    }
   }, [location.pathname, visibleSections]);
 
   const toggleGroup = (id) =>
-    setOpenGroups((current) => ({ ...current, [id]: !current[id] }));
+    setOpenGroup((current) => (current === id ? null : id));
 
   const handleLogout = () => {
     logout();
@@ -195,7 +212,7 @@ function AdminSidebar({ onNavigate }) {
         {visibleSections.map((section) =>
           section.items ? (
             <NavGroup
-              isOpen={Boolean(openGroups[section.id])}
+              isOpen={openGroup === section.id}
               key={section.id}
               onNavigate={onNavigate}
               onToggle={() => toggleGroup(section.id)}
@@ -221,20 +238,27 @@ function AdminSidebar({ onNavigate }) {
           className={({ isActive }) =>
             [
               "group flex min-h-12 items-center gap-3 px-3 text-sm font-extrabold uppercase tracking-[0.01em] transition hover:bg-white/6 hover:text-white",
-              isActive ? "bg-white/8 text-white" : "text-white/78",
+              isActive ? "bg-white/10 text-brand-gold" : "text-white/78",
             ].join(" ")
           }
           onClick={onNavigate}
           to={adminPath("profile")}
         >
-          <PersonCircle aria-hidden="true" className="h-5 w-5 text-white/64 transition group-hover:text-white" />
-          <span className="min-w-0">
-            <span className="block truncate">{admin?.fullName || "My Profile"}</span>
-            <span className="block text-xs font-normal normal-case text-white/50">{role}</span>
-          </span>
+          {({ isActive }) => (
+            <>
+              <PersonCircle
+                aria-hidden="true"
+                className={`h-5 w-5 transition group-hover:text-white ${isActive ? "text-brand-gold" : "text-white/64"}`}
+              />
+              <span className="min-w-0">
+                <span className="block truncate">{admin?.fullName || "My Profile"}</span>
+                <span className="block text-xs font-normal normal-case text-white/50">{role}</span>
+              </span>
+            </>
+          )}
         </NavLink>
         <button
-          className="flex min-h-12 w-full items-center gap-3 px-3 text-sm font-extrabold uppercase tracking-[0.01em] text-white/78 transition hover:bg-brand-emerald hover:text-white focus:outline-none focus:ring-0"
+          className="flex min-h-12 w-full items-center gap-3 px-3 text-sm font-extrabold uppercase tracking-[0.01em] text-white/78 transition hover:bg-white/6 hover:text-white focus:outline-none focus:ring-0"
           onClick={handleLogout}
           type="button"
         >

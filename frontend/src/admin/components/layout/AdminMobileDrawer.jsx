@@ -14,10 +14,10 @@ function AdminMobileDrawer({ isOpen, onClose }) {
         onClick={onClose}
         type="button"
       />
-      <div className="absolute inset-y-0 left-0 w-[min(22rem,86vw)] shadow-2xl">
+      <div className="absolute inset-y-0 left-0 w-[min(23rem,88vw)] shadow-2xl">
         <button
           aria-label="Close admin navigation"
-          className="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center text-white hover:text-brand-gold focus:outline-none focus:ring-0"
+          className="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center bg-white/8 text-white transition hover:bg-white/12 hover:text-brand-gold focus:outline-none focus:ring-0"
           onClick={onClose}
           type="button"
         >

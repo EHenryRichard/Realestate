@@ -5,14 +5,54 @@ import { getIcon } from "../../../config/iconConfig.js";
 import { getSiteWhatsAppLink, siteConfig } from "../../../config/siteConfig.js";
 import { mainMenuUtilityLinks } from "../../../data/mainMenuLinks.js";
 import { navLinks } from "../../../data/navLinks.js";
+import { useClientAuth } from "../../../hooks/useClientAuth.jsx";
 import Button from "../../ui/Button/Button.jsx";
 
 function MobileDrawer({ isOpen, onClose }) {
+  const { client, isAuthenticated, isCheckingSession } = useClientAuth();
   const panelRef = useRef(null);
   const closeButtonRef = useRef(null);
   const AgentIcon = getIcon("personCheck");
   const CallIcon = getIcon("telephone");
   const WhatsAppIcon = getIcon("whatsapp");
+  const canUseSavedHouses = isAuthenticated && client?.emailVerified;
+  const userMenuLinks = isAuthenticated
+    ? [
+        ...(canUseSavedHouses
+          ? [
+              {
+                id: "saved",
+                label: "Saved Houses",
+                helper: "Your saved options",
+                href: "/saved-houses",
+                iconKey: "heart",
+              },
+            ]
+          : []),
+        {
+          id: "account",
+          label: "My Account",
+          helper: canUseSavedHouses ? "Saved, viewed, and messages" : "Verify email to unlock saved houses",
+          href: "/dashboard",
+          iconKey: "personCheck",
+        },
+      ]
+    : [
+        {
+          id: "login",
+          label: "Sign In",
+          helper: "Open your account",
+          href: "/login",
+          iconKey: "key",
+        },
+        {
+          id: "register",
+          label: "Create Account",
+          helper: "Save houses and message us",
+          href: "/register",
+          iconKey: "personCheck",
+        },
+      ];
 
   useEffect(() => {
     if (!isOpen) {
@@ -65,7 +105,7 @@ function MobileDrawer({ isOpen, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 md:bottom-0 md:left-0 md:right-0 md:top-[4.5rem] md:z-30">
+    <div className="fixed inset-0 z-50">
       <button
         aria-label="Close navigation overlay"
         className="absolute inset-0 h-full w-full bg-brand-forest/58 transition"
@@ -75,13 +115,13 @@ function MobileDrawer({ isOpen, onClose }) {
       <aside
         aria-label="Main navigation"
         aria-modal="true"
-        className="drawer-panel drawer-scrollbar absolute inset-0 flex w-full flex-col overflow-y-auto border-r border-white/10 bg-brand-forest px-5 pb-6 pt-6 text-white shadow-2xl sm:px-6 md:bottom-0 md:left-0 md:right-auto md:top-0 md:w-[23rem]"
+        className="drawer-panel drawer-scrollbar absolute inset-y-0 left-0 flex w-[min(23rem,88vw)] flex-col overflow-y-auto border-r border-white/10 bg-brand-forest px-4 pb-6 pt-5 text-white shadow-2xl sm:px-5 md:w-[23rem]"
         id="mobile-nav-drawer"
         ref={panelRef}
         role="dialog"
         tabIndex={-1}
       >
-        <div className="drawer-link mb-5 flex items-start justify-between gap-4 border-b border-white/12 pb-4">
+        <div className="drawer-link mb-4 flex items-start justify-between gap-4 border-b border-white/12 pb-4">
           <div className="flex items-center gap-3">
             <img
               alt="Sureboy Realty"
@@ -109,11 +149,11 @@ function MobileDrawer({ isOpen, onClose }) {
         </div>
 
         <div
-          className="drawer-link mb-5 grid grid-cols-2 gap-2"
+          className="drawer-link mb-4 grid grid-cols-2 gap-2"
           style={{ animationDelay: "70ms" }}
         >
           <a
-            className="flex min-h-14 items-center gap-3 border border-brand-gold/35 bg-brand-gold px-3 py-2 text-brand-forest transition hover:bg-brand-forest hover:text-white focus:outline-none focus:ring-0"
+            className="flex min-h-14 items-center gap-3 bg-brand-gold px-3 py-2 text-brand-forest transition hover:bg-brand-gold-soft focus:outline-none focus:ring-0"
             href={`tel:${siteConfig.phoneCompact}`}
             onClick={onClose}
           >
@@ -126,7 +166,7 @@ function MobileDrawer({ isOpen, onClose }) {
             </span>
           </a>
           <a
-            className="flex min-h-14 items-center gap-3 border border-brand-gold/45 bg-brand-forest px-3 py-2 text-white transition hover:bg-brand-emerald hover:!text-white focus:outline-none focus:ring-0"
+            className="flex min-h-14 items-center gap-3 border border-white/14 bg-white/6 px-3 py-2 text-white transition hover:bg-white/10 hover:!text-white focus:outline-none focus:ring-0"
             href={getSiteWhatsAppLink()}
             onClick={onClose}
             rel="noreferrer"
@@ -142,7 +182,7 @@ function MobileDrawer({ isOpen, onClose }) {
           </a>
         </div>
 
-        <nav aria-label="Main menu" className="grid gap-2 md:gap-3">
+        <nav aria-label="Main menu" className="grid gap-1.5">
           {navLinks.map((link, index) => {
             const LinkIcon = getIcon(link.iconKey);
 
@@ -150,8 +190,8 @@ function MobileDrawer({ isOpen, onClose }) {
               <NavLink
                 className={({ isActive }) =>
                   [
-                    'drawer-link group flex min-h-14 items-center gap-3 border-b border-white/10 px-3 py-2 text-white transition duration-300 hover:-translate-x-1 hover:bg-white/5 hover:text-white md:min-h-[3.75rem]',
-                    isActive ? 'bg-white/8 text-white' : 'text-white/82',
+                    'drawer-link group flex min-h-14 items-center gap-3 px-3 py-2 text-white transition duration-200 hover:bg-white/6 hover:text-white',
+                    isActive ? 'bg-white/10 text-brand-gold' : 'text-white/82',
                   ]
                     .filter(Boolean)
                     .join(' ')
@@ -168,7 +208,7 @@ function MobileDrawer({ isOpen, onClose }) {
                       className={[
                         'grid h-10 w-10 shrink-0 place-items-center transition duration-200',
                         isActive
-                          ? 'text-white'
+                          ? 'text-brand-gold'
                           : 'text-white/64 group-hover:text-white',
                       ]
                         .filter(Boolean)
@@ -178,11 +218,11 @@ function MobileDrawer({ isOpen, onClose }) {
                       <LinkIcon className="h-5 w-5" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-sm font-semibold uppercase leading-tight tracking-[0.01em] md:text-base">
+                      <span className="block text-sm font-extrabold uppercase leading-tight tracking-[0.01em]">
                         {link.label}
                       </span>
                       {link.helper ? (
-                        <span className="mt-1 block text-xs font-medium normal-case leading-tight text-white/66 group-hover:text-white/80">
+                        <span className={`mt-1 block text-xs font-medium normal-case leading-tight ${isActive ? 'text-white/72' : 'text-white/58 group-hover:text-white/76'}`}>
                           {link.helper}
                         </span>
                       ) : null}
@@ -195,13 +235,63 @@ function MobileDrawer({ isOpen, onClose }) {
         </nav>
 
         <div className="mt-auto border-t border-white/12 pt-4">
+          {!isCheckingSession ? (
+            <div className="drawer-link mb-4 grid gap-2">
+              <p className="px-3 text-[0.68rem] font-extrabold uppercase tracking-[0.01em] text-brand-gold">
+                {isAuthenticated ? "Your Account" : "Account"}
+              </p>
+              {userMenuLinks.map((link, index) => {
+                const UserIcon = getIcon(link.iconKey);
+
+                return (
+                  <NavLink
+                    className={({ isActive }) =>
+                      [
+                        "group flex min-h-12 items-center gap-3 px-3 text-sm font-semibold text-white/82 transition duration-200 hover:bg-white/6 hover:text-white",
+                        isActive ? "bg-white/10 text-brand-gold" : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")
+                    }
+                    key={link.id}
+                    onClick={onClose}
+                    style={{ animationDelay: `${285 + index * 35}ms` }}
+                    to={link.href}
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <span
+                          className={[
+                            "grid h-9 w-9 shrink-0 place-items-center transition",
+                            isActive ? "text-brand-gold" : "text-white/64 group-hover:text-white",
+                          ]
+                            .filter(Boolean)
+                            .join(" ")}
+                          aria-hidden="true"
+                        >
+                          <UserIcon className="h-4 w-4" />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block leading-tight">{link.label}</span>
+                          <span className="mt-1 block text-xs leading-tight text-white/58">
+                            {link.helper}
+                          </span>
+                        </span>
+                      </>
+                    )}
+                  </NavLink>
+                );
+              })}
+            </div>
+          ) : null}
+
           <div className="grid gap-2">
             {mainMenuUtilityLinks.map((link, index) => {
               const UtilityIcon = getIcon(link.iconKey);
 
               return (
                 <NavLink
-                  className="drawer-link group flex min-h-12 items-center gap-3 text-sm font-normal text-white/78 transition duration-300 hover:-translate-x-1 hover:bg-white/5 hover:text-white"
+                  className="drawer-link group flex min-h-12 items-center gap-3 px-3 text-sm font-normal text-white/78 transition duration-200 hover:bg-white/6 hover:text-white"
                   key={link.id}
                   onClick={onClose}
                   style={{ animationDelay: `${315 + index * 35}ms` }}

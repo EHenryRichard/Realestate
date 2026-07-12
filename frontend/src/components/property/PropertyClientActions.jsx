@@ -10,7 +10,7 @@ import { showError, showSuccess } from "../../utils/toast.jsx";
 // it degrades to a gentle "sign in to save / message" prompt — browsing itself is
 // never gated.
 function PropertyClientActions({ propertyId, propertyTitle }) {
-  const { isAuthenticated, isCheckingSession } = useClientAuth();
+  const { client, isAuthenticated, isCheckingSession } = useClientAuth();
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -90,19 +90,29 @@ function PropertyClientActions({ propertyId, propertyTitle }) {
 
   return (
     <div className="mt-6 space-y-4">
-      <button
-        className={`flex items-center gap-2 rounded-md border px-4 py-2.5 text-sm font-bold transition ${
-          saved
-            ? "border-brand-gold bg-brand-gold/10 text-brand-forest"
-            : "border-brand-forest/20 text-brand-forest hover:bg-brand-forest hover:text-white"
-        }`}
-        disabled={busy}
-        onClick={toggleSaved}
-        type="button"
-      >
-        {saved ? <HeartFill className="h-4 w-4 text-brand-gold" /> : <Heart className="h-4 w-4" />}
-        {saved ? "Saved" : "Save this place"}
-      </button>
+      {client?.emailVerified ? (
+        <button
+          className={`flex items-center gap-2 rounded-md border px-4 py-2.5 text-sm font-bold transition ${
+            saved
+              ? "border-brand-gold bg-brand-gold/10 text-brand-forest"
+              : "border-brand-forest/20 text-brand-forest hover:bg-brand-forest hover:text-white"
+          }`}
+          disabled={busy}
+          onClick={toggleSaved}
+          type="button"
+        >
+          {saved ? <HeartFill className="h-4 w-4 text-brand-gold" /> : <Heart className="h-4 w-4" />}
+          {saved ? "Saved" : "Save this place"}
+        </button>
+      ) : (
+        <p className="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
+          Confirm your email before saving houses.{" "}
+          <Link className="font-black underline" to="/dashboard">
+            Go to your account
+          </Link>
+          .
+        </p>
+      )}
 
       <form className="grid gap-2" onSubmit={sendInquiry}>
         <label className="text-sm font-semibold text-brand-forest" htmlFor="inquiry-message">

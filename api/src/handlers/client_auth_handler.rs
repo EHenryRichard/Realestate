@@ -172,6 +172,33 @@ pub(crate) fn require_client_claims(
     Ok(claims)
 }
 
+/// Stricter guard for feature endpoints: the token must be valid AND the account
+/// must be active with a confirmed email. Verification happens after the token
+/// is issued, so this checks the database, not the claims. Returns 403 with a
+/// plain-English message the frontend can show as-is.
+pub(crate) async fn require_verified_client(
+    config: &AppConfig,
+    pool: &DbPool,
+    request: &HttpRequest,
+) -> Result<crate::utils::jwt::JwtClaims, HttpResponse> {
+    let claims = require_client_claims(config, request)?;
+    let status = sqlx::query_scalar::<_, bool>(
+        "SELECT email_verified AND is_active FROM client_users WHERE id = $1",
+    )
+    .bind(claims.sub)
+    .fetch_optional(pool)
+    .await
+    .map_err(common::server_error)?;
+
+    match status {
+        Some(true) => Ok(claims),
+        Some(false) => Err(common::forbidden(
+            "Please confirm your email address to use this feature.",
+        )),
+        None => Err(common::unauthorized("Account not found")),
+    }
+}
+
 /// Generates a fresh verification token and emails it. Logs on failure but never
 /// hard-fails the caller — a mail hiccup shouldn't block signup.
 async fn send_verification_email(config: &AppConfig, mailer: &Mailer, client: &ClientUser) {
@@ -357,7 +384,7 @@ pub async fn update_me(
     request: HttpRequest,
     payload: web::Json<UpdateClientProfileRequest>,
 ) -> impl Responder {
-    let claims = match require_client_claims(&config, &request) {
+    let claims = match require_verified_client(&config, pool.get_ref(), &request).await {
         Ok(claims) => claims,
         Err(response) => return response,
     };

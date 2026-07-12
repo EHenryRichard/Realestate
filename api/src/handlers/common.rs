@@ -43,6 +43,13 @@ pub fn unauthorized(message: &str) -> HttpResponse {
     }))
 }
 
+pub fn forbidden(message: &str) -> HttpResponse {
+    HttpResponse::Forbidden().json(json!({
+        "success": false,
+        "message": message
+    }))
+}
+
 pub fn not_found(message: &str) -> HttpResponse {
     HttpResponse::NotFound().json(json!({
         "success": false,

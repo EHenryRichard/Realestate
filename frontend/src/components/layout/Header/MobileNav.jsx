@@ -4,7 +4,7 @@ function MobileNav({ isOpen, onOpen, triggerRef }) {
       aria-controls="mobile-nav-drawer"
       aria-expanded={isOpen}
       aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
-      className="inline-flex min-h-10 items-center gap-3 border-0 bg-transparent text-xs font-normal uppercase tracking-[0.01em] text-white transition hover:text-brand-gold focus:outline-none focus:ring-0"
+      className="inline-flex min-h-10 items-center gap-3 border-0 bg-transparent text-xs font-normal uppercase tracking-[0.01em] text-white transition hover:text-brand-gold focus:outline-none focus:ring-0 lg:hidden"
       onClick={onOpen}
       ref={triggerRef}
       type="button"

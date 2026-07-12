@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
+import { EnvelopeFill } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useClientAuth } from "../../hooks/useClientAuth.jsx";
 import { clientApi } from "../../api/clientApi.js";
 import { clientAuthApi } from "../../api/clientAuthApi.js";
 import NotificationPreferences from "../../components/dashboard/NotificationPreferences.jsx";
-import ClientPushToggle from "../../components/dashboard/ClientPushToggle.jsx";
+import AlertChannelModal from "../../components/dashboard/AlertChannelModal.jsx";
 import { showError, showSuccess } from "../../utils/toast.jsx";
 
 // Formats a price like ₦25,000,000 (no decimals).
@@ -42,7 +43,7 @@ function PropertyRow({ item, onRemove }) {
           onClick={() => onRemove(item.id)}
           type="button"
         >
-          Remove
+          Unsave
         </button>
       )}
     </li>
@@ -74,6 +75,10 @@ function ClientDashboard() {
   const [loading, setLoading] = useState(true);
   const [resending, setResending] = useState(false); // "resend verification" button
 
+  // Features are locked until the email is confirmed (the backend enforces the
+  // same rule), so don't even fetch the lists for unverified accounts.
+  const isVerified = Boolean(client?.emailVerified);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -94,8 +99,12 @@ function ClientDashboard() {
   }, []);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    if (isVerified) {
+      load();
+    } else {
+      setLoading(false);
+    }
+  }, [load, isVerified]);
 
   const handleRemoveSaved = async (propertyId) => {
     try {
@@ -127,7 +136,7 @@ function ClientDashboard() {
   };
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10">
+    <main className="mx-auto max-w-5xl px-4 pb-10 pt-24 md:pt-28">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-bold text-brand-forest">
@@ -144,23 +153,31 @@ function ClientDashboard() {
         </button>
       </div>
 
-      {client && !client.emailVerified && (
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4">
-          <p className="text-sm font-semibold text-amber-800">
-            Please confirm your email address to secure your account.
+      {/* Everything is locked until the email is confirmed (backend enforces
+          the same rule on every feature endpoint). */}
+      {client && !isVerified ? (
+        <div className="mt-10 rounded-xl border border-brand-forest/10 bg-brand-cream/60 p-6 text-center shadow-sm sm:p-10">
+          <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-brand-forest text-white" aria-hidden="true">
+            <EnvelopeFill className="h-6 w-6" />
+          </span>
+          <h2 className="mt-4 font-display text-xl font-bold text-brand-forest">
+            Confirm your email to use your dashboard
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-brand-muted">
+            We sent a link to <span className="font-bold text-brand-forest">{client.email}</span>. Click it
+            to unlock saving houses, alerts, and messaging our team. Check your spam folder if you
+            can't find it.
           </p>
           <button
-            className="rounded-md bg-amber-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-amber-700 disabled:opacity-60"
+            className="mt-5 rounded-md bg-brand-forest px-5 py-2.5 text-sm font-bold text-white transition hover:bg-brand-emerald disabled:opacity-60"
             disabled={resending}
             onClick={handleResend}
             type="button"
           >
-            {resending ? "Sending..." : "Resend link"}
+            {resending ? "Sending..." : "Resend the link"}
           </button>
         </div>
-      )}
-
-      {loading ? (
+      ) : loading ? (
         <p className="mt-10 text-center text-sm text-brand-muted">Loading your dashboard…</p>
       ) : (
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
@@ -223,8 +240,12 @@ function ClientDashboard() {
         </div>
       )}
 
-      <NotificationPreferences />
-      <ClientPushToggle />
+      {isVerified && (
+        <>
+          <NotificationPreferences />
+          <AlertChannelModal />
+        </>
+      )}
     </main>
   );
 }

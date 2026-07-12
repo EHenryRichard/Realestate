@@ -18,7 +18,10 @@ use crate::{
         client_dto::CreateInquiryRequest,
         notification_dto::{PushSubscriptionRequest, PushUnsubscribeRequest},
     },
-    handlers::{client_auth_handler::require_client_claims, common},
+    handlers::{
+        client_auth_handler::{require_client_claims, require_verified_client},
+        common,
+    },
     models::client_user::ClientUser,
 };
 
@@ -54,14 +57,16 @@ struct InquiryItem {
     created_at: DateTime<Utc>,
 }
 
-/// Small helper: authenticate the client and parse the `{property_id}` path.
-/// Returns the client id and property id, or an error response.
-fn client_and_property(
+/// Small helper: authenticate the client (verified accounts only) and parse the
+/// `{property_id}` path. Returns the client id and property id, or an error
+/// response.
+async fn client_and_property(
     config: &AppConfig,
+    pool: &crate::db::DbPool,
     request: &HttpRequest,
     path: web::Path<String>,
 ) -> Result<(Uuid, Uuid), actix_web::HttpResponse> {
-    let claims = require_client_claims(config, request)?;
+    let claims = require_verified_client(config, pool, request).await?;
     let property_id =
         Uuid::parse_str(&path.into_inner()).map_err(|_| common::bad_request("Invalid property id"))?;
     Ok((claims.sub, property_id))
@@ -77,7 +82,7 @@ pub async fn save_property(
     request: HttpRequest,
     path: web::Path<String>,
 ) -> impl Responder {
-    let (client_id, property_id) = match client_and_property(&config, &request, path) {
+    let (client_id, property_id) = match client_and_property(&config, pool.get_ref(), &request, path).await {
         Ok(pair) => pair,
         Err(response) => return response,
     };
@@ -103,7 +108,7 @@ pub async fn unsave_property(
     request: HttpRequest,
     path: web::Path<String>,
 ) -> impl Responder {
-    let (client_id, property_id) = match client_and_property(&config, &request, path) {
+    let (client_id, property_id) = match client_and_property(&config, pool.get_ref(), &request, path).await {
         Ok(pair) => pair,
         Err(response) => return response,
     };
@@ -125,7 +130,7 @@ pub async fn list_saved(
     pool: web::Data<DbPool>,
     request: HttpRequest,
 ) -> impl Responder {
-    let claims = match require_client_claims(&config, &request) {
+    let claims = match require_verified_client(&config, pool.get_ref(), &request).await {
         Ok(claims) => claims,
         Err(response) => return response,
     };
@@ -158,7 +163,7 @@ pub async fn record_view(
     request: HttpRequest,
     path: web::Path<String>,
 ) -> impl Responder {
-    let (client_id, property_id) = match client_and_property(&config, &request, path) {
+    let (client_id, property_id) = match client_and_property(&config, pool.get_ref(), &request, path).await {
         Ok(pair) => pair,
         Err(response) => return response,
     };
@@ -183,7 +188,7 @@ pub async fn list_viewed(
     pool: web::Data<DbPool>,
     request: HttpRequest,
 ) -> impl Responder {
-    let claims = match require_client_claims(&config, &request) {
+    let claims = match require_verified_client(&config, pool.get_ref(), &request).await {
         Ok(claims) => claims,
         Err(response) => return response,
     };
@@ -217,7 +222,7 @@ pub async fn create_inquiry(
     request: HttpRequest,
     payload: web::Json<CreateInquiryRequest>,
 ) -> impl Responder {
-    let claims = match require_client_claims(&config, &request) {
+    let claims = match require_verified_client(&config, pool.get_ref(), &request).await {
         Ok(claims) => claims,
         Err(response) => return response,
     };
@@ -274,7 +279,7 @@ pub async fn list_inquiries(
     pool: web::Data<DbPool>,
     request: HttpRequest,
 ) -> impl Responder {
-    let claims = match require_client_claims(&config, &request) {
+    let claims = match require_verified_client(&config, pool.get_ref(), &request).await {
         Ok(claims) => claims,
         Err(response) => return response,
     };
@@ -308,7 +313,7 @@ pub async fn subscribe_push(
     request: HttpRequest,
     payload: web::Json<PushSubscriptionRequest>,
 ) -> impl Responder {
-    let claims = match require_client_claims(&config, &request) {
+    let claims = match require_verified_client(&config, pool.get_ref(), &request).await {
         Ok(claims) => claims,
         Err(response) => return response,
     };
