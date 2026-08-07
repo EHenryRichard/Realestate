@@ -12,7 +12,7 @@ function PropertiesTable({ properties }) {
     try {
       await adminPropertyApi.remove(property.id);
       showSuccess(`${property.title} has been deleted.`);
-      reload();
+      
     } catch (err) {
       showError(err.message);
     }
