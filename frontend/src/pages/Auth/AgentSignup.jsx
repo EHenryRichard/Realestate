@@ -68,7 +68,7 @@ function AgentSignup() {
             </p>
             <Link
               className="mt-6 inline-block rounded-md bg-brand-forest px-5 py-2.5 font-bold text-white hover:bg-brand-emerald"
-              to={adminPath("login")}
+              to={adminPath("agent-login")}
             >
               Go to login
             </Link>
